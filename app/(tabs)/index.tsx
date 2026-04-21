@@ -240,11 +240,6 @@ export default function App() {
         <TextInput style={styles.input} placeholder="Phone Number" />
         <TextInput style={styles.input} placeholder="Email Address" />
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Delivery Options</Text>
-          <Text style={styles.cardSubtitle}>Pickup / Curbside / Delivery</Text>
-        </View>
-
         <View style={styles.summaryBox}>
           <Text style={styles.summaryTitle}>Final Total</Text>
           <Text style={styles.summaryTotal}>${cartTotal.toFixed(2)}</Text>
