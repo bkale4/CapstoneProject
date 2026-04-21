@@ -265,7 +265,6 @@ export default function App() {
             Your order has been successfully placed.
           </Text>
           <Text style={styles.summaryLine}>Order Number: #1042</Text>
-          <Text style={styles.summaryLine}>Delivery Method: Pickup</Text>
           <Text style={styles.summaryLine}>
             Estimated Ready Time: 20 minutes
           </Text>
