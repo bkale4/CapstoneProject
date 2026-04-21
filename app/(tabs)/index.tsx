@@ -22,6 +22,69 @@ type Screen =
   | "businessLogin"
   | "business";
 
+type BusinessLoginScreenProps = {
+  Header: ({ title }: { title: string }) => React.JSX.Element;
+  styles: any;
+  adminUsername: string;
+  setAdminUsername: React.Dispatch<React.SetStateAction<string>>;
+  adminPassword: string;
+  setAdminPassword: React.Dispatch<React.SetStateAction<string>>;
+  handleBusinessLogin: () => void;
+  loginMessage: string;
+};
+
+function BusinessLoginScreen({
+  Header,
+  styles,
+  adminUsername,
+  setAdminUsername,
+  adminPassword,
+  setAdminPassword,
+  handleBusinessLogin,
+  loginMessage,
+}: BusinessLoginScreenProps) {
+  return (
+    <>
+      <Header title="Business Login" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Admin Access Only</Text>
+          <Text style={styles.cardSubtitle}>
+            This section is restricted and is not for public customer use.
+          </Text>
+        </View>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          value={adminUsername}
+          onChangeText={setAdminUsername}
+          autoCapitalize="none"
+          blurOnSubmit={false}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={adminPassword}
+          onChangeText={setAdminPassword}
+          autoCapitalize="none"
+          blurOnSubmit={false}
+        />
+
+        <Pressable style={styles.primaryButton} onPress={handleBusinessLogin}>
+          <Text style={styles.primaryButtonText}>Log In</Text>
+        </Pressable>
+
+        {loginMessage !== "" && (
+          <Text style={styles.errorText}>{loginMessage}</Text>
+        )}
+      </ScrollView>
+    </>
+  );
+}
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [cartTotal, setCartTotal] = useState(0);
@@ -346,43 +409,6 @@ export default function App() {
     </>
   );
 
-  const BusinessLoginScreen = () => (
-    <>
-      <Header title="Business Login" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Admin Access Only</Text>
-          <Text style={styles.cardSubtitle}>
-            This section is restricted and is not for public customer use.
-          </Text>
-        </View>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          value={adminUsername}
-          onChangeText={setAdminUsername}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          value={adminPassword}
-          onChangeText={setAdminPassword}
-        />
-
-        <Pressable style={styles.primaryButton} onPress={handleBusinessLogin}>
-          <Text style={styles.primaryButtonText}>Log In</Text>
-        </Pressable>
-
-        {loginMessage !== "" && (
-          <Text style={styles.errorText}>{loginMessage}</Text>
-        )}
-      </ScrollView>
-    </>
-  );
-
   const BusinessScreen = () => (
     <>
       <Header title="Business Dashboard" />
@@ -427,7 +453,18 @@ export default function App() {
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
       {screen === "cateringRequest" && <CateringRequestScreen />}
-      {screen === "businessLogin" && <BusinessLoginScreen />}
+      {screen === "businessLogin" && (
+        <BusinessLoginScreen
+          Header={Header}
+          styles={styles}
+          adminUsername={adminUsername}
+          setAdminUsername={setAdminUsername}
+          adminPassword={adminPassword}
+          setAdminPassword={setAdminPassword}
+          handleBusinessLogin={handleBusinessLogin}
+          loginMessage={loginMessage}
+        />
+      )}
       {screen === "business" && <BusinessScreen />}
       <NavBar />
     </SafeAreaView>
