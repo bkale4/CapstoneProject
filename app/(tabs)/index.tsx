@@ -19,14 +19,27 @@ type Screen =
   | "orderConfirmation"
   | "catering"
   | "cateringRequest"
+  | "businessLogin"
   | "business";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
   const [cartTotal, setCartTotal] = useState(0);
+  const [adminUsername, setAdminUsername] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [loginMessage, setLoginMessage] = useState("");
 
   const addToCart = (price: number) => {
     setCartTotal((prev) => prev + price);
+  };
+
+  const handleBusinessLogin = () => {
+    if (adminUsername === "admin" && adminPassword === "12345") {
+      setLoginMessage("");
+      setScreen("business");
+    } else {
+      setLoginMessage("Access Denied. This area is for admin use only.");
+    }
   };
 
   const Header = ({ title }: { title: string }) => (
@@ -49,7 +62,7 @@ export default function App() {
       <Pressable onPress={() => setScreen("cart")}>
         <Text style={styles.navText}>Cart</Text>
       </Pressable>
-      <Pressable onPress={() => setScreen("business")}>
+      <Pressable onPress={() => setScreen("businessLogin")}>
         <Text style={styles.navText}>Business</Text>
       </Pressable>
     </View>
@@ -333,6 +346,43 @@ export default function App() {
     </>
   );
 
+  const BusinessLoginScreen = () => (
+    <>
+      <Header title="Business Login" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Admin Access Only</Text>
+          <Text style={styles.cardSubtitle}>
+            This section is restricted and is not for public customer use.
+          </Text>
+        </View>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          value={adminUsername}
+          onChangeText={setAdminUsername}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={adminPassword}
+          onChangeText={setAdminPassword}
+        />
+
+        <Pressable style={styles.primaryButton} onPress={handleBusinessLogin}>
+          <Text style={styles.primaryButtonText}>Log In</Text>
+        </Pressable>
+
+        {loginMessage !== "" && (
+          <Text style={styles.errorText}>{loginMessage}</Text>
+        )}
+      </ScrollView>
+    </>
+  );
+
   const BusinessScreen = () => (
     <>
       <Header title="Business Dashboard" />
@@ -377,6 +427,7 @@ export default function App() {
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
       {screen === "cateringRequest" && <CateringRequestScreen />}
+      {screen === "businessLogin" && <BusinessLoginScreen />}
       {screen === "business" && <BusinessScreen />}
       <NavBar />
     </SafeAreaView>
@@ -521,5 +572,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "#2f241f",
+  },
+  errorText: {
+    color: "#a12626",
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 12,
+    textAlign: "center",
   },
 });
