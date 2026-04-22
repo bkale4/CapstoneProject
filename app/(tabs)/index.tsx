@@ -22,7 +22,11 @@ type Screen =
   | "cateringRequest"
   | "cateringConfirmation"
   | "businessLogin"
-  | "business";
+  | "business"
+  | "ordersManagement"
+  | "cateringManagement"
+  | "menuManagement"
+  | "availabilityManagement";
 
 type BusinessLoginScreenProps = {
   Header: ({ title }: { title: string }) => React.JSX.Element;
@@ -634,30 +638,128 @@ export default function App() {
     <>
       <Header title="Business Dashboard" />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
+        <Pressable
+          style={styles.card}
+          onPress={() => setScreen("ordersManagement")}
+        >
           <Text style={styles.cardTitle}>Incoming Orders</Text>
           <Text style={styles.cardSubtitle}>
-            Track food orders and delivery methods.
+            Track food orders and update status.
           </Text>
-        </View>
+        </Pressable>
 
-        <View style={styles.card}>
+        <Pressable
+          style={styles.card}
+          onPress={() => setScreen("cateringManagement")}
+        >
           <Text style={styles.cardTitle}>Catering Requests</Text>
           <Text style={styles.cardSubtitle}>
             Review, accept, decline, or follow up.
           </Text>
-        </View>
+        </Pressable>
 
-        <View style={styles.card}>
+        <Pressable
+          style={styles.card}
+          onPress={() => setScreen("menuManagement")}
+        >
           <Text style={styles.cardTitle}>Menu Management</Text>
           <Text style={styles.cardSubtitle}>
             Update menus by service context.
           </Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.card}
+          onPress={() => setScreen("availabilityManagement")}
+        >
+          <Text style={styles.cardTitle}>Availability Management</Text>
+          <Text style={styles.cardSubtitle}>Adjust the catering calendar.</Text>
+        </Pressable>
+      </ScrollView>
+    </>
+  );
+
+  const OrdersManagementScreen = () => (
+    <>
+      <Header title="Incoming Orders" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Order #1042</Text>
+          <Text style={styles.cardSubtitle}>Customer: John Doe</Text>
+          <Text style={styles.cardSubtitle}>
+            Items: Pulled Pork Sandwich, Sweet Tea
+          </Text>
+          <Text style={styles.cardSubtitle}>Status: Preparing</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Availability Management</Text>
-          <Text style={styles.cardSubtitle}>Adjust the catering calendar.</Text>
+          <Text style={styles.cardTitle}>Order #1043</Text>
+          <Text style={styles.cardSubtitle}>Customer: Jane Doe</Text>
+          <Text style={styles.cardSubtitle}>
+            Items: BBQ Chicken Plate, Lemonade
+          </Text>
+          <Text style={styles.cardSubtitle}>Status: Ready for Pickup</Text>
+        </View>
+      </ScrollView>
+    </>
+  );
+
+  const CateringManagementScreen = () => (
+    <>
+      <Header title="Catering Requests" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Request #C201</Text>
+          <Text style={styles.cardSubtitle}>Date: May 21, 2026</Text>
+          <Text style={styles.cardSubtitle}>Guests: 45</Text>
+          <Text style={styles.cardSubtitle}>
+            Menu Preference: Sandwich Platters
+          </Text>
+          <Text style={styles.cardSubtitle}>Status: Follow Up Needed</Text>
+        </View>
+      </ScrollView>
+    </>
+  );
+
+  const MenuManagementScreen = () => (
+    <>
+      <Header title="Menu Management" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Food Trailer Menu</Text>
+          <Text style={styles.cardSubtitle}>Pulled Pork Sandwich</Text>
+          <Text style={styles.cardSubtitle}>Mac and Cheese</Text>
+          <Text style={styles.cardSubtitle}>Sweet Tea</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Onsite Event Menu</Text>
+          <Text style={styles.cardSubtitle}>BBQ Chicken Plate</Text>
+          <Text style={styles.cardSubtitle}>Loaded Fries</Text>
+          <Text style={styles.cardSubtitle}>Lemonade</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Catering Menu</Text>
+          <Text style={styles.cardSubtitle}>BBQ Buffet</Text>
+          <Text style={styles.cardSubtitle}>Sandwich Platters</Text>
+          <Text style={styles.cardSubtitle}>Family-Style Sides</Text>
+        </View>
+      </ScrollView>
+    </>
+  );
+
+  const AvailabilityManagementScreen = () => (
+    <>
+      <Header title="Availability Management" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Current Catering Availability</Text>
+          <Text style={styles.cardSubtitle}>May 10 - Unavailable</Text>
+          <Text style={styles.cardSubtitle}>May 12 - Available</Text>
+          <Text style={styles.cardSubtitle}>May 14 - Available</Text>
+          <Text style={styles.cardSubtitle}>May 18 - Unavailable</Text>
+          <Text style={styles.cardSubtitle}>May 21 - Available</Text>
         </View>
       </ScrollView>
     </>
@@ -689,6 +791,10 @@ export default function App() {
         />
       )}
       {screen === "business" && <BusinessScreen />}
+      {screen === "ordersManagement" && <OrdersManagementScreen />}
+      {screen === "availabilityManagement" && <AvailabilityManagementScreen />}
+      {screen === "menuManagement" && <MenuManagementScreen />}
+      {screen === "cateringManagement" && <CateringManagementScreen />}
       <NavBar />
     </SafeAreaView>
   );
