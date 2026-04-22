@@ -97,6 +97,9 @@ export default function App() {
   const addToCart = (price: number) => {
     setCartTotal((prev) => prev + price);
   };
+  const clearCart = () => {
+    setCartTotal(0);
+  };
 
   const handleBusinessLogin = () => {
     if (adminUsername === "admin" && adminPassword === "12345") {
@@ -299,6 +302,10 @@ export default function App() {
             Total: ${cartTotal.toFixed(2)}
           </Text>
         </View>
+
+        <Pressable style={styles.secondaryButton} onPress={clearCart}>
+          <Text style={styles.secondaryButtonText}>Clear Cart</Text>
+        </Pressable>
 
         <Pressable
           style={styles.primaryButton}
@@ -631,6 +638,18 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: "white",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  secondaryButton: {
+    backgroundColor: "#e7e1da",
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  secondaryButtonText: {
+    color: "#2f241f",
     fontSize: 16,
     fontWeight: "700",
   },
