@@ -19,6 +19,7 @@ type Screen =
   | "orderConfirmation"
   | "catering"
   | "cateringRequest"
+  | "cateringConfirmation"
   | "businessLogin"
   | "business";
 
@@ -402,8 +403,36 @@ export default function App() {
           multiline
         />
 
-        <Pressable style={styles.primaryButton}>
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => setScreen("cateringConfirmation")}
+        >
           <Text style={styles.primaryButtonText}>Submit Catering Request</Text>
+        </Pressable>
+      </ScrollView>
+    </>
+  );
+
+  const CateringConfirmationScreen = () => (
+    <>
+      <Header title="Request Submitted" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.summaryBox}>
+          <Text style={styles.summaryTitle}>Thank You!</Text>
+          <Text style={styles.summaryLine}>
+            Your catering request has been submitted successfully.
+          </Text>
+          <Text style={styles.summaryLine}>
+            A member of Root & Ranch Catering will review your request.
+          </Text>
+          <Text style={styles.summaryLine}>Status: Pending approval</Text>
+        </View>
+
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => setScreen("home")}
+        >
+          <Text style={styles.primaryButtonText}>Return Home</Text>
         </Pressable>
       </ScrollView>
     </>
@@ -453,6 +482,7 @@ export default function App() {
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
       {screen === "cateringRequest" && <CateringRequestScreen />}
+      {screen === "cateringConfirmation" && <CateringConfirmationScreen />}
       {screen === "businessLogin" && (
         <BusinessLoginScreen
           Header={Header}
