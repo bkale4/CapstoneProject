@@ -89,17 +89,58 @@ function BusinessLoginScreen({
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
-  const [cartTotal, setCartTotal] = useState(0);
+  type CartItem = {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  };
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
-  const addToCart = (price: number) => {
-    setCartTotal((prev) => prev + price);
+  const addToCart = (id: string, name: string, price: number) => {
+    setCartItems((prev) => {
+      const existingItem = prev.find((item) => item.id === id);
+
+      if (existingItem) {
+        return prev.map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
+        );
+      }
+
+      return [...prev, { id, name, price, quantity: 1 }];
+    });
   };
+  const increaseQuantity = (id: string) => {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
+      ),
+    );
+  };
+
+  const decreaseQuantity = (id: string) => {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity - 1 } : item,
+      ),
+    );
+  };
+
+  const removeItem = (id: string) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
   const clearCart = () => {
-    setCartTotal(0);
+    setCartItems([]);
   };
+
+  const cartTotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0,
+  );
 
   const handleBusinessLogin = () => {
     if (adminUsername === "admin" && adminPassword === "12345") {
@@ -152,10 +193,12 @@ export default function App() {
   );
 
   const MenuItem = ({
+    id,
     name,
     description,
     price,
   }: {
+    id: string;
     name: string;
     description: string;
     price: number;
@@ -166,7 +209,10 @@ export default function App() {
         <Text style={styles.menuDescription}>{description}</Text>
         <Text style={styles.menuPrice}>${price.toFixed(2)}</Text>
       </View>
-      <Pressable style={styles.addButton} onPress={() => addToCart(price)}>
+      <Pressable
+        style={styles.addButton}
+        onPress={() => addToCart(id, name, price)}
+      >
         <Text style={styles.addButtonText}>Add</Text>
       </Pressable>
     </View>
@@ -230,16 +276,19 @@ export default function App() {
         <Text style={styles.sectionText}>Hours: 11:00 AM - 6:00 PM</Text>
 
         <MenuItem
+          id="pulled-pork-sandwich"
           name="Pulled Pork Sandwich"
           description="Smoked pork with house BBQ sauce"
           price={12}
         />
         <MenuItem
+          id="mac-and-cheese"
           name="Mac and Cheese"
           description="Creamy side dish"
           price={5}
         />
         <MenuItem
+          id="sweet-tea"
           name="Sweet Tea"
           description="Fresh brewed sweet tea"
           price={3}
@@ -266,16 +315,23 @@ export default function App() {
         </Text>
 
         <MenuItem
+          id="bbq-chicken-plate"
           name="BBQ Chicken Plate"
           description="Chicken with baked beans and slaw"
           price={14}
         />
         <MenuItem
+          id="loaded-fries"
           name="Loaded Fries"
           description="Fries topped with cheese and pulled pork"
           price={8}
         />
-        <MenuItem name="Lemonade" description="Fresh lemonade" price={3} />
+        <MenuItem
+          id="lemonade"
+          name="Lemonade"
+          description="Fresh lemonade"
+          price={3}
+        />
 
         <Pressable
           style={styles.primaryButton}
@@ -295,9 +351,48 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.summaryBox}>
           <Text style={styles.summaryTitle}>Your Order</Text>
-          <Text style={styles.summaryLine}>Pulled Pork Sandwich - $12.00</Text>
-          <Text style={styles.summaryLine}>Mac and Cheese - $5.00</Text>
-          <Text style={styles.summaryLine}>Sweet Tea - $3.00</Text>
+
+          {cartItems.length === 0 ? (
+            <Text style={styles.summaryLine}>Your cart is empty.</Text>
+          ) : (
+            cartItems.map((item) => (
+              <View key={item.id} style={styles.cartItemRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.menuName}>{item.name}</Text>
+                  <Text style={styles.summaryLine}>
+                    ${item.price.toFixed(2)} each
+                  </Text>
+                  <Text style={styles.summaryLine}>
+                    Subtotal: ${(item.price * item.quantity).toFixed(2)}
+                  </Text>
+                </View>
+
+                <View style={styles.quantityControls}>
+                  <Pressable
+                    style={styles.quantityButton}
+                    onPress={() => decreaseQuantity(item.id)}
+                  >
+                    <Text style={styles.quantityButtonText}>-</Text>
+                  </Pressable>
+                  <Text style={styles.quantityText}>{item.quantity}</Text>
+                  <Pressable
+                    style={styles.quantityButton}
+                    onPress={() => increaseQuantity(item.id)}
+                  >
+                    <Text style={styles.quantityButtonText}>+</Text>
+                  </Pressable>
+                </View>
+
+                <Pressable
+                  style={styles.removeButton}
+                  onPress={() => removeItem(item.id)}
+                >
+                  <Text style={styles.removeButtonText}>Remove</Text>
+                </Pressable>
+              </View>
+            ))
+          )}
+
           <Text style={styles.summaryTotal}>
             Total: ${cartTotal.toFixed(2)}
           </Text>
@@ -308,8 +403,13 @@ export default function App() {
         </Pressable>
 
         <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("checkout")}
+          style={[
+            styles.primaryButton,
+            cartItems.length === 0 && styles.disabledButton,
+          ]}
+          onPress={() => {
+            if (cartItems.length > 0) setScreen("checkout");
+          }}
         >
           <Text style={styles.primaryButtonText}>Proceed to Checkout</Text>
         </Pressable>
@@ -326,8 +426,16 @@ export default function App() {
         <TextInput style={styles.input} placeholder="Email Address" />
 
         <View style={styles.summaryBox}>
-          <Text style={styles.summaryTitle}>Final Total</Text>
-          <Text style={styles.summaryTotal}>${cartTotal.toFixed(2)}</Text>
+          <Text style={styles.summaryTitle}>Final Order</Text>
+          {cartItems.map((item) => (
+            <Text key={item.id} style={styles.summaryLine}>
+              {item.name} x {item.quantity} - $
+              {(item.price * item.quantity).toFixed(2)}
+            </Text>
+          ))}
+          <Text style={styles.summaryTotal}>
+            Total: ${cartTotal.toFixed(2)}
+          </Text>
         </View>
 
         <Pressable
@@ -657,6 +765,45 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 16,
     padding: 16,
+  },
+  cartItemRow: {
+    backgroundColor: "#f7f4ef",
+    borderRadius: 14,
+    padding: 12,
+    marginTop: 10,
+  },
+  quantityControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    gap: 10,
+  },
+  quantityButton: {
+    backgroundColor: "#2f241f",
+    borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  quantityButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: "600",
+    minWidth: 20,
+    textAlign: "center",
+  },
+  removeButton: {
+    marginTop: 10,
+  },
+  removeButtonText: {
+    color: "#a12626",
+    fontWeight: "600",
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
   summaryTitle: {
     fontSize: 18,
