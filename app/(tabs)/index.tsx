@@ -18,6 +18,7 @@ type Screen =
   | "checkout"
   | "orderConfirmation"
   | "catering"
+  | "availabilityCalendar"
   | "cateringRequest"
   | "cateringConfirmation"
   | "businessLogin"
@@ -371,10 +372,51 @@ export default function App() {
           </Text>
         </View>
 
-        <View style={styles.card}>
+        <Pressable
+          style={styles.card}
+          onPress={() => setScreen("availabilityCalendar")}
+        >
           <Text style={styles.cardTitle}>Availability Calendar</Text>
           <Text style={styles.cardSubtitle}>
             Available dates and unavailable dates would be shown here.
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => setScreen("cateringRequest")}
+        >
+          <Text style={styles.primaryButtonText}>Start Catering Request</Text>
+        </Pressable>
+      </ScrollView>
+    </>
+  );
+
+  const AvailabilityCalendarScreen = () => (
+    <>
+      <Header title="Catering Availability" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>May 2026</Text>
+          <Text style={styles.cardSubtitle}>
+            Available dates are open for catering requests.
+          </Text>
+        </View>
+
+        <View style={styles.summaryBox}>
+          <Text style={styles.summaryTitle}>May 10 - Unavailable</Text>
+          <Text style={styles.summaryTitle}>May 12 - Available</Text>
+          <Text style={styles.summaryTitle}>May 14 - Available</Text>
+          <Text style={styles.summaryTitle}>May 18 - Unavailable</Text>
+          <Text style={styles.summaryTitle}>May 21 - Available</Text>
+          <Text style={styles.summaryTitle}>May 25 - Unvailable</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Legend</Text>
+          <Text style={styles.cardSubtitle}>Available = open for requests</Text>
+          <Text style={styles.cardSubtitle}>
+            Unavailable = already booked / not open for requests
           </Text>
         </View>
 
@@ -382,7 +424,7 @@ export default function App() {
           style={styles.primaryButton}
           onPress={() => setScreen("cateringRequest")}
         >
-          <Text style={styles.primaryButtonText}>Start Catering Request</Text>
+          <Text style={styles.primaryButtonText}>Continue to Request Form</Text>
         </Pressable>
       </ScrollView>
     </>
@@ -481,6 +523,7 @@ export default function App() {
       {screen === "checkout" && <CheckoutScreen />}
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
+      {screen === "availabilityCalendar" && <AvailabilityCalendarScreen />}
       {screen === "cateringRequest" && <CateringRequestScreen />}
       {screen === "cateringConfirmation" && <CateringConfirmationScreen />}
       {screen === "businessLogin" && (
