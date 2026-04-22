@@ -62,6 +62,7 @@ function BusinessLoginScreen({
           value={adminUsername}
           onChangeText={setAdminUsername}
           autoCapitalize="none"
+          placeholderTextColor="#555"
           blurOnSubmit={false}
         />
 
@@ -72,6 +73,7 @@ function BusinessLoginScreen({
           value={adminPassword}
           onChangeText={setAdminPassword}
           autoCapitalize="none"
+          placeholderTextColor="#555"
           blurOnSubmit={false}
         />
 
@@ -421,9 +423,21 @@ export default function App() {
     <>
       <Header title="Checkout" />
       <ScrollView contentContainerStyle={styles.content}>
-        <TextInput style={styles.input} placeholder="Full Name" />
-        <TextInput style={styles.input} placeholder="Phone Number" />
-        <TextInput style={styles.input} placeholder="Email Address" />
+        <TextInput
+          style={styles.input}
+          placeholder="Full Name"
+          placeholderTextColor="#555"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Phone Number"
+          placeholderTextColor="#555"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email Address"
+          placeholderTextColor="#555"
+        />
 
         <View style={styles.summaryBox}>
           <Text style={styles.summaryTitle}>Final Order</Text>
@@ -549,14 +563,35 @@ export default function App() {
     <>
       <Header title="Catering Request Form" />
       <ScrollView contentContainerStyle={styles.content}>
-        <TextInput style={styles.input} placeholder="Preferred Date" />
-        <TextInput style={styles.input} placeholder="Preferred Time" />
-        <TextInput style={styles.input} placeholder="Estimated Guest Count" />
-        <TextInput style={styles.input} placeholder="Menu Preferences" />
-        <TextInput style={styles.input} placeholder="Contact Information" />
+        <TextInput
+          style={styles.input}
+          placeholder="Preferred Date"
+          placeholderTextColor="#555"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Preferred Time"
+          placeholderTextColor="#555"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Estimated Guest Count"
+          placeholderTextColor="#555"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Menu Preferences"
+          placeholderTextColor="#555"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contact Information"
+          placeholderTextColor="#555"
+        />
         <TextInput
           style={[styles.input, styles.notesInput]}
           placeholder="Special Notes"
+          placeholderTextColor="#555"
           multiline
         />
 
