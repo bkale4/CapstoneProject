@@ -806,12 +806,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#F6F1E7",
   },
   header: {
-    backgroundColor: "#FFFFFF",
-    fontSize: 24,
-    fontWeight: "700",
+    backgroundColor: "#3f5b3a",
+    paddingVertical: 22,
+    paddingHorizontal: 20,
   },
   headerTitle: {
-    color: "white",
+    color: "#ffffff",
     fontSize: 24,
     fontWeight: "700",
   },
