@@ -146,6 +146,8 @@ export default function App() {
     setCartItems([]);
   };
 
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
+
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -498,6 +500,30 @@ export default function App() {
           placeholderTextColor="#555"
         />
 
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Payment Method</Text>
+
+          {["Cash", "Venmo", "PayPal", "Zelle"].map((method) => (
+            <Pressable
+              key={method}
+              style={[
+                styles.optionButton,
+                paymentMethod === method && styles.selectedOption,
+              ]}
+              onPress={() => setPaymentMethod(method)}
+            >
+              <Text
+                style={[
+                  styles.optionText,
+                  paymentMethod === method && styles.selectedOptionText,
+                ]}
+              >
+                {method}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
         <View style={styles.summaryBox}>
           <Text style={styles.summaryTitle}>Final Order</Text>
           {cartItems.map((item) => (
@@ -533,6 +559,9 @@ export default function App() {
           <Text style={styles.summaryLine}>Order Number: #1042</Text>
           <Text style={styles.summaryLine}>
             Estimated Ready Time: 20 minutes
+          </Text>
+          <Text style={styles.summaryLine}>
+            Payment Method: {paymentMethod}
           </Text>
           <Text style={styles.summaryTotal}>
             Total: ${cartTotal.toFixed(2)}
@@ -1039,6 +1068,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "700",
     marginTop: 10,
+  },
+  optionButton: {
+    backgroundColor: "f3efea",
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#d8d0c8",
+  },
+  selectedOption: {
+    backgroundColor: "#3f5b3a",
+    borderColor: "#3f5b3a",
+  },
+  optionText: {
+    fontSize: 15,
+    color: "#2f241f",
+    fontWeight: "600",
+  },
+  selectedOptionText: {
+    color: "#ffffff",
   },
   input: {
     backgroundColor: "#FFFFFF",
