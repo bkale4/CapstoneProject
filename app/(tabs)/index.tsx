@@ -203,26 +203,48 @@ export default function App() {
     name,
     description,
     price,
+    status,
   }: {
     id: string;
     name: string;
     description: string;
     price: number;
-  }) => (
-    <View style={styles.menuItem}>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.menuName}>{name}</Text>
-        <Text style={styles.menuDescription}>{description}</Text>
-        <Text style={styles.menuPrice}>${price.toFixed(2)}</Text>
+    status?: "Available" | "Limited" | "Sold Out";
+  }) => {
+    const isSoldOut = status === "Sold Out";
+
+    return (
+      <View style={styles.menuItem}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.menuName}>{name}</Text>
+          <Text style={styles.menuDescription}>{description}</Text>
+          <Text style={styles.menuPrice}>${price.toFixed(2)}</Text>
+
+          {status && status !== "Available" && (
+            <Text
+              style={[
+                styles.statusText,
+                status === "Sold Out" ? styles.soldOutText : styles.limitedText,
+              ]}
+            >
+              {status}
+            </Text>
+          )}
+        </View>
+
+        <Pressable
+          style={[styles.addButton, isSoldOut && styles.disabledButton]}
+          onPress={() => {
+            if (!isSoldOut) addToCart(id, name, price);
+          }}
+        >
+          <Text style={styles.addButtonText}>
+            {isSoldOut ? "Unavailable" : "Add"}
+          </Text>
+        </Pressable>
       </View>
-      <Pressable
-        style={styles.addButton}
-        onPress={() => addToCart(id, name, price)}
-      >
-        <Text style={styles.addButtonText}>Add</Text>
-      </Pressable>
-    </View>
-  );
+    );
+  };
 
   const HomeScreen = () => (
     <>
@@ -286,18 +308,21 @@ export default function App() {
           name="Pulled Pork Sandwich"
           description="Smoked pork with house BBQ sauce"
           price={12}
+          status="Available"
         />
         <MenuItem
           id="mac-and-cheese"
           name="Mac and Cheese"
           description="Creamy side dish"
           price={5}
+          status="Limited"
         />
         <MenuItem
           id="sweet-tea"
           name="Sweet Tea"
           description="Fresh brewed sweet tea"
           price={3}
+          status="Sold Out"
         />
 
         <Pressable
@@ -870,6 +895,20 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 8,
   },
+  statusText: {
+    marginTop: 8,
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  limitedText: {
+    color: "#8a5a00",
+  },
+  soldOutText: {
+    color: "#a12626",
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
   addButton: {
     backgroundColor: "#2f241f",
     borderRadius: 12,
@@ -944,9 +983,6 @@ const styles = StyleSheet.create({
   removeButtonText: {
     color: "#a12626",
     fontWeight: "600",
-  },
-  disabledButton: {
-    opacity: 0.5,
   },
   summaryTitle: {
     fontSize: 18,
