@@ -11,6 +11,7 @@ import {
 
 type Screen =
   | "home"
+  | "about"
   | "order"
   | "foodTrailer"
   | "onsiteEvent"
@@ -170,6 +171,9 @@ export default function App() {
       <Pressable onPress={() => setScreen("home")}>
         <Text style={styles.navText}>Home</Text>
       </Pressable>
+      <Pressable onPress={() => setScreen("about")}>
+        <Text style={styles.navText}>About</Text>
+      </Pressable>
       <Pressable onPress={() => setScreen("order")}>
         <Text style={styles.navText}>Order</Text>
       </Pressable>
@@ -271,6 +275,30 @@ export default function App() {
           subtitle="Check catering options and submit a request."
           onPress={() => setScreen("catering")}
         />
+      </ScrollView>
+    </>
+  );
+
+  const AboutScreen = () => (
+    <>
+      <Header title="About Root & Ranch" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>About Us</Text>
+          <Text style={styles.cardSubtitle}>About us paragraph.</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Contact Information</Text>
+          <Text style={styles.cardSubtitle}>Phone: (123) 456-7890</Text>
+          <Text style={styles.cardSubtitle}>Email: example@email.com</Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Social Media</Text>
+          <Text style={styles.cardSubtitle}>Facebook: username</Text>
+          <Text style={styles.cardSubtitle}>Instagram: @username</Text>
+        </View>
       </ScrollView>
     </>
   );
@@ -805,6 +833,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       {screen === "home" && <HomeScreen />}
+      {screen === "about" && <AboutScreen />}
       {screen === "order" && <OrderScreen />}
       {screen === "foodTrailer" && <FoodTrailerScreen />}
       {screen === "onsiteEvent" && <OnsiteEventScreen />}
