@@ -102,6 +102,8 @@ export default function App() {
     quantity: number;
   };
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [venueName, setVenueName] = useState("");
+  const [venueAddress, setvenueAddress] = useState("");
   const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
@@ -615,6 +617,16 @@ export default function App() {
         <TextInput
           style={styles.input}
           placeholder="Contact Information"
+          placeholderTextColor="#555"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Venue Name"
+          placeholderTextColor="#555"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Venue Address"
           placeholderTextColor="#555"
         />
         <TextInput
