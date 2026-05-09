@@ -1115,7 +1115,7 @@ const styles = StyleSheet.create({
   navText: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#2f241f",
+    color: "#F6F1E7",
   },
   errorText: {
     color: "#a12626",
