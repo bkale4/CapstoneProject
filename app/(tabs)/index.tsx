@@ -164,6 +164,13 @@ export default function App() {
 
   const Header = ({ title }: { title: string }) => (
     <View style={styles.header}>
+      <Pressable
+        style={styles.logoPlaceholder}
+        onPress={() => setScreen("home")}
+      >
+        <Text style={styles.logoText}>Logo</Text>
+      </Pressable>
+
       <Text style={styles.headerTitle}>{title}</Text>
     </View>
   );
@@ -902,8 +909,24 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#3f5b3a",
-    paddingVertical: 22,
+    paddingVertical: 18,
     paddingHorizontal: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  logoPlaceholder: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "#f6f1e7",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoText: {
+    color: "#3f5b3a",
+    fontSize: 12,
+    fontWeight: "700",
   },
   headerTitle: {
     color: "#ffffff",
