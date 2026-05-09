@@ -153,14 +153,26 @@ export default function App() {
     0,
   );
 
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
   const handleBusinessLogin = () => {
     if (adminUsername === "admin" && adminPassword === "12345") {
       setLoginMessage("");
+      setIsAdminLoggedIn(true);
       setScreen("business");
     } else {
       setLoginMessage("Access Denied. This area is for admin use only.");
     }
   };
+
+  const BusinessBackButton = () => (
+    <Pressable
+      style={styles.secondaryButton}
+      onPress={() => setScreen("business")}
+    >
+      <Text style={styles.secondaryButtonText}>Back to Business Dashboard</Text>
+    </Pressable>
+  );
 
   const Header = ({ title }: { title: string }) => (
     <View style={styles.header}>
@@ -192,7 +204,11 @@ export default function App() {
       <Pressable onPress={() => setScreen("cart")}>
         <Text style={styles.navText}>Cart</Text>
       </Pressable>
-      <Pressable onPress={() => setScreen("businessLogin")}>
+      <Pressable
+        onPress={() =>
+          setScreen(isAdminLoggedIn ? "business" : "businessLogin")
+        }
+      >
         <Text style={styles.navText}>Business</Text>
       </Pressable>
     </View>
@@ -784,6 +800,7 @@ export default function App() {
     <>
       <Header title="Incoming Orders" />
       <ScrollView contentContainerStyle={styles.content}>
+        <BusinessBackButton />
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Order #1042</Text>
           <Text style={styles.cardSubtitle}>Customer: John Doe</Text>
@@ -809,6 +826,7 @@ export default function App() {
     <>
       <Header title="Catering Requests" />
       <ScrollView contentContainerStyle={styles.content}>
+        <BusinessBackButton />
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Request #C201</Text>
           <Text style={styles.cardSubtitle}>Date: May 21, 2026</Text>
@@ -826,6 +844,7 @@ export default function App() {
     <>
       <Header title="Menu Management" />
       <ScrollView contentContainerStyle={styles.content}>
+        <BusinessBackButton />
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Food Trailer Menu</Text>
           <Text style={styles.cardSubtitle}>Pulled Pork Sandwich</Text>
@@ -854,6 +873,7 @@ export default function App() {
     <>
       <Header title="Availability Management" />
       <ScrollView contentContainerStyle={styles.content}>
+        <BusinessBackButton />
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Current Catering Availability</Text>
           <Text style={styles.cardSubtitle}>May 10 - Unavailable</Text>
