@@ -742,12 +742,18 @@ export default function App() {
 
               const isAvailable = availability[dateKey] !== false;
 
+              const isToday =
+                day === today.getDate() &&
+                currentMonth === today.getMonth() &&
+                currentYear === today.getFullYear();
+
               return (
                 <View
                   key={dateKey}
                   style={[
                     styles.calendarDay,
                     isAvailable ? styles.availableDay : styles.unavailableDay,
+                    isToday && styles.todayDay,
                   ]}
                 >
                   <Text style={styles.calendarDayNumber}>{day}</Text>
@@ -1339,5 +1345,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     color: "#3f5b3a",
+  },
+  todayDay: {
+    borderWidth: 3,
+    borderColor: "#3f5b3a",
   },
 });
