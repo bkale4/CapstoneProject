@@ -110,19 +110,55 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
-  const [availability, setAvailability] = useState<Record<number, boolean>>(
-    () =>
-      Object.fromEntries(
-        Array.from({ length: 31 }, (_, index) => [index + 1, true]),
-      ),
-  );
+  const [availability, setAvailability] = useState<Record<string, boolean>>({});
 
-  const toggleAvailability = (day: number) => {
+  const toggleAvailability = (dateKey: string) => {
     setAvailability((prev) => ({
       ...prev,
-      [day]: !prev[day],
+      [dateKey]: prev[dateKey] === false,
     }));
   };
+
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+
+  const goToPreviousMonth = () => {
+    if (currentMonth == 0) {
+      setCurrentMonth(11);
+      setCurrentYear((prev) => prev - 1);
+    } else {
+      setCurrentMonth((prev) => prev - 1);
+    }
+  };
+
+  const goToNextMonth = () => {
+    if (currentMonth == 11) {
+      setCurrentMonth(0);
+      setCurrentYear((prev) => prev + 1);
+    } else {
+      setCurrentMonth((prev) => prev + 1);
+    }
+  };
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
 
   const addToCart = (id: string, name: string, price: number) => {
     setCartItems((prev) => {
@@ -657,13 +693,29 @@ export default function App() {
 
   const AvailabilityCalendarScreen = () => (
     <>
-      <Header title="Catering Availability Calendar" />
+      <Header title="Catering Availability" />
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>September 2026</Text>
+          <View style={styles.calendarHeader}>
+            <Pressable
+              style={styles.calendarNavButton}
+              onPress={goToPreviousMonth}
+            >
+              <Text style={styles.calendarNavText}>‹</Text>
+            </Pressable>
+
+            <Text style={styles.cardTitle}>
+              {monthNames[currentMonth]} {currentYear}
+            </Text>
+
+            <Pressable style={styles.calendarNavButton} onPress={goToNextMonth}>
+              <Text style={styles.calendarNavText}>›</Text>
+            </Pressable>
+          </View>
+
           <Text style={styles.cardSubtitle}>
-            Select an available date for your catering request.
+            View available dates for catering requests.
           </Text>
         </View>
 
@@ -677,17 +729,22 @@ export default function App() {
           </View>
 
           <View style={styles.calendarGrid}>
-            {Array.from({ length: 5 }).map((_, index) => (
+            {Array.from({ length: firstDayOfMonth }).map((_, index) => (
               <View key={`blank-${index}`} style={styles.calendarDay} />
             ))}
 
-            {Array.from({ length: 31 }, (_, index) => {
+            {Array.from({ length: daysInMonth }, (_, index) => {
               const day = index + 1;
-              const isAvailable = availability[day];
+
+              const dateKey = `${currentYear}-${String(
+                currentMonth + 1,
+              ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+              const isAvailable = availability[dateKey] !== false;
 
               return (
                 <View
-                  key={day}
+                  key={dateKey}
                   style={[
                     styles.calendarDay,
                     isAvailable ? styles.availableDay : styles.unavailableDay,
@@ -706,11 +763,13 @@ export default function App() {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Legend</Text>
+
           <Text style={styles.cardSubtitle}>
             Available = open for catering requests
           </Text>
+
           <Text style={styles.cardSubtitle}>
-            Unavailable = already booked / not open for requests
+            Unavailable = already booked or not accepting requests
           </Text>
         </View>
 
@@ -718,9 +777,7 @@ export default function App() {
           style={styles.primaryButton}
           onPress={() => setScreen("cateringRequest")}
         >
-          <Text style={styles.primaryButtonText}>
-            Continue to Catering Request Form
-          </Text>
+          <Text style={styles.primaryButtonText}>Continue to Request Form</Text>
         </Pressable>
       </ScrollView>
     </>
@@ -1268,5 +1325,19 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: "center",
     color: "#5a514c",
+  },
+  calendarHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  calendarNavButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  calendarNavText: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#3f5b3a",
   },
 });
