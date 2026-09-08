@@ -110,6 +110,20 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
+  const [availability, setAvailability] = useState<Record<number, boolean>>(
+    () =>
+      Object.fromEntries(
+        Array.from({ length: 31 }, (_, index) => [index + 1, true]),
+      ),
+  );
+
+  const toggleAvailability = (day: number) => {
+    setAvailability((prev) => ({
+      ...prev,
+      [day]: !prev[day],
+    }));
+  };
+
   const addToCart = (id: string, name: string, price: number) => {
     setCartItems((prev) => {
       const existingItem = prev.find((item) => item.id === id);
