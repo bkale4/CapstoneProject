@@ -657,27 +657,58 @@ export default function App() {
 
   const AvailabilityCalendarScreen = () => (
     <>
-      <Header title="Catering Availability" />
+      <Header title="Catering Availability Calendar" />
+
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>May 2026</Text>
+          <Text style={styles.cardTitle}>September 2026</Text>
           <Text style={styles.cardSubtitle}>
-            Available dates are open for catering requests.
+            Select an available date for your catering request.
           </Text>
         </View>
 
-        <View style={styles.summaryBox}>
-          <Text style={styles.summaryTitle}>May 10 - Unavailable</Text>
-          <Text style={styles.summaryTitle}>May 12 - Available</Text>
-          <Text style={styles.summaryTitle}>May 14 - Available</Text>
-          <Text style={styles.summaryTitle}>May 18 - Unavailable</Text>
-          <Text style={styles.summaryTitle}>May 21 - Available</Text>
-          <Text style={styles.summaryTitle}>May 25 - Unvailable</Text>
+        <View style={styles.calendar}>
+          <View style={styles.weekRow}>
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <Text key={day} style={styles.weekDay}>
+                {day}
+              </Text>
+            ))}
+          </View>
+
+          <View style={styles.calendarGrid}>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <View key={`blank-${index}`} style={styles.calendarDay} />
+            ))}
+
+            {Array.from({ length: 31 }, (_, index) => {
+              const day = index + 1;
+              const isAvailable = availability[day];
+
+              return (
+                <View
+                  key={day}
+                  style={[
+                    styles.calendarDay,
+                    isAvailable ? styles.availableDay : styles.unavailableDay,
+                  ]}
+                >
+                  <Text style={styles.calendarDayNumber}>{day}</Text>
+
+                  <Text style={styles.calendarStatus}>
+                    {isAvailable ? "Available" : "Unavailable"}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Legend</Text>
-          <Text style={styles.cardSubtitle}>Available = open for requests</Text>
+          <Text style={styles.cardSubtitle}>
+            Available = open for catering requests
+          </Text>
           <Text style={styles.cardSubtitle}>
             Unavailable = already booked / not open for requests
           </Text>
@@ -687,7 +718,9 @@ export default function App() {
           style={styles.primaryButton}
           onPress={() => setScreen("cateringRequest")}
         >
-          <Text style={styles.primaryButtonText}>Continue to Request Form</Text>
+          <Text style={styles.primaryButtonText}>
+            Continue to Catering Request Form
+          </Text>
         </Pressable>
       </ScrollView>
     </>
@@ -1189,5 +1222,51 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 12,
     textAlign: "center",
+  },
+  calendar: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 12,
+  },
+  weekRow: {
+    flexDirection: "row",
+    marginBottom: 8,
+  },
+  weekDay: {
+    width: "14.28%",
+    textAlign: "center",
+    fontWeight: "700",
+    fontSize: 12,
+    color: "#5a514c",
+  },
+  calendarGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  calendarDay: {
+    width: "14.28%",
+    minHeight: 58,
+    borderWidth: 1,
+    borderColor: "#D8C3A5",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 6,
+  },
+  availableDay: {
+    backgroundColor: "#E7efe4",
+  },
+  unavailableDay: {
+    backgroundColor: "#f3d8d8",
+  },
+  calendarDayNumber: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#2f241f",
+  },
+  calendarStatus: {
+    fontSize: 9,
+    marginTop: 4,
+    textAlign: "center",
+    color: "#5a514c",
   },
 });
