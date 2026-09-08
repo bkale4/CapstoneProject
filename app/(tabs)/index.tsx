@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-
 import {
   Pressable,
   SafeAreaView,
@@ -312,19 +311,27 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>About Us</Text>
-          <Text style={styles.cardSubtitle}>About us paragraph.</Text>
+          <Text style={styles.cardSubtitle}>
+            Root & Ranch focuses on food quality and sustainability using
+            locally sourced ingredients while also having a positive impact on
+            our customers and community with the support of our enthusiastic and
+            friendly team.
+          </Text>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Contact Information</Text>
-          <Text style={styles.cardSubtitle}>Phone: (123) 456-7890</Text>
-          <Text style={styles.cardSubtitle}>Email: example@email.com</Text>
+          <Text style={styles.cardSubtitle}>Phone: (443) 289-6423</Text>
+          <Text style={styles.cardSubtitle}>
+            Email: rootandranchub@outlook.com
+          </Text>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Social Media</Text>
-          <Text style={styles.cardSubtitle}>Facebook: username</Text>
-          <Text style={styles.cardSubtitle}>Instagram: @username</Text>
+          <Text style={styles.cardSubtitle}>
+            Facebook: Root & Ranch Catering and Concessions
+          </Text>
         </View>
       </ScrollView>
     </>
