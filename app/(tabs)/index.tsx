@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 import {
@@ -107,14 +107,19 @@ export default function App() {
     quantity: number;
   };
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [venueName, setVenueName] = useState("");
-  const [venueAddress, setvenueAddress] = useState("");
   const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
   const [selectedCateringDate, setSelectedCateringDate] = useState<string>("");
+  const [cateringTime, setCateringTime] = useState("");
+  const [cateringGuestCount, setCateringGuestCount] = useState("");
+  const [cateringMenuPreferences, setCateringMenuPreferences] = useState("");
+  const [cateringContact, setCateringContact] = useState("");
+  const [cateringVenueName, setCateringVenueName] = useState("");
+  const [cateringVenueAddress, setCateringVenueAddress] = useState("");
+  const [cateringNotes, setCateringNotes] = useState("");
 
   useEffect(() => {
     const loadAvailability = async () => {
@@ -155,6 +160,30 @@ export default function App() {
       console.log("Availability saved:", dateKey, newAvailability);
     } catch (error) {
       console.error("Error saving availability:", error);
+    }
+  };
+
+  const submitCateringRequest = async () => {
+    try {
+      await addDoc(collection(db, "cateringRequests"), {
+        customerName: "",
+        contactInformation: cateringContact,
+        date: selectedCateringDate,
+        time: cateringTime,
+        guestCount: Number(cateringGuestCount),
+        menuPreferences: cateringMenuPreferences,
+        venueName: cateringVenueName,
+        venueAddress: cateringVenueAddress,
+        specialNotes: cateringNotes,
+        status: "pending",
+        createdAt: new Date(),
+      });
+
+      console.log("Catering request saved to Firebase");
+
+      setScreen("cateringConfirmation");
+    } catch (error) {
+      console.error("Error saving catering request:", error);
     }
   };
 
@@ -863,36 +892,50 @@ export default function App() {
           style={styles.input}
           placeholder="Preferred Time"
           placeholderTextColor="#555"
+          value={cateringTime}
+          onChangeText={setCateringTime}
         />
         <TextInput
           style={styles.input}
           placeholder="Estimated Guest Count"
           placeholderTextColor="#555"
+          value={cateringGuestCount}
+          onChangeText={setCateringGuestCount}
         />
         <TextInput
           style={styles.input}
           placeholder="Menu Preferences"
           placeholderTextColor="#555"
+          value={cateringMenuPreferences}
+          onChangeText={setCateringMenuPreferences}
         />
         <TextInput
           style={styles.input}
           placeholder="Contact Information"
           placeholderTextColor="#555"
+          value={cateringContact}
+          onChangeText={setCateringContact}
         />
         <TextInput
           style={styles.input}
           placeholder="Venue Name"
           placeholderTextColor="#555"
+          value={cateringVenueName}
+          onChangeText={setCateringVenueName}
         />
         <TextInput
           style={styles.input}
           placeholder="Venue Address"
           placeholderTextColor="#555"
+          value={cateringVenueAddress}
+          onChangeText={setCateringVenueAddress}
         />
         <TextInput
           style={[styles.input, styles.notesInput]}
           placeholder="Special Notes"
           placeholderTextColor="#555"
+          value={cateringNotes}
+          onChangeText={setCateringNotes}
           multiline
         />
 
