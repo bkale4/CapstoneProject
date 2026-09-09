@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 import {
   Pressable,
@@ -112,11 +115,46 @@ export default function App() {
 
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
 
-  const toggleAvailability = (dateKey: string) => {
+  useEffect(() => {
+    const loadAvailability = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "availability"));
+
+        const savedAvailability: Record<string, boolean> = {};
+
+        querySnapshot.forEach((document) => {
+          const data = document.data();
+
+          savedAvailability[document.id] = data.available;
+        });
+        setAvailability(savedAvailability);
+        console.log("Availability loaded from Firebase");
+      } catch (error) {
+        console.error("Error loading availability:", error);
+      }
+    };
+
+    loadAvailability();
+  }, []);
+
+  const toggleAvailability = async (dateKey: string) => {
+    const newAvailability = availability[dateKey] === false;
+
     setAvailability((prev) => ({
       ...prev,
-      [dateKey]: prev[dateKey] === false,
+      [dateKey]: newAvailability,
     }));
+
+    try {
+      await setDoc(doc(db, "availability", dateKey), {
+        date: dateKey,
+        available: newAvailability,
+      });
+
+      console.log("Availability saved:", dateKey, newAvailability);
+    } catch (error) {
+      console.error("Error saving availability:", error);
+    }
   };
 
   const today = new Date();
