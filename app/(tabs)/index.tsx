@@ -114,6 +114,7 @@ export default function App() {
   const [loginMessage, setLoginMessage] = useState("");
 
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
+  const [selectedCateringDate, setSelectedCateringDate] = useState<string>("");
 
   useEffect(() => {
     const loadAvailability = async () => {
@@ -197,6 +198,17 @@ export default function App() {
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+
+  const formatCateringDate = (dateKey: string) => {
+    if (!dateKey) return "";
+    const [year, month, day] = dateKey.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
   const addToCart = (id: string, name: string, price: number) => {
     setCartItems((prev) => {
@@ -718,13 +730,6 @@ export default function App() {
             Available dates and unavailable dates would be shown here.
           </Text>
         </Pressable>
-
-        <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("cateringRequest")}
-        >
-          <Text style={styles.primaryButtonText}>Start Catering Request</Text>
-        </Pressable>
       </ScrollView>
     </>
   );
@@ -778,7 +783,18 @@ export default function App() {
                 currentMonth + 1,
               ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-              const isAvailable = availability[dateKey] !== false;
+              const dateForCell = new Date(currentYear, currentMonth, day);
+
+              const todayAtMidnight = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate(),
+              );
+
+              const isPastDate = dateForCell < todayAtMidnight;
+
+              const isAvailable =
+                !isPastDate && availability[dateKey] !== false;
 
               const isToday =
                 day === today.getDate() &&
@@ -786,12 +802,15 @@ export default function App() {
                 currentYear === today.getFullYear();
 
               return (
-                <View
+                <Pressable
                   key={dateKey}
+                  disabled={!isAvailable}
+                  onPress={() => setSelectedCateringDate(dateKey)}
                   style={[
                     styles.calendarDay,
                     isAvailable ? styles.availableDay : styles.unavailableDay,
                     isToday && styles.todayDay,
+                    selectedCateringDate === dateKey && styles.selectedDay,
                   ]}
                 >
                   <Text style={styles.calendarDayNumber}>{day}</Text>
@@ -799,7 +818,7 @@ export default function App() {
                   <Text style={styles.calendarStatus}>
                     {isAvailable ? "Available" : "Unavailable"}
                   </Text>
-                </View>
+                </Pressable>
               );
             })}
           </View>
@@ -818,7 +837,11 @@ export default function App() {
         </View>
 
         <Pressable
-          style={styles.primaryButton}
+          style={[
+            styles.primaryButton,
+            !selectedCateringDate && styles.disabledButton,
+          ]}
+          disabled={!selectedCateringDate}
           onPress={() => setScreen("cateringRequest")}
         >
           <Text style={styles.primaryButtonText}>Continue to Request Form</Text>
@@ -831,11 +854,11 @@ export default function App() {
     <>
       <Header title="Catering Request Form" />
       <ScrollView contentContainerStyle={styles.content}>
-        <TextInput
-          style={styles.input}
-          placeholder="Preferred Date"
-          placeholderTextColor="#555"
-        />
+        <View style={styles.input}>
+          <Text style={styles.selectedDateText}>
+            Preferred Date: {formatCateringDate(selectedCateringDate)}
+          </Text>
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Preferred Time"
@@ -1464,5 +1487,13 @@ const styles = StyleSheet.create({
   todayDay: {
     borderWidth: 3,
     borderColor: "#3f5b3a",
+  },
+  selectedDay: {
+    borderWidth: 3,
+    borderColor: "#8b5e3c",
+  },
+  selectedDateText: {
+    color: "#2f241f",
+    fontSize: 16,
   },
 });
