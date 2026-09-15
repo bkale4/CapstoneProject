@@ -112,6 +112,7 @@ export default function App() {
   const [loginMessage, setLoginMessage] = useState("");
 
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
+  const [cateringCustomerName, setCateringCustomerName] = useState("");
   const [selectedCateringDate, setSelectedCateringDate] = useState<string>("");
   const [cateringTime, setCateringTime] = useState("");
   const [cateringGuestCount, setCateringGuestCount] = useState("");
@@ -166,7 +167,7 @@ export default function App() {
   const submitCateringRequest = async () => {
     try {
       await addDoc(collection(db, "cateringRequests"), {
-        customerName: "",
+        customerName: cateringCustomerName,
         contactInformation: cateringContact,
         date: selectedCateringDate,
         time: cateringTime,
@@ -890,6 +891,13 @@ export default function App() {
         </View>
         <TextInput
           style={styles.input}
+          placeholder="Customer Name"
+          placeholderTextColor="#555"
+          value={cateringCustomerName}
+          onChangeText={setCateringCustomerName}
+        />
+        <TextInput
+          style={styles.input}
           placeholder="Preferred Time"
           placeholderTextColor="#555"
           value={cateringTime}
@@ -939,10 +947,7 @@ export default function App() {
           multiline
         />
 
-        <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("cateringConfirmation")}
-        >
+        <Pressable style={styles.primaryButton} onPress={submitCateringRequest}>
           <Text style={styles.primaryButtonText}>Submit Catering Request</Text>
         </Pressable>
       </ScrollView>
@@ -1198,7 +1203,7 @@ export default function App() {
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
       {screen === "availabilityCalendar" && <AvailabilityCalendarScreen />}
-      {screen === "cateringRequest" && <CateringRequestScreen />}
+      {screen === "cateringRequest" && CateringRequestScreen()}
       {screen === "cateringConfirmation" && <CateringConfirmationScreen />}
       {screen === "businessLogin" && (
         <BusinessLoginScreen
