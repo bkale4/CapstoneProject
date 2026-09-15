@@ -121,6 +121,9 @@ export default function App() {
 
   const [foodTrailerItems, setFoodTrailerItems] = useState<any[]>([]);
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
+  const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
+  const [foodTrailerHours, setFoodTrailerHours] = useState("");
+
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
   const [cateringCustomerName, setCateringCustomerName] = useState("");
   const [selectedCateringDate, setSelectedCateringDate] = useState<string>("");
@@ -142,6 +145,9 @@ export default function App() {
 
           if (menuData.type === "foodTrailer" && menuData.active === true) {
             setFoodTrailerItems(menuData.items || []);
+            setFoodTrailerLocation(menuData.location || "");
+            setFoodTrailerEventName(menuData.eventName || "");
+            setFoodTrailerHours(menuData.hours || "");
           }
         });
       } catch (error) {
@@ -534,9 +540,10 @@ export default function App() {
       <Header title="Food Trailer Menu" />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionText}>
-          Now Serving: Mount St. Mary's Campus
+          Now Serving: {foodTrailerLocation}
         </Text>
-        <Text style={styles.sectionText}>Hours: 11:00 AM - 6:00 PM</Text>
+        <Text style={styles.sectionText}>Event: {foodTrailerEventName}</Text>
+        <Text style={styles.sectionText}>Hours: {foodTrailerHours}</Text>
 
         {foodTrailerItems.map((item, index) => (
           <MenuItem
