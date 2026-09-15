@@ -119,6 +119,8 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
+  const [foodTrailerItems, setFoodTrailerItems] = useState<any[]>([]);
+  const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
   const [cateringCustomerName, setCateringCustomerName] = useState("");
   const [selectedCateringDate, setSelectedCateringDate] = useState<string>("");
@@ -129,6 +131,25 @@ export default function App() {
   const [cateringVenueName, setCateringVenueName] = useState("");
   const [cateringVenueAddress, setCateringVenueAddress] = useState("");
   const [cateringNotes, setCateringNotes] = useState("");
+
+  useEffect(() => {
+    const loadFoodTrailerMenu = async () => {
+      try {
+        const menuSnapshot = await getDocs(collection(db, "menus"));
+
+        menuSnapshot.forEach((menuDoc) => {
+          const menuData = menuDoc.data();
+
+          if (menuData.type === "foodTrailer" && menuData.active === true) {
+            setFoodTrailerItems(menuData.items || []);
+          }
+        });
+      } catch (error) {
+        console.error("Error loading food trailer menu:", error);
+      }
+    };
+    loadFoodTrailerMenu();
+  }, []);
 
   useEffect(() => {
     const loadAvailability = async () => {
@@ -517,27 +538,22 @@ export default function App() {
         </Text>
         <Text style={styles.sectionText}>Hours: 11:00 AM - 6:00 PM</Text>
 
-        <MenuItem
-          id="pulled-pork-sandwich"
-          name="Pulled Pork Sandwich"
-          description="Smoked pork with house BBQ sauce"
-          price={12}
-          status="Available"
-        />
-        <MenuItem
-          id="mac-and-cheese"
-          name="Mac and Cheese"
-          description="Creamy side dish"
-          price={5}
-          status="Limited"
-        />
-        <MenuItem
-          id="sweet-tea"
-          name="Sweet Tea"
-          description="Fresh brewed sweet tea"
-          price={3}
-          status="Sold Out"
-        />
+        {foodTrailerItems.map((item, index) => (
+          <MenuItem
+            key={index}
+            id={`food-trailer-${index}`}
+            name={item.name}
+            description={item.description}
+            price={item.price}
+            status={
+              item.status === "soldOut"
+                ? "Sold Out"
+                : item.status === "limited"
+                  ? "Limited"
+                  : "Available"
+            }
+          />
+        ))}
 
         <Pressable
           style={styles.primaryButton}
