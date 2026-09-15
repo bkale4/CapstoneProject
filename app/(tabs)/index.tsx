@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
+import { auth, db } from "../../firebaseConfig";
 
 import {
   Pressable,
@@ -286,13 +294,25 @@ export default function App() {
 
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
-  const handleBusinessLogin = () => {
-    if (adminUsername === "admin" && adminPassword === "12345") {
-      setLoginMessage("");
-      setIsAdminLoggedIn(true);
-      setScreen("business");
-    } else {
-      setLoginMessage("Access Denied. This area is for admin use only.");
+  const handleBusinessLogin = async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        adminUsername,
+        adminPassword,
+      );
+
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+
+      if (userDoc.exists() && userDoc.data().role === "admin") {
+        setLoginMessage("");
+        setIsAdminLoggedIn(true);
+        setScreen("business");
+      } else {
+        setLoginMessage("Access Denied. This area is for admin use only.");
+      }
+    } catch (error) {
+      setLoginMessage("Access Denied. Please check your email and passowrd.");
     }
   };
 
