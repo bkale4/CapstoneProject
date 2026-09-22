@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import {
   addDoc,
   collection,
@@ -29,6 +32,8 @@ type Screen =
   | "onsiteEvent"
   | "cart"
   | "checkout"
+  | "customerLogin"
+  | "createAccount"
   | "orderConfirmation"
   | "catering"
   | "availabilityCalendar"
@@ -123,6 +128,41 @@ export default function App() {
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
   const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
   const [foodTrailerHours, setFoodTrailerHours] = useState("");
+
+  const [continueAsGuest, setContinueAsGuest] = useState(false);
+  const [newCustomerName, setNewCustomerName] = useState("");
+  const [newCustomerPhone, setNewCustomerPhone] = useState("");
+  const [newCustomerEmail, setNewCustomerEmail] = useState("");
+  const [newCustomerPassword, setNewCustomerPassword] = useState("");
+  const [createAccountMessage, setCreateAccountMessage] = useState("");
+
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPassword, setCustomerPassword] = useState("");
+  const [customerLoginMessage, setCustomerLoginMessage] = useState("");
+
+  const handleCreateAccount = async () => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        newCustomerEmail,
+        newCustomerPassword,
+      );
+
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        name: newCustomerName,
+        phone: newCustomerPhone,
+        email: newCustomerEmail,
+        role: "customer",
+      });
+
+      setCreateAccountMessage("");
+      setScreen("checkout");
+    } catch (error) {
+      setCreateAccountMessage(
+        "Unable to create account. Please check your information.",
+      );
+    }
+  };
 
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
   const [cateringCustomerName, setCateringCustomerName] = useState("");
@@ -685,25 +725,138 @@ export default function App() {
     </>
   );
 
-  const CheckoutScreen = () => (
+  const CustomerLoginScreen = () => (
     <>
-      <Header title="Checkout" />
+      <Header title="Customer Sign In" />
       <ScrollView contentContainerStyle={styles.content}>
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          placeholderTextColor="#555"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          placeholderTextColor="#555"
-        />
+        <Text style={styles.sectionText}>
+          Sign in to your customer account.
+        </Text>
+
         <TextInput
           style={styles.input}
           placeholder="Email Address"
           placeholderTextColor="#555"
         />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#555"
+          secureTextEntry
+        />
+
+        <Pressable style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>Sign In</Text>
+        </Pressable>
+
+        <Pressable onPress={() => setScreen("checkout")}>
+          <Text style={styles.optionText}>Back to Checkout</Text>
+        </Pressable>
+      </ScrollView>
+    </>
+  );
+
+  const CreateAccountScreen = () => (
+    <>
+      <Header title="Create Account" />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.sectionText}>
+          Create an account to make checkout easier.
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Full Name"
+          placeholderTextColor="#555"
+          value={newCustomerName}
+          onChangeText={setNewCustomerName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Phone Number"
+          placeholderTextColor="#555"
+          value={newCustomerPhone}
+          onChangeText={setNewCustomerPhone}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email Address"
+          placeholderTextColor="#555"
+          value={newCustomerEmail}
+          onChangeText={setNewCustomerEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#555"
+          secureTextEntry
+          value={newCustomerPassword}
+          onChangeText={setNewCustomerPassword}
+        />
+
+        <Pressable style={styles.primaryButton} onPress={handleCreateAccount}>
+          <Text style={styles.primaryButtonText}>Create Account</Text>
+        </Pressable>
+
+        <Pressable onPress={() => setScreen("checkout")}>
+          <Text style={styles.optionText}>Back to Checkout</Text>
+        </Pressable>
+      </ScrollView>
+    </>
+  );
+
+  const CheckoutScreen = () => (
+    <>
+      <Header title="Checkout" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Customer Account</Text>
+          <Text style={styles.sectionText}>
+            Sign in, create an account, or continue as a guest.
+          </Text>
+          <Pressable
+            style={styles.optionButton}
+            onPress={() => setScreen("customerLogin")}
+          >
+            <Text style={styles.optionText}>Sign In</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.optionButton}
+            onPress={() => setScreen("createAccount")}
+          >
+            <Text style={styles.optionText}>Create Account</Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.optionButton}
+            onPress={() => setContinueAsGuest(true)}
+          >
+            <Text style={styles.optionText}>Continue as Guest</Text>
+          </Pressable>
+        </View>
+
+        {continueAsGuest && (
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name"
+              placeholderTextColor="#555"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Phone Number"
+              placeholderTextColor="#555"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Email Address"
+              placeholderTextColor="#555"
+            />
+          </>
+        )}
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Payment Method</Text>
@@ -1243,6 +1396,8 @@ export default function App() {
       {screen === "onsiteEvent" && <OnsiteEventScreen />}
       {screen === "cart" && <CartScreen />}
       {screen === "checkout" && <CheckoutScreen />}
+      {screen === "customerLogin" && <CustomerLoginScreen />}
+      {screen === "createAccount" && CreateAccountScreen()}
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
       {screen === "availabilityCalendar" && <AvailabilityCalendarScreen />}
