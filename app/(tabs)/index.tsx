@@ -164,6 +164,29 @@ export default function App() {
     }
   };
 
+  const handleCustomerLogin = async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        customerEmail,
+        customerPassword,
+      );
+
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+
+      if (userDoc.exists() && userDoc.data().role === "customer") {
+        setCustomerLoginMessage("");
+        setScreen("checkout");
+      } else {
+        setCustomerLoginMessage(
+          "Access Denied. This account is not a customer account.",
+        );
+      }
+    } catch (error) {
+      setCustomerLoginMessage("Invalid email or password.");
+    }
+  };
+
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
   const [cateringCustomerName, setCateringCustomerName] = useState("");
   const [selectedCateringDate, setSelectedCateringDate] = useState<string>("");
@@ -737,18 +760,25 @@ export default function App() {
           style={styles.input}
           placeholder="Email Address"
           placeholderTextColor="#555"
+          value={customerEmail}
+          onChangeText={setCustomerEmail}
         />
-
         <TextInput
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#555"
           secureTextEntry
+          value={customerPassword}
+          onChangeText={setCustomerPassword}
         />
 
-        <Pressable style={styles.primaryButton}>
+        <Pressable style={styles.primaryButton} onPress={handleCustomerLogin}>
           <Text style={styles.primaryButtonText}>Sign In</Text>
         </Pressable>
+
+        {customerLoginMessage !== "" && (
+          <Text style={styles.sectionText}>{customerLoginMessage}</Text>
+        )}
 
         <Pressable onPress={() => setScreen("checkout")}>
           <Text style={styles.optionText}>Back to Checkout</Text>
@@ -1396,7 +1426,7 @@ export default function App() {
       {screen === "onsiteEvent" && <OnsiteEventScreen />}
       {screen === "cart" && <CartScreen />}
       {screen === "checkout" && <CheckoutScreen />}
-      {screen === "customerLogin" && <CustomerLoginScreen />}
+      {screen === "customerLogin" && CustomerLoginScreen()}
       {screen === "createAccount" && CreateAccountScreen()}
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
