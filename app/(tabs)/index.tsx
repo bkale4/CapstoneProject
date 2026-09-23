@@ -145,6 +145,10 @@ export default function App() {
   const [loggedInCustomerPhone, setLoggedInCustomerPhone] = useState("");
   const [loggedInCustomerEmail, setLoggedInCustomerEmail] = useState("");
 
+  const [guestName, setGuestName] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+
   const handleCreateAccount = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -914,16 +918,22 @@ export default function App() {
               style={styles.input}
               placeholder="Full Name"
               placeholderTextColor="#555"
+              value={guestName}
+              onChangeText={setGuestName}
             />
             <TextInput
               style={styles.input}
               placeholder="Phone Number"
               placeholderTextColor="#555"
+              value={guestPhone}
+              onChangeText={setGuestPhone}
             />
             <TextInput
               style={styles.input}
               placeholder="Email Address"
               placeholderTextColor="#555"
+              value={guestEmail}
+              onChangeText={setGuestEmail}
             />
           </>
         )}
@@ -1465,7 +1475,7 @@ export default function App() {
       {screen === "foodTrailer" && <FoodTrailerScreen />}
       {screen === "onsiteEvent" && <OnsiteEventScreen />}
       {screen === "cart" && <CartScreen />}
-      {screen === "checkout" && <CheckoutScreen />}
+      {screen === "checkout" && CheckoutScreen()}
       {screen === "customerLogin" && CustomerLoginScreen()}
       {screen === "createAccount" && CreateAccountScreen()}
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
