@@ -135,10 +135,15 @@ export default function App() {
   const [newCustomerEmail, setNewCustomerEmail] = useState("");
   const [newCustomerPassword, setNewCustomerPassword] = useState("");
   const [createAccountMessage, setCreateAccountMessage] = useState("");
+  const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false);
 
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPassword, setCustomerPassword] = useState("");
   const [customerLoginMessage, setCustomerLoginMessage] = useState("");
+
+  const [loggedInCustomerName, setLoggedInCustomerName] = useState("");
+  const [loggedInCustomerPhone, setLoggedInCustomerPhone] = useState("");
+  const [loggedInCustomerEmail, setLoggedInCustomerEmail] = useState("");
 
   const handleCreateAccount = async () => {
     try {
@@ -156,6 +161,7 @@ export default function App() {
       });
 
       setCreateAccountMessage("");
+      setIsCustomerLoggedIn(true);
       setScreen("checkout");
     } catch (error) {
       setCreateAccountMessage(
@@ -175,7 +181,14 @@ export default function App() {
       const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
 
       if (userDoc.exists() && userDoc.data().role === "customer") {
+        const customerData = userDoc.data();
+
+        setLoggedInCustomerName(customerData.name || "");
+        setLoggedInCustomerPhone(customerData.phone || "");
+        setLoggedInCustomerEmail(customerData.email || "");
+
         setCustomerLoginMessage("");
+        setIsCustomerLoggedIn(true);
         setScreen("checkout");
       } else {
         setCustomerLoginMessage(
@@ -843,29 +856,53 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Customer Account</Text>
-          <Text style={styles.sectionText}>
-            Sign in, create an account, or continue as a guest.
-          </Text>
-          <Pressable
-            style={styles.optionButton}
-            onPress={() => setScreen("customerLogin")}
-          >
-            <Text style={styles.optionText}>Sign In</Text>
-          </Pressable>
 
-          <Pressable
-            style={styles.optionButton}
-            onPress={() => setScreen("createAccount")}
-          >
-            <Text style={styles.optionText}>Create Account</Text>
-          </Pressable>
+          {isCustomerLoggedIn ? (
+            <>
+              <Text style={styles.sectionText}>
+                Signed in to your customer account.
+              </Text>
 
-          <Pressable
-            style={styles.optionButton}
-            onPress={() => setContinueAsGuest(true)}
-          >
-            <Text style={styles.optionText}>Continue as Guest</Text>
-          </Pressable>
+              <Text style={styles.sectionText}>
+                Name: {loggedInCustomerName}
+              </Text>
+
+              <Text style={styles.sectionText}>
+                Phone: {loggedInCustomerPhone}
+              </Text>
+
+              <Text style={styles.sectionText}>
+                Email: {loggedInCustomerEmail}
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.sectionText}>
+                Sign in, create an account, or continue as a guest.
+              </Text>
+
+              <Pressable
+                style={styles.optionButton}
+                onPress={() => setScreen("customerLogin")}
+              >
+                <Text style={styles.optionText}>Sign In</Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.optionButton}
+                onPress={() => setScreen("createAccount")}
+              >
+                <Text style={styles.optionText}>Create Account</Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.optionButton}
+                onPress={() => setContinueAsGuest(true)}
+              >
+                <Text style={styles.optionText}>Continue as Guest</Text>
+              </Pressable>
+            </>
+          )}
         </View>
 
         {continueAsGuest && (
