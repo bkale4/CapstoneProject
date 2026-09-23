@@ -159,6 +159,9 @@ export default function App() {
         email: newCustomerEmail,
         role: "customer",
       });
+      setLoggedInCustomerName(newCustomerName);
+      setLoggedInCustomerPhone(newCustomerPhone);
+      setLoggedInCustomerEmail(newCustomerEmail);
 
       setCreateAccountMessage("");
       setIsCustomerLoggedIn(true);
