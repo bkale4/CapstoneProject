@@ -1732,6 +1732,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#d8d0c8",
   },
+  selectedOptionButton: {
+    backgroundColor: "#D8C3A5",
+    borderWidth: 2,
+    borderColor: "#4F6F52",
+  },
   selectedOption: {
     backgroundColor: "#3f5b3a",
     borderColor: "#3f5b3a",
