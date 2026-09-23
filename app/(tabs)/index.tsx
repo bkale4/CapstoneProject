@@ -896,7 +896,7 @@ export default function App() {
           <Text style={styles.cardTitle}>Customer Account</Text>
 
           {isCustomerLoggedIn ? (
-            <>
+            <View style={[styles.optionButton, styles.selectedOptionButton]}>
               <Text style={styles.sectionText}>
                 Signed in to your customer account.
               </Text>
@@ -912,7 +912,7 @@ export default function App() {
               <Text style={styles.sectionText}>
                 Email: {loggedInCustomerEmail}
               </Text>
-            </>
+            </View>
           ) : (
             <>
               <Text style={styles.sectionText}>
@@ -934,7 +934,10 @@ export default function App() {
               </Pressable>
 
               <Pressable
-                style={styles.optionButton}
+                style={[
+                  styles.optionButton,
+                  continueAsGuest && styles.selectedOptionButton,
+                ]}
                 onPress={() => setContinueAsGuest(true)}
               >
                 <Text style={styles.optionText}>Continue as Guest</Text>
