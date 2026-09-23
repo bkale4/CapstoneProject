@@ -10,6 +10,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  serverTimestamp,
   setDoc,
 } from "firebase/firestore";
 import { auth, db } from "../../firebaseConfig";
@@ -279,6 +280,36 @@ export default function App() {
       console.log("Availability saved:", dateKey, newAvailability);
     } catch (error) {
       console.error("Error saving availability:", error);
+    }
+  };
+
+  const submitOrder = async () => {
+    const customerName = isCustomerLoggedIn ? loggedInCustomerName : guestName;
+
+    const customerPhone = isCustomerLoggedIn
+      ? loggedInCustomerPhone
+      : guestPhone;
+
+    const customerEmail = isCustomerLoggedIn
+      ? loggedInCustomerEmail
+      : guestEmail;
+
+    try {
+      await addDoc(collection(db, "orders"), {
+        customerName: customerName,
+        phone: customerPhone,
+        email: customerEmail,
+        items: cartItems,
+        total: cartTotal,
+        paymentMethod: paymentMethod,
+        paymentStatus: "Not Paid",
+        status: "Open",
+        createdAt: serverTimestamp(),
+      });
+      console.log("Order saved to Firebase");
+      setScreen("orderConfirmation");
+    } catch (error) {
+      console.error("Error saving order:", error);
     }
   };
 
@@ -975,10 +1006,7 @@ export default function App() {
           </Text>
         </View>
 
-        <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("orderConfirmation")}
-        >
+        <Pressable style={styles.primaryButton} onPress={submitOrder}>
           <Text style={styles.primaryButtonText}>Place Order</Text>
         </Pressable>
       </ScrollView>
