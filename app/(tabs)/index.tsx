@@ -130,6 +130,11 @@ export default function App() {
   const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
   const [foodTrailerHours, setFoodTrailerHours] = useState("");
 
+  const [onsiteEventItems, setOnsiteEventItems] = useState<any[]>([]);
+  const [onsiteEventLocation, setOnsiteEventLocation] = useState("");
+  const [onsiteEventName, setOnsiteEventName] = useState("");
+  const [onsiteEventHours, setOnsiteEventHours] = useState("");
+
   const [continueAsGuest, setContinueAsGuest] = useState(false);
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerPhone, setNewCustomerPhone] = useState("");
@@ -239,6 +244,28 @@ export default function App() {
       }
     };
     loadFoodTrailerMenu();
+  }, []);
+
+  useEffect(() => {
+    const loadOnsiteEventMenu = async () => {
+      try {
+        const menuSnapshot = await getDocs(collection(db, "menus"));
+
+        menuSnapshot.forEach((menuDoc) => {
+          const menuData = menuDoc.data();
+
+          if (menuData.type === "onsiteEvent" && menuData.active === true) {
+            setOnsiteEventItems(menuData.items || []);
+            setOnsiteEventLocation(menuData.location || "");
+            setOnsiteEventName(menuData.eventName || "");
+            setOnsiteEventHours(menuData.hours || "");
+          }
+        });
+      } catch (error) {
+        console.error("Error loading onsite event menu:", error);
+      }
+    };
+    loadOnsiteEventMenu();
   }, []);
 
   useEffect(() => {
@@ -692,9 +719,11 @@ export default function App() {
     <>
       <Header title="Onsite Event Menu" />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.sectionText}>
-          Current Event: Campus Celebration
-        </Text>
+        <Text style={styles.sectionText}>Current Event: {onsiteEventName}</Text>
+
+        <Text style={styles.sectionText}>Location: {onsiteEventLocation}</Text>
+
+        <Text style={styles.sectionText}>Hours: {onsiteEventHours}</Text>
 
         <MenuItem
           id="bbq-chicken-plate"
