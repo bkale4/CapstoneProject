@@ -135,6 +135,10 @@ export default function App() {
   const [onsiteEventName, setOnsiteEventName] = useState("");
   const [onsiteEventHours, setOnsiteEventHours] = useState("");
 
+  const [selectedMenuType, setSelectedMenuType] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState("");
+
   const [continueAsGuest, setContinueAsGuest] = useState(false);
   const [newCustomerName, setNewCustomerName] = useState("");
   const [newCustomerPhone, setNewCustomerPhone] = useState("");
@@ -605,13 +609,23 @@ export default function App() {
         <ServiceCard
           title="Food Trailer"
           subtitle="Browse the active food trailer menu and place a quick order."
-          onPress={() => setScreen("foodTrailer")}
+          onPress={() => {
+            setSelectedMenuType("Food Trailer");
+            setSelectedLocation(foodTrailerLocation);
+            setSelectedEvent(foodTrailerEventName);
+            setScreen("foodTrailer");
+          }}
         />
 
         <ServiceCard
           title="Onsite Event"
           subtitle="View event-specific menu options and order food."
-          onPress={() => setScreen("onsiteEvent")}
+          onPress={() => {
+            setSelectedMenuType("Onsite Event");
+            setSelectedLocation(onsiteEventLocation);
+            setSelectedEvent(onsiteEventName);
+            setScreen("onsiteEvent");
+          }}
         />
 
         <ServiceCard
@@ -725,24 +739,22 @@ export default function App() {
 
         <Text style={styles.sectionText}>Hours: {onsiteEventHours}</Text>
 
-        <MenuItem
-          id="bbq-chicken-plate"
-          name="BBQ Chicken Plate"
-          description="Chicken with baked beans and slaw"
-          price={14}
-        />
-        <MenuItem
-          id="loaded-fries"
-          name="Loaded Fries"
-          description="Fries topped with cheese and pulled pork"
-          price={8}
-        />
-        <MenuItem
-          id="lemonade"
-          name="Lemonade"
-          description="Fresh lemonade"
-          price={3}
-        />
+        {onsiteEventItems.map((item, index) => (
+          <MenuItem
+            key={index}
+            id={`onsite-event-${index}`}
+            name={item.name}
+            description={item.description}
+            price={item.price}
+            status={
+              item.status === "soldOut"
+                ? "Sold Out"
+                : item.status === "limited"
+                  ? "Limited"
+                  : "Available"
+            }
+          />
+        ))}
 
         <Pressable
           style={styles.primaryButton}
