@@ -125,10 +125,30 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
-  const [foodTrailerItems, setFoodTrailerItems] = useState<any[]>([]);
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
   const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
-  const [foodTrailerHours, setFoodTrailerHours] = useState("");
+
+  // Food Trailer - Breakfast
+  const [breakfastHours, setBreakfastHours] = useState("");
+  const [breakfastSandwiches, setBreakfastSandwiches] = useState<any[]>([]);
+  const [breakfastSandwichesDescription, setBreakfastSandwichesDescription] =
+    useState("");
+  const [breakfastItems, setBreakfastItems] = useState<any[]>([]);
+  const [breakfastBowlAddOnOptions, setBreakfastBowlAddOnOptions] =
+    useState("");
+  const [breakfastBowlAddOnPrice, setBreakfastBowlAddOnPrice] = useState(0);
+
+  // Food Trailer - Lunch
+  const [lunchHours, setLunchHours] = useState("");
+  const [lunchSandwichesWraps, setLunchSandwichesWraps] = useState<any[]>([]);
+  const [sandwichFriesAddOns, setSandwichFriesAddOns] = useState<any>(null);
+  const [sideOfFries, setSideOfFries] = useState(null);
+  const [lunchSalads, setLunchSalads] = useState<any[]>([]);
+  const [lunchBakedPotatoFries, setLunchBakedPotatoFries] = useState<any[]>([]);
+
+  // Breakfast/Lunch dropdowns
+  const [breakfastExpanded, setBreakfastExpanded] = useState(false);
+  const [lunchExpanded, setLunchExpanded] = useState(false);
 
   const [onsiteEventItems, setOnsiteEventItems] = useState<any[]>([]);
   const [onsiteEventLocation, setOnsiteEventLocation] = useState("");
@@ -237,10 +257,8 @@ export default function App() {
           const menuData = menuDoc.data();
 
           if (menuData.type === "foodTrailer" && menuData.active === true) {
-            setFoodTrailerItems(menuData.items || []);
             setFoodTrailerLocation(menuData.location || "");
             setFoodTrailerEventName(menuData.eventName || "");
-            setFoodTrailerHours(menuData.hours || "");
           }
         });
       } catch (error) {
@@ -330,6 +348,9 @@ export default function App() {
         customerName: customerName,
         phone: customerPhone,
         email: customerEmail,
+        menuType: selectedMenuType,
+        location: selectedLocation,
+        eventName: selectedEvent,
         items: cartItems,
         total: cartTotal,
         paymentMethod: paymentMethod,
@@ -693,38 +714,43 @@ export default function App() {
   const FoodTrailerScreen = () => (
     <>
       <Header title="Food Trailer Menu" />
+
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionText}>
           Now Serving: {foodTrailerLocation}
         </Text>
-        <Text style={styles.sectionText}>Event: {foodTrailerEventName}</Text>
-        <Text style={styles.sectionText}>Hours: {foodTrailerHours}</Text>
 
-        {foodTrailerItems.map((item, index) => (
-          <MenuItem
-            key={index}
-            id={`food-trailer-${index}`}
-            name={item.name}
-            description={item.description}
-            price={item.price}
-            status={
-              item.status === "soldOut"
-                ? "Sold Out"
-                : item.status === "limited"
-                  ? "Limited"
-                  : "Available"
-            }
-          />
-        ))}
+        <Text style={styles.sectionText}>Event: {foodTrailerEventName}</Text>
 
         <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("cart")}
+          style={styles.optionButton}
+          onPress={() => setBreakfastExpanded(!breakfastExpanded)}
         >
-          <Text style={styles.primaryButtonText}>
-            View Cart - ${cartTotal.toFixed(2)}
+          <Text style={styles.optionText}>
+            Breakfast {breakfastExpanded ? "▲" : "▼"}
           </Text>
         </Pressable>
+
+        {breakfastExpanded && (
+          <>
+            <Text style={styles.sectionText}>{breakfastHours}</Text>
+          </>
+        )}
+
+        <Pressable
+          style={styles.optionButton}
+          onPress={() => setLunchExpanded(!lunchExpanded)}
+        >
+          <Text style={styles.optionText}>
+            Lunch {lunchExpanded ? "▲" : "▼"}
+          </Text>
+        </Pressable>
+
+        {lunchExpanded && (
+          <>
+            <Text style={styles.sectionText}>{lunchHours}</Text>
+          </>
+        )}
       </ScrollView>
     </>
   );
