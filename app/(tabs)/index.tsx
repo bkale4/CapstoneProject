@@ -850,6 +850,22 @@ export default function App() {
                 </Text>
               </View>
             ))}
+
+            <Text style={styles.menuSectionTitle}>Baked Potatoes / Fries</Text>
+
+            {lunchBakedPotatoFries.map((item, index) => (
+              <View key={index} style={styles.card}>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+
+                {item.description && (
+                  <Text style={styles.sectionText}>{item.description}</Text>
+                )}
+
+                <Text style={styles.sectionText}>
+                  ${Number(item.price).toFixed(2)}
+                </Text>
+              </View>
+            ))}
           </>
         )}
       </ScrollView>
