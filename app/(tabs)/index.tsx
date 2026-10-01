@@ -777,6 +777,12 @@ export default function App() {
                 <Text style={styles.sectionText}>
                   ${Number(item.price).toFixed(2)}
                 </Text>
+                {item.name === "Breakfast Bowl" && (
+                  <Text style={styles.addOnText}>
+                    Add {breakfastBowlAddOnOptions} + ${" "}
+                    {Number(breakfastBowlAddOnPrice).toFixed(2)}
+                  </Text>
+                )}
               </View>
             ))}
           </>
@@ -794,6 +800,22 @@ export default function App() {
         {lunchExpanded && (
           <>
             <Text style={styles.sectionText}>{lunchHours}</Text>
+
+            <Text style={styles.menuSectionTitle}>Sandwiches / Wraps</Text>
+
+            {lunchSandwichesWraps.map((item, index) => (
+              <View key={index} style={styles.card}>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+
+                {item.description && (
+                  <Text style={styles.sectionText}>{item.description}</Text>
+                )}
+
+                <Text style={styles.sectionText}>
+                  ${Number(item.price).toFixed(2)}
+                </Text>
+              </View>
+            ))}
           </>
         )}
       </ScrollView>
@@ -1762,6 +1784,11 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  addOnText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 8,
   },
   statusText: {
     marginTop: 8,
