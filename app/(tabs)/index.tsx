@@ -539,11 +539,11 @@ export default function App() {
 
   const Header = ({ title }: { title: string }) => (
     <View style={styles.header}>
-      <Pressable
-        style={styles.logoPlaceholder}
-        onPress={() => setScreen("home")}
-      >
-        <Text style={styles.logoText}>Logo</Text>
+      <Pressable style={styles.logoContainer} onPress={() => setScreen("home")}>
+        <Image
+          source={require("../../assets/images/root-ranch-logo.png")}
+          style={styles.logoImage}
+        />
       </Pressable>
 
       <Text style={styles.headerTitle}>{title}</Text>
@@ -1784,18 +1784,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
-  logoPlaceholder: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#f6f1e7",
+  logoContainer: {
+    width: 160,
+    height: 110,
     alignItems: "center",
     justifyContent: "center",
   },
-  logoText: {
-    color: "#3f5b3a",
-    fontSize: 12,
-    fontWeight: "700",
+  logoImage: {
+    width: 160,
+    height: 110,
+    resizeMode: "contain",
   },
   headerTitle: {
     color: "#ffffff",
