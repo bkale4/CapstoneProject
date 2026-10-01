@@ -259,6 +259,23 @@ export default function App() {
           if (menuData.type === "foodTrailer" && menuData.active === true) {
             setFoodTrailerLocation(menuData.location || "");
             setFoodTrailerEventName(menuData.eventName || "");
+            setBreakfastHours(menuData.breakfastHours || "");
+            setBreakfastSandwiches(menuData.breakfastSandwiches || []);
+            setBreakfastSandwichesDescription(
+              menuData.breakfastSandwichesDescription || "",
+            );
+            setBreakfastItems(menuData.breakfastItems || []);
+            setBreakfastBowlAddOnOptions(
+              menuData.breakfastBowlAddOnOptions || "",
+            );
+            setBreakfastBowlAddOnPrice(menuData.breakfastBowlAddOnPrice || 0);
+
+            setLunchHours(menuData.lunchHours || "");
+            setLunchSandwichesWraps(menuData.lunchSandwichesWraps || []);
+            setSandwichFriesAddOns(menuData.sandwichFriesAddOns || null);
+            setSideOfFries(menuData.sideOfFries || null);
+            setLunchSalads(menuData.lunchSalads || []);
+            setLunchBakedPotatoFries(menuData.lunchBakedPotatoFries || []);
           }
         });
       } catch (error) {
@@ -723,25 +740,53 @@ export default function App() {
         <Text style={styles.sectionText}>Event: {foodTrailerEventName}</Text>
 
         <Pressable
-          style={styles.optionButton}
+          style={styles.menuDropdownButton}
           onPress={() => setBreakfastExpanded(!breakfastExpanded)}
         >
-          <Text style={styles.optionText}>
+          <Text style={styles.menuDropdownText}>
             Breakfast {breakfastExpanded ? "▲" : "▼"}
           </Text>
         </Pressable>
 
         {breakfastExpanded && (
           <>
-            <Text style={styles.sectionText}>{breakfastHours}</Text>
+            <Text style={styles.menuHours}>{breakfastHours}</Text>
+
+            <Text style={styles.menuSectionTitle}>Sandwiches</Text>
+
+            <Text style={styles.menuDescription}>
+              {breakfastSandwichesDescription}
+            </Text>
+
+            {breakfastSandwiches.map((item, index) => (
+              <View key={index} style={styles.card}>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+
+                <Text style={styles.sectionText}>
+                  ${Number(item.price).toFixed(2)}
+                </Text>
+              </View>
+            ))}
+
+            <Text style={styles.menuSectionTitle}>Other Breakfast Items</Text>
+
+            {breakfastItems.map((item, index) => (
+              <View key={index} style={styles.card}>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+
+                <Text style={styles.sectionText}>
+                  ${Number(item.price).toFixed(2)}
+                </Text>
+              </View>
+            ))}
           </>
         )}
 
         <Pressable
-          style={styles.optionButton}
+          style={styles.menuDropdownButton}
           onPress={() => setLunchExpanded(!lunchExpanded)}
         >
-          <Text style={styles.optionText}>
+          <Text style={styles.menuDropdownText}>
             Lunch {lunchExpanded ? "▲" : "▼"}
           </Text>
         </Pressable>
@@ -1679,15 +1724,44 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "700",
   },
-  menuDescription: {
-    fontSize: 14,
-    color: "#5a514c",
-    marginTop: 4,
-  },
   menuPrice: {
     fontSize: 15,
     fontWeight: "600",
     marginTop: 8,
+  },
+  menuDescription: {
+    fontSize: 20,
+    fontStyle: "italic",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  menuHours: {
+    fontSize: 24,
+    fontWeight: "bold",
+    fontStyle: "italic",
+    marginTop: 16,
+    marginBottom: 22,
+    textAlign: "center",
+  },
+  menuSectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 4,
+    textAlign: "center",
+  },
+  menuDropdownButton: {
+    backgroundColor: "#4F6F53",
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  menuDropdownText: {
+    color: "#F3EFEA",
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   statusText: {
     marginTop: 8,
