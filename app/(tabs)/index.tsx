@@ -142,7 +142,7 @@ export default function App() {
   const [lunchHours, setLunchHours] = useState("");
   const [lunchSandwichesWraps, setLunchSandwichesWraps] = useState<any[]>([]);
   const [sandwichFriesAddOns, setSandwichFriesAddOns] = useState<any>(null);
-  const [sideOfFries, setSideOfFries] = useState(null);
+  const [sideOfFries, setSideOfFries] = useState<any>(null);
   const [lunchSalads, setLunchSalads] = useState<any[]>([]);
   const [lunchBakedPotatoFries, setLunchBakedPotatoFries] = useState<any[]>([]);
 
@@ -273,6 +273,7 @@ export default function App() {
             setLunchHours(menuData.lunchHours || "");
             setLunchSandwichesWraps(menuData.lunchSandwichesWraps || []);
             setSandwichFriesAddOns(menuData.sandwichFriesAddOns || null);
+            console.log("Sandwich fries add-on:", menuData.sandwichFriesAddOns);
             setSideOfFries(menuData.sideOfFries || null);
             setLunchSalads(menuData.lunchSalads || []);
             setLunchBakedPotatoFries(menuData.lunchBakedPotatoFries || []);
@@ -814,8 +815,25 @@ export default function App() {
                 <Text style={styles.sectionText}>
                   ${Number(item.price).toFixed(2)}
                 </Text>
+
+                {sandwichFriesAddOns && (
+                  <Text style={styles.addOnText}>
+                    {sandwichFriesAddOns.name} + $
+                    {Number(sandwichFriesAddOns.price).toFixed(2)}
+                  </Text>
+                )}
               </View>
             ))}
+
+            {sideOfFries && (
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>{sideOfFries.name}</Text>
+
+                <Text style={styles.sectionText}>
+                  ${Number(sideOfFries.price).toFixed(2)}
+                </Text>
+              </View>
+            )}
           </>
         )}
       </ScrollView>
