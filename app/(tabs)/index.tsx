@@ -16,6 +16,7 @@ import {
 import { auth, db } from "../../firebaseConfig";
 
 import {
+  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -839,15 +840,40 @@ export default function App() {
 
             {lunchSalads.map((item, index) => (
               <View key={index} style={styles.card}>
-                <Text style={styles.cardTitle}>{item.name}</Text>
+                {item.name === "Chopped Cheeseburger" ? (
+                  <View style={styles.menuItemWithImage}>
+                    <View style={styles.menuItemInfo}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
 
-                {item.description && (
-                  <Text style={styles.sectionText}>{item.description}</Text>
+                      {item.description && (
+                        <Text style={styles.sectionText}>
+                          {item.description}
+                        </Text>
+                      )}
+
+                      <Text style={styles.sectionText}>
+                        ${Number(item.price).toFixed(2)}
+                      </Text>
+                    </View>
+
+                    <Image
+                      source={require("../../assets/images/chopped cheeseburger salad - food trailer.jpg")}
+                      style={styles.menuItemSideImage}
+                    />
+                  </View>
+                ) : (
+                  <>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+
+                    {item.description && (
+                      <Text style={styles.sectionText}>{item.description}</Text>
+                    )}
+
+                    <Text style={styles.sectionText}>
+                      ${Number(item.price).toFixed(2)}
+                    </Text>
+                  </>
                 )}
-
-                <Text style={styles.sectionText}>
-                  ${Number(item.price).toFixed(2)}
-                </Text>
               </View>
             ))}
 
@@ -855,15 +881,40 @@ export default function App() {
 
             {lunchBakedPotatoFries.map((item, index) => (
               <View key={index} style={styles.card}>
-                <Text style={styles.cardTitle}>{item.name}</Text>
+                {item.name === "Chicken & Broccoli" ? (
+                  <View style={styles.menuItemWithImage}>
+                    <View style={styles.menuItemInfo}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
 
-                {item.description && (
-                  <Text style={styles.sectionText}>{item.description}</Text>
+                      {item.description && (
+                        <Text style={styles.sectionText}>
+                          {item.description}
+                        </Text>
+                      )}
+
+                      <Text style={styles.sectionText}>
+                        ${Number(item.price).toFixed(2)}
+                      </Text>
+                    </View>
+
+                    <Image
+                      source={require("../../assets/images/chicken and broccoli potato - food trailer.jpg")}
+                      style={styles.menuItemSideImage}
+                    />
+                  </View>
+                ) : (
+                  <>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+
+                    {item.description && (
+                      <Text style={styles.sectionText}>{item.description}</Text>
+                    )}
+
+                    <Text style={styles.sectionText}>
+                      ${Number(item.price).toFixed(2)}
+                    </Text>
+                  </>
                 )}
-
-                <Text style={styles.sectionText}>
-                  ${Number(item.price).toFixed(2)}
-                </Text>
               </View>
             ))}
           </>
@@ -1834,6 +1885,34 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  menuItemImageContainer: {
+    alignItems: "flex-start",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  menuItemImage: {
+    width: 250,
+    height: 250,
+    borderRadius: 10,
+    resizeMode: "contain",
+  },
+  menuItemWithImage: {
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+  menuItemInfo: {
+    flex: 1,
+    paddingRight: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
+    justifyContent: "space-between",
+  },
+  menuItemSideImage: {
+    width: "40%",
+    height: 220,
+    resizeMode: "contain",
+    borderRadius: 10,
   },
   addOnText: {
     fontSize: 16,
