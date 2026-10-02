@@ -38,6 +38,7 @@ type Screen =
   | "createAccount"
   | "orderConfirmation"
   | "catering"
+  | "cateringMenu"
   | "availabilityCalendar"
   | "cateringRequest"
   | "cateringConfirmation"
@@ -150,6 +151,22 @@ export default function App() {
   // Breakfast/Lunch dropdowns
   const [breakfastExpanded, setBreakfastExpanded] = useState(false);
   const [lunchExpanded, setLunchExpanded] = useState(false);
+
+  // Catering Menu
+  const [cateringMenuTitle, setCateringMenuTitle] = useState("");
+  const [cateringHalfServingSize, setCateringHalfServingSize] = useState("");
+  const [cateringFullServingSize, setCateringFullServingSize] = useState("");
+
+  const [cateringStarters, setCateringStarters] = useState<any[]>([]);
+  const [cateringStartersDescription, setCateringStartersDescription] =
+    useState("");
+
+  const [cateringHandhelds, setCateringHandhelds] = useState<any[]>([]);
+  const [cateringHandheldsDescription, setCateringHandheldsDescription] =
+    useState("");
+
+  const [cateringSideSalads, setCateringSideSalads] = useState<any[]>([]);
+  const [cateringSalads, setCateringSalads] = useState<any[]>([]);
 
   const [onsiteEventItems, setOnsiteEventItems] = useState<any[]>([]);
   const [onsiteEventLocation, setOnsiteEventLocation] = useState("");
@@ -308,6 +325,37 @@ export default function App() {
     };
     loadOnsiteEventMenu();
   }, []);
+
+  const loadCateringMenu = async () => {
+    try {
+      const menuSnapshot = await getDocs(collection(db, "menus"));
+
+      menuSnapshot.forEach((menuDoc) => {
+        const menuData = menuDoc.data();
+
+        if (menuData.name === "Catering") {
+          setCateringMenuTitle(menuData.cateringMenuTitle || "");
+          setCateringHalfServingSize(menuData.cateringHalfServingSize || "");
+          setCateringFullServingSize(menuData.cateringFullServingSize || "");
+
+          setCateringStarters(menuData.cateringStarters || []);
+          setCateringStartersDescription(
+            menuData.cateringStartersDescription || "",
+          );
+
+          setCateringHandhelds(menuData.cateringHandhelds || []);
+          setCateringHandheldsDescription(
+            menuData.cateringHandheldsDescription || "",
+          );
+
+          setCateringSideSalads(menuData.cateringSideSalads || []);
+          setCateringSalads(menuData.cateringSideSalads || []);
+        }
+      });
+    } catch (error) {
+      console.error("Error loading catering menu:", error);
+    }
+  };
 
   useEffect(() => {
     const loadAvailability = async () => {
@@ -1286,12 +1334,18 @@ export default function App() {
     <>
       <Header title="Catering Services" />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
+        <Pressable
+          style={styles.card}
+          onPress={async () => {
+            await loadCateringMenu();
+            setScreen("cateringMenu");
+          }}
+        >
           <Text style={styles.cardTitle}>Catering Menu</Text>
           <Text style={styles.cardSubtitle}>
             View catering-specific menu options and packages.
           </Text>
-        </View>
+        </Pressable>
 
         <Pressable
           style={styles.card}
@@ -1798,7 +1852,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     color: "#ffffff",
     fontSize: 24,
-    fontWeight: "700",
   },
   content: {
     padding: 16,
