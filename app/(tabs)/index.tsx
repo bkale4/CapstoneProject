@@ -1022,11 +1022,14 @@ export default function App() {
         </Text>
 
         <Text style={styles.menuSectionTitle}>Starters</Text>
+        <Text style={styles.menuDescription}>
+          {cateringStartersDescription}
+        </Text>
         {cateringStarters.map((item, index) => (
           <View key={index} style={styles.card}>
             {item.name === "Vegetable Platter & Dip" ? (
               <View style={styles.menuItemWithImage}>
-                <View style={styles.menuItemInfo}>
+                <View style={styles.cateringItemInfo}>
                   <Text style={styles.cardTitle}>{item.name}</Text>
 
                   <Text style={styles.sectionText}>
@@ -1040,7 +1043,7 @@ export default function App() {
 
                 <Image
                   source={require("../../assets/images/veggie tray - catering.jpg")}
-                  style={styles.menuItemSideImage}
+                  style={styles.cateringItemSideImage}
                 />
               </View>
             ) : (
@@ -1058,8 +1061,6 @@ export default function App() {
             )}
           </View>
         ))}
-
-        <Text style={styles.sectionText}>{cateringStartersDescription}</Text>
       </ScrollView>
     </>
   );
@@ -2013,6 +2014,17 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     justifyContent: "space-between",
+  },
+  cateringItemInfo: {
+    flex: 1,
+    paddingRight: 15,
+    paddingTop: 10,
+  },
+  cateringItemSideImage: {
+    width: 150,
+    height: 150,
+    resizeMode: "cover",
+    borderRadius: 10,
   },
   menuItemSideImage: {
     width: "40%",
