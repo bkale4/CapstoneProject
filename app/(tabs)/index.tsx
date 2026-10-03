@@ -1193,6 +1193,10 @@ export default function App() {
             ))}
           </>
         )}
+
+        <Text style={styles.cateringNote}>
+          Contact us with for special requests and dietary restriction requests.
+        </Text>
       </ScrollView>
     </>
   );
@@ -2169,6 +2173,13 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "400",
     marginTop: 8,
+  },
+  cateringNote: {
+    fontSize: 16,
+    fontStyle: "italic",
+    textAlign: "center",
+    marginTop: 20,
+    marginBottom: 20,
   },
   menuItemSideImage: {
     width: "40%",
