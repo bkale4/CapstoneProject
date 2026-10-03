@@ -168,6 +168,14 @@ export default function App() {
   const [cateringSideSalads, setCateringSideSalads] = useState<any[]>([]);
   const [cateringSalads, setCateringSalads] = useState<any[]>([]);
 
+  const [cateringStartersExpanded, setCateringStartersExpanded] =
+    useState(false);
+  const [cateringHandheldsExpanded, setCateringHandheldsExpanded] =
+    useState(false);
+  const [cateringSideSaladsExpanded, setCateringSideSaladsExpanded] =
+    useState(false);
+  const [cateringSaladsExpanded, setCateringSaladsExpanded] = useState(false);
+
   const [onsiteEventItems, setOnsiteEventItems] = useState<any[]>([]);
   const [onsiteEventLocation, setOnsiteEventLocation] = useState("");
   const [onsiteEventName, setOnsiteEventName] = useState("");
@@ -1015,22 +1023,98 @@ export default function App() {
       <Header title="Catering Menu" />
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.menuDescription}>{cateringMenuTitle}</Text>
+        <Text style={styles.cateringMenuTitle}>{cateringMenuTitle}</Text>
 
         <Text style={styles.menuHours}>
           HALF ({cateringHalfServingSize}) - FULL ({cateringFullServingSize})
         </Text>
 
-        <Text style={styles.menuSectionTitle}>Starters</Text>
-        <Text style={styles.menuDescription}>
-          {cateringStartersDescription}
-        </Text>
-        {cateringStarters.map((item, index) => (
-          <View key={index} style={styles.card}>
-            {item.name === "Vegetable Platter & Dip" ||
-            item.name === "Fruit Platter & Dip" ||
-            item.name === "Deviled Eggs" ? (
-              <View style={styles.menuItemWithImage}>
+        <Pressable
+          style={styles.menuDropdownButton}
+          onPress={() => setCateringStartersExpanded(!cateringStartersExpanded)}
+        >
+          <Text style={styles.menuDropdownText}>
+            Starters {cateringStartersExpanded ? "▲" : "▼"}
+          </Text>
+        </Pressable>
+
+        {cateringStartersExpanded && (
+          <>
+            <Text style={styles.menuDescription}>
+              {cateringStartersDescription}
+            </Text>
+            {cateringStarters.map((item, index) => (
+              <View key={index} style={styles.card}>
+                {item.name === "Vegetable Platter & Dip" ||
+                item.name === "Fruit Platter & Dip" ||
+                item.name === "Deviled Eggs" ? (
+                  <View style={styles.menuItemWithImage}>
+                    <View style={styles.cateringItemInfo}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+
+                      <Text style={styles.cateringPrice}>
+                        Half: ${Number(item.halfPrice).toFixed(2)}
+                      </Text>
+
+                      <Text style={styles.cateringPrice}>
+                        Full: ${Number(item.fullPrice).toFixed(2)}
+                      </Text>
+                    </View>
+
+                    {item.name === "Vegetable Platter & Dip" && (
+                      <Image
+                        source={require("../../assets/images/veggie tray - catering.jpg")}
+                        style={styles.cateringItemSideImage}
+                      />
+                    )}
+
+                    {item.name === "Fruit Platter & Dip" && (
+                      <Image
+                        source={require("../../assets/images/fruit tray - catering.jpg")}
+                        style={styles.cateringItemSideImage}
+                      />
+                    )}
+
+                    {item.name === "Deviled Eggs" && (
+                      <Image
+                        source={require("../../assets/images/deviled eggs - catering.jpg")}
+                        style={styles.cateringItemSideImage}
+                      />
+                    )}
+                  </View>
+                ) : (
+                  <>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+
+                    <Text style={styles.cateringPrice}>
+                      Half: ${Number(item.halfPrice).toFixed(2)}
+                    </Text>
+
+                    <Text style={styles.cateringPrice}>
+                      Full: ${Number(item.fullPrice).toFixed(2)}
+                    </Text>
+                  </>
+                )}
+              </View>
+            ))}
+          </>
+        )}
+
+        <Pressable
+          style={styles.menuDropdownButton}
+          onPress={() =>
+            setCateringSideSaladsExpanded(!cateringSideSaladsExpanded)
+          }
+        >
+          <Text style={styles.menuDropdownText}>
+            Side Salads {cateringSideSaladsExpanded ? "▲" : "▼"}
+          </Text>
+        </Pressable>
+
+        {cateringSideSaladsExpanded && (
+          <>
+            {cateringSideSalads.map((item, index) => (
+              <View key={index} style={styles.card}>
                 <View style={styles.cateringItemInfo}>
                   <Text style={styles.cardTitle}>{item.name}</Text>
 
@@ -1042,43 +1126,73 @@ export default function App() {
                     Full: ${Number(item.fullPrice).toFixed(2)}
                   </Text>
                 </View>
-
-                {item.name === "Vegetable Platter & Dip" && (
-                  <Image
-                    source={require("../../assets/images/veggie tray - catering.jpg")}
-                    style={styles.cateringItemSideImage}
-                  />
-                )}
-
-                {item.name === "Fruit Platter & Dip" && (
-                  <Image
-                    source={require("../../assets/images/fruit tray - catering.jpg")}
-                    style={styles.cateringItemSideImage}
-                  />
-                )}
-
-                {item.name === "Deviled Eggs" && (
-                  <Image
-                    source={require("../../assets/images/deviled eggs - catering.jpg")}
-                    style={styles.cateringItemSideImage}
-                  />
-                )}
               </View>
-            ) : (
-              <>
-                <Text style={styles.cardTitle}>{item.name}</Text>
+            ))}
+          </>
+        )}
 
-                <Text style={styles.cateringPrice}>
-                  Half: ${Number(item.halfPrice).toFixed(2)}
-                </Text>
+        <Pressable
+          style={styles.menuDropdownButton}
+          onPress={() =>
+            setCateringHandheldsExpanded(!cateringHandheldsExpanded)
+          }
+        >
+          <Text style={styles.menuDropdownText}>
+            Handhelds {cateringHandheldsExpanded ? "▲" : "▼"}
+          </Text>
+        </Pressable>
 
-                <Text style={styles.cateringPrice}>
-                  Full: ${Number(item.fullPrice).toFixed(2)}
-                </Text>
-              </>
-            )}
-          </View>
-        ))}
+        {cateringHandheldsExpanded && (
+          <>
+            <Text style={styles.menuDescription}>
+              {cateringHandheldsDescription}
+            </Text>
+            {cateringHandhelds.map((item, index) => (
+              <View key={index} style={styles.card}>
+                <View style={styles.cateringItemInfo}>
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+
+                  <Text style={styles.cateringPrice}>
+                    Half: ${Number(item.halfPrice).toFixed(2)}
+                  </Text>
+
+                  <Text style={styles.cateringPrice}>
+                    Full: ${Number(item.fullPrice).toFixed(2)}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </>
+        )}
+
+        <Pressable
+          style={styles.menuDropdownButton}
+          onPress={() => setCateringSaladsExpanded(!cateringSaladsExpanded)}
+        >
+          <Text style={styles.menuDropdownText}>
+            Salads {cateringSaladsExpanded ? "▲" : "▼"}
+          </Text>
+        </Pressable>
+
+        {cateringSaladsExpanded && (
+          <>
+            {cateringSalads.map((item, index) => (
+              <View key={index} style={styles.card}>
+                <View style={styles.cateringItemInfo}>
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+
+                  <Text style={styles.cateringPrice}>
+                    Half: ${Number(item.halfPrice).toFixed(2)}
+                  </Text>
+
+                  <Text style={styles.cateringPrice}>
+                    Full: ${Number(item.fullPrice).toFixed(2)}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </>
+        )}
       </ScrollView>
     </>
   );
@@ -2032,6 +2146,13 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     justifyContent: "space-between",
+  },
+  cateringMenuTitle: {
+    fontSize: 30,
+    fontWeight: "bold",
+    fontStyle: "italic",
+    marginBottom: 16,
+    textAlign: "center",
   },
   cateringItemInfo: {
     flex: 1,
