@@ -1032,11 +1032,11 @@ export default function App() {
                 <View style={styles.cateringItemInfo}>
                   <Text style={styles.cardTitle}>{item.name}</Text>
 
-                  <Text style={styles.sectionText}>
+                  <Text style={styles.cateringPrice}>
                     Half: ${Number(item.halfPrice).toFixed(2)}
                   </Text>
 
-                  <Text style={styles.sectionText}>
+                  <Text style={styles.cateringPrice}>
                     Full: ${Number(item.fullPrice).toFixed(2)}
                   </Text>
                 </View>
@@ -1050,11 +1050,11 @@ export default function App() {
               <>
                 <Text style={styles.cardTitle}>{item.name}</Text>
 
-                <Text style={styles.sectionText}>
+                <Text style={styles.cateringPrice}>
                   Half: ${Number(item.halfPrice).toFixed(2)}
                 </Text>
 
-                <Text style={styles.sectionText}>
+                <Text style={styles.cateringPrice}>
                   Full: ${Number(item.fullPrice).toFixed(2)}
                 </Text>
               </>
@@ -2025,6 +2025,11 @@ const styles = StyleSheet.create({
     height: 150,
     resizeMode: "cover",
     borderRadius: 10,
+  },
+  cateringPrice: {
+    fontSize: 17,
+    fontWeight: "400",
+    marginTop: 8,
   },
   menuItemSideImage: {
     width: "40%",
