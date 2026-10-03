@@ -1010,6 +1010,60 @@ export default function App() {
     </>
   );
 
+  const CateringMenuScreen = () => (
+    <>
+      <Header title="Catering Menu" />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.menuDescription}>{cateringMenuTitle}</Text>
+
+        <Text style={styles.menuHours}>
+          HALF ({cateringHalfServingSize}) - FULL ({cateringFullServingSize})
+        </Text>
+
+        <Text style={styles.menuSectionTitle}>Starters</Text>
+        {cateringStarters.map((item, index) => (
+          <View key={index} style={styles.card}>
+            {item.name === "Vegetable Platter & Dip" ? (
+              <View style={styles.menuItemWithImage}>
+                <View style={styles.menuItemInfo}>
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+
+                  <Text style={styles.sectionText}>
+                    Half: ${Number(item.halfPrice).toFixed(2)}
+                  </Text>
+
+                  <Text style={styles.sectionText}>
+                    Full: ${Number(item.fullPrice).toFixed(2)}
+                  </Text>
+                </View>
+
+                <Image
+                  source={require("../../assets/images/veggie tray - catering.jpg")}
+                  style={styles.menuItemSideImage}
+                />
+              </View>
+            ) : (
+              <>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+
+                <Text style={styles.sectionText}>
+                  Half: ${Number(item.halfPrice).toFixed(2)}
+                </Text>
+
+                <Text style={styles.sectionText}>
+                  Full: ${Number(item.fullPrice).toFixed(2)}
+                </Text>
+              </>
+            )}
+          </View>
+        ))}
+
+        <Text style={styles.sectionText}>{cateringStartersDescription}</Text>
+      </ScrollView>
+    </>
+  );
+
   const CartScreen = () => (
     <>
       <Header title="Cart / Order Review" />
@@ -1800,6 +1854,7 @@ export default function App() {
       {screen === "createAccount" && CreateAccountScreen()}
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
+      {screen === "cateringMenu" && CateringMenuScreen()}
       {screen === "availabilityCalendar" && <AvailabilityCalendarScreen />}
       {screen === "cateringRequest" && CateringRequestScreen()}
       {screen === "cateringConfirmation" && <CateringConfirmationScreen />}
