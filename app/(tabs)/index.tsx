@@ -1027,7 +1027,9 @@ export default function App() {
         </Text>
         {cateringStarters.map((item, index) => (
           <View key={index} style={styles.card}>
-            {item.name === "Vegetable Platter & Dip" ? (
+            {item.name === "Vegetable Platter & Dip" ||
+            item.name === "Fruit Platter & Dip" ||
+            item.name === "Deviled Eggs" ? (
               <View style={styles.menuItemWithImage}>
                 <View style={styles.cateringItemInfo}>
                   <Text style={styles.cardTitle}>{item.name}</Text>
@@ -1041,10 +1043,26 @@ export default function App() {
                   </Text>
                 </View>
 
-                <Image
-                  source={require("../../assets/images/veggie tray - catering.jpg")}
-                  style={styles.cateringItemSideImage}
-                />
+                {item.name === "Vegetable Platter & Dip" && (
+                  <Image
+                    source={require("../../assets/images/veggie tray - catering.jpg")}
+                    style={styles.cateringItemSideImage}
+                  />
+                )}
+
+                {item.name === "Fruit Platter & Dip" && (
+                  <Image
+                    source={require("../../assets/images/fruit tray - catering.jpg")}
+                    style={styles.cateringItemSideImage}
+                  />
+                )}
+
+                {item.name === "Deviled Eggs" && (
+                  <Image
+                    source={require("../../assets/images/deviled eggs - catering.jpg")}
+                    style={styles.cateringItemSideImage}
+                  />
+                )}
               </View>
             ) : (
               <>
