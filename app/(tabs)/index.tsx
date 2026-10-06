@@ -1706,7 +1706,7 @@ export default function App() {
         />
         <TextInput
           style={styles.input}
-          placeholder="Contact Information"
+          placeholder="Email Address"
           placeholderTextColor="#555"
           value={cateringContact}
           onChangeText={setCateringContact}
