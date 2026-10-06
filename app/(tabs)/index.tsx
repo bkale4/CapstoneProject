@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+
 import {
   addDoc,
   collection,
@@ -11,8 +12,9 @@ import {
   getDoc,
   getDocs,
   serverTimestamp,
-  setDoc,
+  setDoc
 } from "firebase/firestore";
+
 import { auth, db } from "../../firebaseConfig";
 
 import {
@@ -205,6 +207,8 @@ export default function App() {
   const [guestPhone, setGuestPhone] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
 
+  const [adminMenus, setAdminMenus] = useState<any>([]);
+
   const handleCreateAccount = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -362,6 +366,21 @@ export default function App() {
       });
     } catch (error) {
       console.error("Error loading catering menu:", error);
+    }
+  };
+
+  const loadAdminMenus = async () => {
+    try {
+      const menuSnapshot = await getDocs(collection(db, "menus"));
+
+      const menus = menuSnapshot.docs.map((menuDoc) => ({
+        id: menuDoc.id,
+        ...menuDoc.data(),
+      }));
+
+      setAdminMenus(menus);
+    } catch (error) {
+      console.error("Error loading admin menus:", error);
     }
   };
 
@@ -1792,7 +1811,10 @@ export default function App() {
 
         <Pressable
           style={styles.card}
-          onPress={() => setScreen("menuManagement")}
+          onPress={async () => {
+            await loadAdminMenus();
+            setScreen("menuManagement");
+          }}
         >
           <Text style={styles.cardTitle}>Menu Management</Text>
           <Text style={styles.cardSubtitle}>
@@ -1860,26 +1882,24 @@ export default function App() {
       <Header title="Menu Management" />
       <ScrollView contentContainerStyle={styles.content}>
         <BusinessBackButton />
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Food Trailer Menu</Text>
-          <Text style={styles.cardSubtitle}>Pulled Pork Sandwich</Text>
-          <Text style={styles.cardSubtitle}>Mac and Cheese</Text>
-          <Text style={styles.cardSubtitle}>Sweet Tea</Text>
-        </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Onsite Event Menu</Text>
-          <Text style={styles.cardSubtitle}>BBQ Chicken Plate</Text>
-          <Text style={styles.cardSubtitle}>Loaded Fries</Text>
-          <Text style={styles.cardSubtitle}>Lemonade</Text>
-        </View>
+        {adminMenus.map((menu: any) => (
+          <View key={menu.id} style={styles.card}>
+            <Text style={styles.cardTitle}>{menu.name}</Text>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Catering Menu</Text>
-          <Text style={styles.cardSubtitle}>BBQ Buffet</Text>
-          <Text style={styles.cardSubtitle}>Sandwich Platters</Text>
-          <Text style={styles.cardSubtitle}>Family-Style Sides</Text>
-        </View>
+            {menu.location && (
+              <Text style={styles.cardSubtitle}>Location: {menu.location}</Text>
+            )}
+
+            {menu.eventName && (
+              <Text style={styles.cardSubtitle}>Event: {menu.eventName}</Text>
+            )}
+
+            <Text style={styles.cardSubtitle}>
+              Status: {menu.active ? "Active" : "Inactive"}
+            </Text>
+          </View>
+        ))}
       </ScrollView>
     </>
   );
