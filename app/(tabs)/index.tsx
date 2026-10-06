@@ -12,7 +12,8 @@ import {
   getDoc,
   getDocs,
   serverTimestamp,
-  setDoc
+  setDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 import { auth, db } from "../../firebaseConfig";
@@ -381,6 +382,20 @@ export default function App() {
       setAdminMenus(menus);
     } catch (error) {
       console.error("Error loading admin menus:", error);
+    }
+  };
+
+  const toggleMenuActive = async (menuId: string, currentActive: boolean) => {
+    try {
+      const menuRef = doc(db, "menus", menuId);
+
+      await updateDoc(menuRef, {
+        active: !currentActive,
+      });
+
+      await loadAdminMenus();
+    } catch (error) {
+      console.error("Error updating menu status:", error);
     }
   };
 
@@ -1898,6 +1913,15 @@ export default function App() {
             <Text style={styles.cardSubtitle}>
               Status: {menu.active ? "Active" : "Inactive"}
             </Text>
+
+            <Pressable
+              style={styles.adminButton}
+              onPress={() => toggleMenuActive(menu.id, menu.active)}
+            >
+              <Text style={styles.adminButtonText}>
+                {menu.active ? "Set Inactive" : "Set Active"}
+              </Text>
+            </Pressable>
           </View>
         ))}
       </ScrollView>
@@ -2447,5 +2471,18 @@ const styles = StyleSheet.create({
   selectedDateText: {
     color: "#2f241f",
     fontSize: 16,
+  },
+  adminButton: {
+    backgroundColor: "#3f5b3a",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 12,
+    alignItems: "center",
+  },
+  adminButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
