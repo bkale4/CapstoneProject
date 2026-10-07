@@ -413,6 +413,29 @@ export default function App() {
     }
   };
 
+  const addNewMenu = async () => {
+    try {
+      await addDoc(collection(db, "menus"), {
+        name: newMenuName,
+        type: newMenuType,
+        location: newMenuLocation,
+        eventName: newMenuEventName,
+        active: newMenuActive,
+      });
+
+      setNewMenuName("");
+      setNewMenuType("");
+      setNewMenuLocation("");
+      setNewMenuEventName("");
+      setNewMenuActive(true);
+
+      await loadAdminMenus();
+      setScreen("menuManagement");
+    } catch (error) {
+      console.error("Error adding menu:", error);
+    }
+  };
+
   useEffect(() => {
     const loadAvailability = async () => {
       try {
@@ -2039,7 +2062,7 @@ export default function App() {
           </Text>
         </Pressable>
 
-        <Pressable style={styles.adminButton}>
+        <Pressable style={styles.adminButton} onPress={addNewMenu}>
           <Text style={styles.adminButtonText}>Add Menu</Text>
         </Pressable>
       </ScrollView>
