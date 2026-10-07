@@ -50,6 +50,7 @@ type Screen =
   | "ordersManagement"
   | "cateringManagement"
   | "menuManagement"
+  | "addMenu"
   | "availabilityManagement";
 
 type BusinessLoginScreenProps = {
@@ -209,6 +210,13 @@ export default function App() {
   const [guestEmail, setGuestEmail] = useState("");
 
   const [adminMenus, setAdminMenus] = useState<any>([]);
+
+  const [newMenuName, setNewMenuName] = useState("");
+  const [newMenuType, setNewMenuType] = useState("");
+  const [menuTypeDropdown, setMenuTypeDropdown] = useState(false);
+  const [newMenuLocation, setNewMenuLocation] = useState("");
+  const [newMenuEventName, setNewMenuEventName] = useState("");
+  const [newMenuActive, setNewMenuActive] = useState(true);
 
   const handleCreateAccount = async () => {
     try {
@@ -383,6 +391,12 @@ export default function App() {
     } catch (error) {
       console.error("Error loading admin menus:", error);
     }
+  };
+
+  const isMenuActive = (menuName: string) => {
+    const menu = adminMenus.find((menu: any) => menu.name === menuName);
+
+    return menu?.active === true;
   };
 
   const toggleMenuActive = async (menuId: string, currentActive: boolean) => {
@@ -738,23 +752,35 @@ export default function App() {
 
         <ServiceCard
           title="Food Trailer"
-          subtitle="Browse the active food trailer menu and place a quick order."
+          subtitle={
+            isMenuActive("Food Trailer Menu")
+              ? "Browse the active food trailer menu and place a quick order."
+              : "The Food Trailer menu is currently unavailable."
+          }
           onPress={() => {
-            setSelectedMenuType("Food Trailer");
-            setSelectedLocation(foodTrailerLocation);
-            setSelectedEvent(foodTrailerEventName);
-            setScreen("foodTrailer");
+            if (isMenuActive("Food Trailer Menu")) {
+              setSelectedMenuType("Food Trailer");
+              setSelectedLocation(foodTrailerLocation);
+              setSelectedEvent(foodTrailerEventName);
+              setScreen("foodTrailer");
+            }
           }}
         />
 
         <ServiceCard
           title="Onsite Event"
-          subtitle="View event-specific menu options and order food."
+          subtitle={
+            isMenuActive("Onsite Event Menu")
+              ? "View event-specific menu options and order food."
+              : "The Onsite Event menu is currently unavailable."
+          }
           onPress={() => {
-            setSelectedMenuType("Onsite Event");
-            setSelectedLocation(onsiteEventLocation);
-            setSelectedEvent(onsiteEventName);
-            setScreen("onsiteEvent");
+            if (isMenuActive("Onsite Event Menu")) {
+              setSelectedMenuType("Onsite Event");
+              setSelectedLocation(onsiteEventLocation);
+              setSelectedEvent(onsiteEventName);
+              setScreen("onsiteEvent");
+            }
           }}
         />
 
@@ -1567,6 +1593,7 @@ export default function App() {
           }}
         >
           <Text style={styles.cardTitle}>Catering Menu</Text>
+
           <Text style={styles.cardSubtitle}>
             View catering-specific menu options and packages.
           </Text>
@@ -1898,6 +1925,13 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.content}>
         <BusinessBackButton />
 
+        <Pressable
+          style={styles.adminButton}
+          onPress={() => setScreen("addMenu")}
+        >
+          <Text style={styles.adminButtonText}>Add Menu</Text>
+        </Pressable>
+
         {adminMenus.map((menu: any) => (
           <View key={menu.id} style={styles.card}>
             <Text style={styles.cardTitle}>{menu.name}</Text>
@@ -1924,6 +1958,90 @@ export default function App() {
             </Pressable>
           </View>
         ))}
+      </ScrollView>
+    </>
+  );
+
+  const AddMenuScreen = () => (
+    <>
+      <Header title="Add Menu" />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => setScreen("menuManagement")}
+        >
+          <Text style={styles.backButtonText}>🡄 Back</Text>
+        </Pressable>
+
+        <Text style={styles.label}>Menu Name</Text>
+        <TextInput
+          style={styles.input}
+          value={newMenuName}
+          onChangeText={setNewMenuName}
+          placeholder="Enter menu name"
+        />
+
+        <Text style={styles.label}>Menu Type</Text>
+
+        <Pressable
+          style={styles.dropdown}
+          onPress={() => setMenuTypeDropdown(!menuTypeDropdown)}
+        >
+          <Text style={styles.dropdownText}>
+            {newMenuType || "Select menu type"}
+          </Text>
+
+          <Text style={styles.dropdownArrow}>
+            {menuTypeDropdown ? "▲" : "▼"}
+          </Text>
+        </Pressable>
+
+        {menuTypeDropdown && (
+          <View style={styles.dropdownOptions}>
+            {["Food Trailer", "Onsite Event", "Catering"].map((type) => (
+              <Pressable
+                key={type}
+                style={styles.dropdownOption}
+                onPress={() => {
+                  setNewMenuType(type);
+                  setMenuTypeDropdown(false);
+                }}
+              >
+                <Text style={styles.dropdownOptionText}>{type}</Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+
+        <Text style={styles.label}>Location</Text>
+        <TextInput
+          style={styles.input}
+          value={newMenuLocation}
+          onChangeText={setNewMenuLocation}
+          placeholder="Enter location"
+        />
+
+        <Text style={styles.label}>Event Name</Text>
+        <TextInput
+          style={styles.input}
+          value={newMenuEventName}
+          onChangeText={setNewMenuEventName}
+          placeholder="Enter event name"
+        />
+
+        <Pressable
+          style={styles.adminButton}
+          onPress={() => setNewMenuActive(!newMenuActive)}
+        >
+          <Text style={styles.adminButtonText}>
+            Status: {newMenuActive ? "Active" : "Inactive"}
+          </Text>
+        </Pressable>
+
+        <Pressable style={styles.adminButton}>
+          <Text style={styles.adminButtonText}>Add Menu</Text>
+        </Pressable>
       </ScrollView>
     </>
   );
@@ -2055,6 +2173,7 @@ export default function App() {
       {screen === "ordersManagement" && <OrdersManagementScreen />}
       {screen === "availabilityManagement" && <AvailabilityManagementScreen />}
       {screen === "menuManagement" && <MenuManagementScreen />}
+      {screen === "addMenu" && AddMenuScreen()}
       {screen === "cateringManagement" && <CateringManagementScreen />}
       <NavBar />
     </SafeAreaView>
@@ -2484,5 +2603,54 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 14,
+    marginBottom: 6,
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    marginBottom: 10,
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#3f5b3a",
+  },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: "#cccccc",
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    backgroundColor: "#ffffff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  dropdownText: {
+    fontSize: 16,
+  },
+  dropdownArrow: {
+    fontSize: 14,
+  },
+  dropdownOptions: {
+    marginTop: 6,
+    gap: 6,
+  },
+  dropdownOption: {
+    backgroundColor: "#ffffff",
+    borderWidth: 2,
+    borderColor: "#3f5b3a",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  dropdownOptionText: {
+    fontSize: 16,
   },
 });
