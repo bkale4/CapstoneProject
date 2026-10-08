@@ -51,6 +51,8 @@ type Screen =
   | "cateringManagement"
   | "menuManagement"
   | "addMenu"
+  | "manageMenuItems"
+  | "editMenuItem"
   | "availabilityManagement";
 
 type BusinessLoginScreenProps = {
@@ -218,6 +220,19 @@ export default function App() {
   const [newMenuEventName, setNewMenuEventName] = useState("");
   const [newMenuActive, setNewMenuActive] = useState(true);
 
+  const [selectedAdminMenu, setSelectedAdminMenu] = useState<any>(null);
+  const [selectedAdminItem, setSelectedAdminItem] = useState<any>(null);
+  const [selectedAdminItemGroup, setSelectedAdminItemGroup] = useState("");
+  const [selectedAdminItemIndex, setSelectedAdminItemIndex] = useState<
+    number | null
+  >(null);
+
+  const [editItemName, setEditItemName] = useState("");
+  const [editItemDescription, setEditItemDescription] = useState("");
+  const [editItemPrice, setEditItemPrice] = useState("");
+  const [editItemStatus, setEditItemStatus] = useState("");
+  const [itemStatusDropdown, setItemStatusDropdown] = useState(false);
+
   const handleCreateAccount = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -378,6 +393,41 @@ export default function App() {
     }
   };
 
+  const saveMenuItemChanges = async () => {
+    if (!selectedAdminMenu || selectedAdminItemIndex === null) {
+      return;
+    }
+
+    try {
+      const updatedItems = [
+        ...(selectedAdminMenu[selectedAdminItemGroup] || []),
+      ];
+
+      updatedItems[selectedAdminItemIndex] = {
+        ...updatedItems[selectedAdminItemIndex],
+        name: editItemName,
+        description: editItemDescription,
+        price: Number(editItemPrice),
+        status: editItemStatus,
+      };
+
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        [selectedAdminItemGroup]: updatedItems,
+      });
+
+      await loadAdminMenus();
+
+      setSelectedAdminMenu({
+        ...selectedAdminMenu,
+        [selectedAdminItemGroup]: updatedItems,
+      });
+
+      setScreen("manageMenuItems");
+    } catch (error) {
+      console.error("Error saving menu item:", error);
+    }
+  };
+
   const loadAdminMenus = async () => {
     try {
       const menuSnapshot = await getDocs(collection(db, "menus"));
@@ -421,6 +471,7 @@ export default function App() {
         location: newMenuLocation,
         eventName: newMenuEventName,
         active: newMenuActive,
+        items: [],
       });
 
       setNewMenuName("");
@@ -600,6 +651,7 @@ export default function App() {
       return [...prev, { id, name, price, quantity: 1 }];
     });
   };
+
   const increaseQuantity = (id: string) => {
     setCartItems((prev) =>
       prev.map((item) =>
@@ -856,24 +908,46 @@ export default function App() {
 
         <ServiceCard
           title="Food Trailer"
-          subtitle="Browse the active food trailer menu and place a quick order."
-          onPress={() => setScreen("foodTrailer")}
+          subtitle={
+            isMenuActive("Food Trailer Menu")
+              ? "Browse the active food trailer menu and place a quick order."
+              : "The Food Trailer menu is currently unavailable."
+          }
+          onPress={() => {
+            if (isMenuActive("Food Trailer Menu")) {
+              setSelectedMenuType("Food Trailer");
+              setSelectedLocation(foodTrailerLocation);
+              setSelectedEvent(foodTrailerEventName);
+              setScreen("foodTrailer");
+            }
+          }}
         />
 
         <ServiceCard
           title="Onsite Event"
-          subtitle="View event-specific menu options and place an order."
-          onPress={() => setScreen("onsiteEvent")}
+          subtitle={
+            isMenuActive("Onsite Event Menu")
+              ? "View event-specific menu options and place an order"
+              : "The Onsite Event menu is currently unavailable."
+          }
+          onPress={() => {
+            if (isMenuActive("Onsite Event Menu")) {
+              setSelectedMenuType("Onsite Event");
+              setSelectedLocation(onsiteEventLocation);
+              setSelectedEvent(onsiteEventName);
+              setScreen("onsiteEvent");
+            }
+          }}
         />
       </ScrollView>
     </>
   );
 
   const FoodTrailerScreen = () => (
-    <>
+    <View style={{ flex: 1 }}>
       <Header title="Food Trailer Menu" />
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         <Text style={styles.sectionText}>
           Now Serving: {foodTrailerLocation}
         </Text>
@@ -906,6 +980,38 @@ export default function App() {
                 <Text style={styles.sectionText}>
                   ${Number(item.price).toFixed(2)}
                 </Text>
+
+                {(item.status === "Limited" || item.status === "Sold Out") && (
+                  <Text
+                    style={[
+                      styles.statusText,
+                      item.status === "Sold Out"
+                        ? styles.soldOutText
+                        : styles.limitedText,
+                    ]}
+                  >
+                    {item.status}
+                  </Text>
+                )}
+
+                <Pressable
+                  style={[
+                    styles.adminButton,
+                    item.status === "Sold Out" && { opacity: 0.5 },
+                  ]}
+                  disabled={item.status === "Sold Out"}
+                  onPress={() =>
+                    addToCart(
+                      `breakfastSandwiches-${index}`,
+                      item.name,
+                      Number(item.price),
+                    )
+                  }
+                >
+                  <Text style={styles.adminButtonText}>
+                    {item.status === "Sold Out" ? "Sold Out" : "Add to Cart"}
+                  </Text>
+                </Pressable>
               </View>
             ))}
 
@@ -1059,7 +1165,18 @@ export default function App() {
           </>
         )}
       </ScrollView>
-    </>
+
+      <View style={{ paddingHorizontal: 14, paddingVertical: 10 }}>
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => setScreen("cart")}
+        >
+          <Text style={styles.primaryButtonText}>
+            View Cart - ${cartTotal.toFixed(2)}
+          </Text>
+        </Pressable>
+      </View>
+    </View>
   );
 
   const OnsiteEventScreen = () => (
@@ -1979,12 +2096,211 @@ export default function App() {
                 {menu.active ? "Set Inactive" : "Set Active"}
               </Text>
             </Pressable>
+
+            <Pressable
+              style={styles.adminButton}
+              onPress={() => {
+                setSelectedAdminMenu(menu);
+                setScreen("manageMenuItems");
+              }}
+            >
+              <Text style={styles.adminButtonText}>Manage Items</Text>
+            </Pressable>
           </View>
         ))}
       </ScrollView>
     </>
   );
 
+  const ManageMenuItemsScreen = () => (
+    <>
+      <Header title="Manage Menu Items" />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => setScreen("menuManagement")}
+        >
+          <Text style={styles.backButtonText}>🡄 Back</Text>
+        </Pressable>
+
+        <Text style={styles.cardTitle}>{selectedAdminMenu?.name}</Text>
+
+        <Text style={styles.cardSubtitle}>
+          Add, edit, price, and remove menu items.
+        </Text>
+
+        {getAdminMenuItemGroups(selectedAdminMenu).map((group: any) => (
+          <View key={group.field}>
+            <Text style={styles.menuSectionTitle}>{group.name}</Text>
+
+            {group.items.length === 0 ? (
+              <Text style={styles.cardSubtitle}>
+                No items have been added yet.
+              </Text>
+            ) : (
+              group.items.map((item: any, index: number) => (
+                <View key={index} style={styles.card}>
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+
+                  {item.description && (
+                    <Text style={styles.cardSubtitle}>{item.description}</Text>
+                  )}
+
+                  <Text style={styles.cardSubtitle}>
+                    ${Number(item.price).toFixed(2)}
+                  </Text>
+
+                  <Text style={styles.cardSubtitle}>Status: {item.status}</Text>
+
+                  <Pressable
+                    style={styles.adminButton}
+                    onPress={() => {
+                      setSelectedAdminItem(item);
+                      setSelectedAdminItemGroup(group.field);
+                      setSelectedAdminItemIndex(index);
+
+                      setEditItemName(item.name || "");
+                      setEditItemDescription(item.description || "");
+                      setEditItemPrice(item.price ?? "");
+                      setEditItemStatus(item.status || "");
+
+                      setScreen("editMenuItem");
+                    }}
+                  >
+                    <Text style={styles.adminButtonText}>Edit Item</Text>
+                  </Pressable>
+                </View>
+              ))
+            )}
+          </View>
+        ))}
+      </ScrollView>
+    </>
+  );
+
+  const EditMenuItemScreen = () => (
+    <>
+      <Header title="Edit Menu Item" />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => setScreen("manageMenuItems")}
+        >
+          <Text style={styles.backButtonText}>🡄 Back</Text>
+        </Pressable>
+
+        <Text style={styles.label}>Item Name</Text>
+        <TextInput
+          style={styles.input}
+          value={editItemName}
+          onChangeText={setEditItemName}
+          placeholder="Enter item name"
+        />
+
+        <Text style={styles.label}>Description</Text>
+        <TextInput
+          style={styles.input}
+          value={editItemDescription}
+          onChangeText={setEditItemDescription}
+          placeholder="Enter description"
+        />
+
+        <Text style={styles.label}>Price</Text>
+        <TextInput
+          style={styles.input}
+          value={editItemPrice}
+          onChangeText={setEditItemPrice}
+          placeholder="Enter price"
+          keyboardType="decimal-pad"
+        />
+
+        <Text style={styles.label}>Availability Status</Text>
+        <Pressable
+          style={styles.dropdown}
+          onPress={() => setItemStatusDropdown(!itemStatusDropdown)}
+        >
+          <Text style={styles.dropdownText}>
+            {editItemStatus || "Select availability status"}
+          </Text>
+
+          <Text style={styles.dropdownArrow}>
+            {itemStatusDropdown ? "▲" : "▼"}
+          </Text>
+        </Pressable>
+
+        {itemStatusDropdown && (
+          <View style={styles.dropdownOptions}>
+            {[
+              { label: "Available", value: "Available" },
+              { label: "Limited", value: "Limited" },
+              { label: "Sold Out", value: "Sold Out" },
+            ].map((option) => (
+              <Pressable
+                key={option.value}
+                style={styles.dropdownOption}
+                onPress={() => {
+                  setEditItemStatus(option.value);
+                  setItemStatusDropdown(false);
+                }}
+              >
+                <Text style={styles.dropdownOptionText}>{option.label}</Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+
+        <Pressable style={styles.adminButton} onPress={saveMenuItemChanges}>
+          <Text style={styles.adminButtonText}>Save Changes</Text>
+        </Pressable>
+      </ScrollView>
+    </>
+  );
+
+  const getAdminMenuItemGroups = (menu: any) => {
+    if (!menu) {
+      return [];
+    }
+
+    if (menu.type === "foodTrailer") {
+      return [
+        {
+          name: "Breakfast Sandwiches",
+          field: "breakfastSandwiches",
+          items: menu.breakfastSandwiches || [],
+        },
+        {
+          name: "Breakfast Items",
+          field: "breakfastItems",
+          items: menu.breakfastItems || [],
+        },
+        {
+          name: "Lunch Sandwiches & Wraps",
+          field: "lunchSandwichesWraps",
+          items: menu.lunchSanwichesWraps || [],
+        },
+        {
+          name: "Lunch Salads",
+          field: "lunchSalads",
+          items: menu.lunchSalads || [],
+        },
+        {
+          name: "Lunch Baked Potatoes & Fries",
+          field: "lunchBakedPotatoFries",
+          items: menu.lunchBakedPotatoFries || [],
+        },
+      ];
+    }
+
+    return [
+      {
+        name: "Menu Items",
+        field: "items",
+        items: menu.items || [],
+      },
+    ];
+  };
   const AddMenuScreen = () => (
     <>
       <Header title="Add Menu" />
@@ -2168,7 +2484,7 @@ export default function App() {
       {screen === "home" && <HomeScreen />}
       {screen === "about" && <AboutScreen />}
       {screen === "order" && <OrderScreen />}
-      {screen === "foodTrailer" && <FoodTrailerScreen />}
+      {screen === "foodTrailer" && FoodTrailerScreen()}
       {screen === "onsiteEvent" && <OnsiteEventScreen />}
       {screen === "cart" && <CartScreen />}
       {screen === "checkout" && CheckoutScreen()}
@@ -2197,6 +2513,8 @@ export default function App() {
       {screen === "availabilityManagement" && <AvailabilityManagementScreen />}
       {screen === "menuManagement" && <MenuManagementScreen />}
       {screen === "addMenu" && AddMenuScreen()}
+      {screen === "manageMenuItems" && ManageMenuItemsScreen()}
+      {screen === "editMenuItem" && EditMenuItemScreen()}
       {screen === "cateringManagement" && <CateringManagementScreen />}
       <NavBar />
     </SafeAreaView>
@@ -2380,7 +2698,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     marginTop: 8,
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: "700",
   },
   limitedText: {
