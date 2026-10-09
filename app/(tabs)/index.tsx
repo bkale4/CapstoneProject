@@ -145,6 +145,9 @@ export default function App() {
   const [breakfastBowlAddOnOptions, setBreakfastBowlAddOnOptions] =
     useState("");
   const [breakfastBowlAddOnPrice, setBreakfastBowlAddOnPrice] = useState(0);
+  const [selectedBreakfastBowlAddOn, setSelectedBreakfastBowlAddOn] = useState<
+    string | null
+  >(null);
 
   // Food Trailer - Lunch
   const [lunchHours, setLunchHours] = useState("");
@@ -219,6 +222,7 @@ export default function App() {
   const [newMenuLocation, setNewMenuLocation] = useState("");
   const [newMenuEventName, setNewMenuEventName] = useState("");
   const [newMenuActive, setNewMenuActive] = useState(true);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   const [selectedAdminMenu, setSelectedAdminMenu] = useState<any>(null);
   const [selectedAdminItem, setSelectedAdminItem] = useState<any>(null);
@@ -348,7 +352,10 @@ export default function App() {
         menuSnapshot.forEach((menuDoc) => {
           const menuData = menuDoc.data();
 
-          if (menuData.type === "onsiteEvent" && menuData.active === true) {
+          if (
+            menuData.type === "onsiteEventCatering" &&
+            menuData.active === true
+          ) {
             setOnsiteEventItems(menuData.items || []);
             setOnsiteEventLocation(menuData.location || "");
             setOnsiteEventName(menuData.eventName || "");
@@ -453,6 +460,28 @@ export default function App() {
     try {
       const menuRef = doc(db, "menus", menuId);
 
+      const selectedMenu = adminMenus.find((menu: any) => menu.id === menuId);
+
+      if (!selectedMenu) return;
+
+      if (!currentActive && selectedMenu.type === "Food Trailer") {
+        const menuSnapshot = await getDocs(collection(db, "menus"));
+
+        for (const menuDoc of menuSnapshot.docs) {
+          const menu = menuDoc.data();
+
+          if (
+            menuDoc.id !== menuId &&
+            menu.type === "Food Trailer" &&
+            menu.active === true
+          ) {
+            await updateDoc(doc(db, "menus", menuDoc.id), {
+              active: false,
+            });
+          }
+        }
+      }
+
       await updateDoc(menuRef, {
         active: !currentActive,
       });
@@ -472,6 +501,7 @@ export default function App() {
         eventName: newMenuEventName,
         active: newMenuActive,
         items: [],
+        categories: [],
       });
 
       setNewMenuName("");
@@ -484,6 +514,36 @@ export default function App() {
       setScreen("menuManagement");
     } catch (error) {
       console.error("Error adding menu:", error);
+    }
+  };
+
+  const addNewCategory = async () => {
+    if (!selectedAdminMenu || !newCategoryName.trim()) {
+      return;
+    }
+
+    try {
+      const updatedCategories = [
+        ...(selectedAdminMenu.categories || []),
+        {
+          name: newCategoryName.trim(),
+          items: [],
+        },
+      ];
+
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        categories: updatedCategories,
+      });
+
+      setSelectedAdminMenu({
+        ...selectedAdminMenu,
+        categories: updatedCategories,
+      });
+
+      setNewCategoryName("");
+      await loadAdminMenus();
+    } catch (error) {
+      console.error("Error adding category:", error);
     }
   };
 
@@ -777,12 +837,14 @@ export default function App() {
     description,
     price,
     status,
+    allowOrdering = true,
   }: {
     id: string;
     name: string;
     description: string;
     price: number;
     status?: "Available" | "Limited" | "Sold Out";
+    allowOrdering?: boolean;
   }) => {
     const isSoldOut = status === "Sold Out";
 
@@ -805,16 +867,18 @@ export default function App() {
           )}
         </View>
 
-        <Pressable
-          style={[styles.addButton, isSoldOut && styles.disabledButton]}
-          onPress={() => {
-            if (!isSoldOut) addToCart(id, name, price);
-          }}
-        >
-          <Text style={styles.addButtonText}>
-            {isSoldOut ? "Unavailable" : "Add"}
-          </Text>
-        </Pressable>
+        {allowOrdering && (
+          <Pressable
+            style={[styles.addButton, isSoldOut && styles.disabledButton]}
+            onPress={() => {
+              if (!isSoldOut) addToCart(id, name, price);
+            }}
+          >
+            <Text style={styles.addButtonText}>
+              {isSoldOut ? "Unavailable" : "Add"}
+            </Text>
+          </Pressable>
+        )}
       </View>
     );
   };
@@ -838,23 +902,6 @@ export default function App() {
               setSelectedLocation(foodTrailerLocation);
               setSelectedEvent(foodTrailerEventName);
               setScreen("foodTrailer");
-            }
-          }}
-        />
-
-        <ServiceCard
-          title="Onsite Event"
-          subtitle={
-            isMenuActive("Onsite Event Menu")
-              ? "View event-specific menu options and order food."
-              : "The Onsite Event menu is currently unavailable."
-          }
-          onPress={() => {
-            if (isMenuActive("Onsite Event Menu")) {
-              setSelectedMenuType("Onsite Event");
-              setSelectedLocation(onsiteEventLocation);
-              setSelectedEvent(onsiteEventName);
-              setScreen("onsiteEvent");
             }
           }}
         />
@@ -919,23 +966,6 @@ export default function App() {
               setSelectedLocation(foodTrailerLocation);
               setSelectedEvent(foodTrailerEventName);
               setScreen("foodTrailer");
-            }
-          }}
-        />
-
-        <ServiceCard
-          title="Onsite Event"
-          subtitle={
-            isMenuActive("Onsite Event Menu")
-              ? "View event-specific menu options and place an order"
-              : "The Onsite Event menu is currently unavailable."
-          }
-          onPress={() => {
-            if (isMenuActive("Onsite Event Menu")) {
-              setSelectedMenuType("Onsite Event");
-              setSelectedLocation(onsiteEventLocation);
-              setSelectedEvent(onsiteEventName);
-              setScreen("onsiteEvent");
             }
           }}
         />
@@ -1021,15 +1051,95 @@ export default function App() {
               <View key={index} style={styles.card}>
                 <Text style={styles.cardTitle}>{item.name}</Text>
 
+                {item.description && (
+                  <Text style={styles.menuDescription}>{item.description}</Text>
+                )}
+
                 <Text style={styles.sectionText}>
                   ${Number(item.price).toFixed(2)}
                 </Text>
-                {item.name === "Breakfast Bowl" && (
-                  <Text style={styles.addOnText}>
-                    Add {breakfastBowlAddOnOptions} + ${" "}
-                    {Number(breakfastBowlAddOnPrice).toFixed(2)}
+
+                {(item.status === "Limited" || item.status === "Sold Out") && (
+                  <Text
+                    style={[
+                      styles.statusText,
+                      item.status === "Sold Out"
+                        ? styles.soldOutText
+                        : styles.limitedText,
+                    ]}
+                  >
+                    {item.status}
                   </Text>
                 )}
+
+                {item.name === "Breakfast Bowl" && (
+                  <View style={{ gap: 8, marginTop: 10 }}>
+                    <Text style={styles.addOnText}>
+                      Add-ons (+${Number(breakfastBowlAddOnPrice).toFixed(2)})
+                    </Text>
+
+                    <View style={{ flexDirection: "row", gap: 10 }}>
+                      {["Bacon", "Sausage"].map((option) => (
+                        <Pressable
+                          key={option}
+                          style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 20,
+                            borderWidth: 1,
+                            borderColor: "#3F5B3A",
+                            borderRadius: 8,
+                            backgroundColor:
+                              selectedBreakfastBowlAddOn === option
+                                ? "#E0E8D9"
+                                : "#FFFFFF",
+                          }}
+                          onPress={() =>
+                            setSelectedBreakfastBowlAddOn(
+                              selectedBreakfastBowlAddOn === option
+                                ? null
+                                : option,
+                            )
+                          }
+                        >
+                          <Text style={{ color: "#333333", fontSize: 14 }}>
+                            {option}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                <Pressable
+                  style={[
+                    styles.adminButton,
+                    item.status === "Sold Out" && { opacity: 0.5 },
+                  ]}
+                  disabled={item.status === "Sold Out"}
+                  onPress={() => {
+                    const hasAddOn =
+                      item.name === "Breakfast Bowl" &&
+                      selectedBreakfastBowlAddOn !== null;
+
+                    const finalPrice =
+                      Number(item.price) +
+                      (hasAddOn ? Number(breakfastBowlAddOnPrice) : 0);
+
+                    const cartName = hasAddOn
+                      ? `${item.name} + ${selectedBreakfastBowlAddOn}`
+                      : item.name;
+
+                    const cartId = hasAddOn
+                      ? `breakfastItems-${index}-${selectedBreakfastBowlAddOn}`
+                      : `breakfastItems-${index}`;
+
+                    addToCart(cartId, cartName, finalPrice);
+                  }}
+                >
+                  <Text style={styles.adminButtonText}>
+                    {item.status === "Sold Out" ? "Sold Out" : "Add to Cart"}
+                  </Text>
+                </Pressable>
               </View>
             ))}
           </>
@@ -1203,17 +1313,9 @@ export default function App() {
                   ? "Limited"
                   : "Available"
             }
+            allowOrdering={false}
           />
         ))}
-
-        <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("cart")}
-        >
-          <Text style={styles.primaryButtonText}>
-            View Cart - ${cartTotal.toFixed(2)}
-          </Text>
-        </Pressable>
       </ScrollView>
     </>
   );
@@ -1724,6 +1826,7 @@ export default function App() {
   const CateringScreen = () => (
     <>
       <Header title="Catering Services" />
+
       <ScrollView contentContainerStyle={styles.content}>
         <Pressable
           style={styles.card}
@@ -1732,10 +1835,19 @@ export default function App() {
             setScreen("cateringMenu");
           }}
         >
-          <Text style={styles.cardTitle}>Catering Menu</Text>
+          <Text style={styles.cardTitle}>Drop-Off Catering</Text>
 
           <Text style={styles.cardSubtitle}>
-            View catering-specific menu options and packages.
+            Explore catering menu options for meals prepared and delivered
+            without onsite event service.
+          </Text>
+        </Pressable>
+
+        <Pressable style={styles.card} onPress={() => setScreen("onsiteEvent")}>
+          <Text style={styles.cardTitle}>Onsite Event Catering</Text>
+          <Text style={styles.cardSubtitle}>
+            Explore catering options for events with food service, including
+            plated dinners, buffets, and stations.
           </Text>
         </Pressable>
 
@@ -1745,7 +1857,7 @@ export default function App() {
         >
           <Text style={styles.cardTitle}>Availability Calendar</Text>
           <Text style={styles.cardSubtitle}>
-            Available dates and unavailable dates would be shown here.
+            View available and unavailable dates for catering.
           </Text>
         </Pressable>
       </ScrollView>
@@ -2130,6 +2242,19 @@ export default function App() {
           Add, edit, price, and remove menu items.
         </Text>
 
+        <Text style={styles.label}>New Category</Text>
+
+        <TextInput
+          style={styles.input}
+          value={newCategoryName}
+          onChangeText={setNewCategoryName}
+          placeholder="Enter category name"
+        />
+
+        <Pressable style={styles.adminButton} onPress={addNewCategory}>
+          <Text style={styles.adminButtonText}>Add Category</Text>
+        </Pressable>
+
         {getAdminMenuItemGroups(selectedAdminMenu).map((group: any) => (
           <View key={group.field}>
             <Text style={styles.menuSectionTitle}>{group.name}</Text>
@@ -2278,7 +2403,7 @@ export default function App() {
         {
           name: "Lunch Sandwiches & Wraps",
           field: "lunchSandwichesWraps",
-          items: menu.lunchSanwichesWraps || [],
+          items: menu.lunchSandwichesWraps || [],
         },
         {
           name: "Lunch Salads",
@@ -2301,6 +2426,7 @@ export default function App() {
       },
     ];
   };
+
   const AddMenuScreen = () => (
     <>
       <Header title="Add Menu" />
@@ -2338,18 +2464,20 @@ export default function App() {
 
         {menuTypeDropdown && (
           <View style={styles.dropdownOptions}>
-            {["Food Trailer", "Onsite Event", "Catering"].map((type) => (
-              <Pressable
-                key={type}
-                style={styles.dropdownOption}
-                onPress={() => {
-                  setNewMenuType(type);
-                  setMenuTypeDropdown(false);
-                }}
-              >
-                <Text style={styles.dropdownOptionText}>{type}</Text>
-              </Pressable>
-            ))}
+            {["Food Trailer", "Drop-Off Catering", "Onsite Event Catering"].map(
+              (type) => (
+                <Pressable
+                  key={type}
+                  style={styles.dropdownOption}
+                  onPress={() => {
+                    setNewMenuType(type);
+                    setMenuTypeDropdown(false);
+                  }}
+                >
+                  <Text style={styles.dropdownOptionText}>{type}</Text>
+                </Pressable>
+              ),
+            )}
           </View>
         )}
 
