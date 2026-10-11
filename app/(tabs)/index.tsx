@@ -19,7 +19,9 @@ import {
 import { auth, db } from "../../firebaseConfig";
 
 import {
+  Alert,
   Image,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -498,6 +500,62 @@ export default function App() {
       setScreen("manageMenuItems");
     } catch (error) {
       console.error("Error saving menu item:", error);
+    }
+  };
+
+  const deleteMenuItem = async (groupField: string, itemIndex: number) => {
+    const isCustomCategory = groupField.startsWith("categories.");
+
+    const categoryIndex = isCustomCategory
+      ? Number(groupField.split(".")[1])
+      : -1;
+
+    const updatedItems = isCustomCategory
+      ? [...(selectedAdminMenu.categories?.[categoryIndex]?.items || [])]
+      : [...(selectedAdminMenu[groupField] || [])];
+
+    updatedItems.splice(itemIndex, 1);
+
+    try {
+      if (isCustomCategory) {
+        const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+        updatedCategories[categoryIndex] = {
+          ...updatedCategories[categoryIndex],
+          items: updatedItems,
+        };
+
+        await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+          categories: updatedCategories,
+        });
+      } else {
+        await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+          [groupField]: updatedItems,
+        });
+      }
+
+      if (isCustomCategory) {
+        const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+        updatedCategories[categoryIndex] = {
+          ...updatedCategories[categoryIndex],
+          items: updatedItems,
+        };
+
+        setSelectedAdminMenu({
+          ...selectedAdminItem,
+          categories: updatedCategories,
+        });
+      } else {
+        setSelectedAdminMenu({
+          ...selectedAdminMenu,
+          [groupField]: updatedItems,
+        });
+      }
+
+      await loadAdminMenus();
+    } catch (error) {
+      console.error("Error deleting menu item:", error);
     }
   };
 
@@ -2531,6 +2589,37 @@ export default function App() {
                     }}
                   >
                     <Text style={styles.adminButtonText}>Edit Item</Text>
+                  </Pressable>
+
+                  <Pressable
+                    style={styles.adminButton}
+                    onPress={() => {
+                      if (Platform.OS === "web") {
+                        const confirmed = window.confirm(
+                          `Are you sure you want to delete ${item.name}?`,
+                        );
+
+                        if (confirmed) {
+                          deleteMenuItem(group.field, index);
+                        }
+
+                        return;
+                      }
+                      Alert.alert(
+                        "Delete Menu Item",
+                        `Are you sure you want to delete ${item.name}?`,
+                        [
+                          { text: "Cancel", style: "cancel" },
+                          {
+                            text: "Delete",
+                            style: "destructive",
+                            onPress: () => deleteMenuItem(group.field, index),
+                          },
+                        ],
+                      );
+                    }}
+                  >
+                    <Text style={styles.adminButtonText}>Delete Item</Text>
                   </Pressable>
                 </View>
               ))
