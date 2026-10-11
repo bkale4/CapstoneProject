@@ -244,6 +244,8 @@ export default function App() {
   const [editItemDescription, setEditItemDescription] = useState("");
   const [editItemPrice, setEditItemPrice] = useState("");
   const [editItemStatus, setEditItemStatus] = useState("");
+  const [editItemAddOnName, setEditItemAddOnName] = useState("");
+  const [editItemAddOnPrice, setEditItemAddOnPrice] = useState("");
   const [itemStatusDropdown, setItemStatusDropdown] = useState(false);
 
   const handleCreateAccount = async () => {
@@ -414,10 +416,28 @@ export default function App() {
       return;
     }
 
+    const hasAddOn = editItemAddOnName.trim() !== "";
+    const addOnPrice = hasAddOn ? Number(editItemAddOnPrice) : 0;
+
+    if (
+      (hasAddOn &&
+        (!editItemAddOnPrice.trim() ||
+          !Number.isFinite(addOnPrice) ||
+          addOnPrice < 0)) ||
+      (!hasAddOn && editItemAddOnPrice.trim())
+    ) {
+      return;
+    }
+
     try {
-      const updatedItems = [
-        ...(selectedAdminMenu[selectedAdminItemGroup] || []),
-      ];
+      const isCustomCategory = selectedAdminItemGroup.startsWith("categories.");
+
+      const categoryIndex = isCustomCategory
+        ? Number(selectedAdminItemGroup.split(".")[1])
+        : -1;
+      const updatedItems = isCustomCategory
+        ? [...(selectedAdminMenu.categories?.[categoryIndex]?.items || [])]
+        : [...(selectedAdminMenu[selectedAdminItemGroup] || [])];
 
       updatedItems[selectedAdminItemIndex] = {
         ...updatedItems[selectedAdminItemIndex],
@@ -425,18 +445,55 @@ export default function App() {
         description: editItemDescription,
         price: Number(editItemPrice),
         status: editItemStatus,
+        ...(hasAddOn && {
+          addOn: {
+            name: editItemAddOnName.trim(),
+            price: addOnPrice,
+          },
+        }),
       };
 
-      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-        [selectedAdminItemGroup]: updatedItems,
-      });
+      if (!hasAddOn) {
+        delete updatedItems[selectedAdminItemIndex].addOn;
+      }
+
+      if (isCustomCategory) {
+        const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+        updatedCategories[categoryIndex] = {
+          ...updatedCategories[categoryIndex],
+          items: updatedItems,
+        };
+
+        await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+          categories: updatedCategories,
+        });
+      } else {
+        await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+          [selectedAdminItemGroup]: updatedItems,
+        });
+      }
+
+      if (isCustomCategory) {
+        const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+        updatedCategories[categoryIndex] = {
+          ...updatedCategories[categoryIndex],
+          items: updatedItems,
+        };
+
+        setSelectedAdminMenu({
+          ...selectedAdminMenu,
+          categories: updatedCategories,
+        });
+      } else {
+        setSelectedAdminMenu({
+          ...selectedAdminMenu,
+          [selectedAdminItemGroup]: updatedItems,
+        });
+      }
 
       await loadAdminMenus();
-
-      setSelectedAdminMenu({
-        ...selectedAdminMenu,
-        [selectedAdminItemGroup]: updatedItems,
-      });
 
       setScreen("manageMenuItems");
     } catch (error) {
@@ -2463,6 +2520,12 @@ export default function App() {
                       setEditItemDescription(item.description || "");
                       setEditItemPrice(item.price ?? "");
                       setEditItemStatus(item.status || "");
+                      setEditItemAddOnName(item.addOn?.name || "");
+                      setEditItemAddOnPrice(
+                        item.addOn?.price != null
+                          ? String(item.addOn.price)
+                          : "",
+                      );
 
                       setScreen("editMenuItem");
                     }}
@@ -2512,6 +2575,22 @@ export default function App() {
           value={editItemPrice}
           onChangeText={setEditItemPrice}
           placeholder="Enter price"
+          keyboardType="decimal-pad"
+        />
+
+        <Text style={styles.label}>Optional Add-on</Text>
+        <TextInput
+          style={styles.input}
+          value={editItemAddOnName}
+          onChangeText={setEditItemAddOnName}
+          placeholder="Add-on name"
+        />
+
+        <TextInput
+          style={styles.input}
+          value={editItemAddOnPrice}
+          onChangeText={setEditItemAddOnPrice}
+          placeholder="Add-on price"
           keyboardType="decimal-pad"
         />
 
