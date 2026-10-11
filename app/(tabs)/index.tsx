@@ -2480,6 +2480,41 @@ export default function App() {
             <Text style={styles.menuSectionTitle}>{group.name}</Text>
 
             {group.field.startsWith("categories.") && (
+              <Pressable
+                style={styles.adminButton}
+                onPress={() => {
+                  const categoryIndex = Number(group.field.split(".")[1]);
+
+                  if (Platform.OS === "web") {
+                    const confirmed = window.confirm(
+                      `Are you sure you want to delete ${group.name}?`,
+                    );
+
+                    if (confirmed) {
+                      deleteMenuCategory(categoryIndex);
+                    }
+
+                    return;
+                  }
+                  Alert.alert(
+                    "Delete Menu Item",
+                    `Are you sure you want to delete ${group.name}?`,
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: () => deleteMenuCategory(categoryIndex),
+                      },
+                    ],
+                  );
+                }}
+              >
+                <Text style={styles.adminButtonText}>Delete Category</Text>
+              </Pressable>
+            )}
+
+            {group.field.startsWith("categories.") && (
               <View style={styles.card}>
                 <Text style={styles.label}>Add Item to {group.name}</Text>
 
@@ -2629,6 +2664,31 @@ export default function App() {
       </ScrollView>
     </>
   );
+
+  const deleteMenuCategory = async (categoryIndex: number) => {
+    if (!selectedAdminMenu) {
+      return;
+    }
+
+    const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+    updatedCategories.splice(categoryIndex, 1);
+
+    try {
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        categories: updatedCategories,
+      });
+
+      setSelectedAdminMenu({
+        ...selectedAdminMenu,
+        categories: updatedCategories,
+      });
+
+      await loadAdminMenus();
+    } catch (error) {
+      console.error("Error deleting menu category:", error);
+    }
+  };
 
   const EditMenuItemScreen = () => (
     <>
