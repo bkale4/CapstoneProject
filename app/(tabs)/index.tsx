@@ -224,6 +224,15 @@ export default function App() {
   const [newMenuActive, setNewMenuActive] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState("");
 
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemDescription, setNewItemDescription] = useState("");
+  const [newItemPrice, setNewItemPrice] = useState("");
+  const [newItemCategoryIndex, setNewItemCategoryIndex] = useState<
+    number | null
+  >(null);
+  const [newAddOnName, setNewAddOnName] = useState("");
+  const [newAddOnPrice, setNewAddOnPrice] = useState("");
+
   const [selectedAdminMenu, setSelectedAdminMenu] = useState<any>(null);
   const [selectedAdminItem, setSelectedAdminItem] = useState<any>(null);
   const [selectedAdminItemGroup, setSelectedAdminItemGroup] = useState("");
@@ -544,6 +553,102 @@ export default function App() {
       await loadAdminMenus();
     } catch (error) {
       console.error("Error adding category:", error);
+    }
+  };
+
+  const addNewMenuItemAddOn = () => {
+    if (!newAddOnName.trim() || !newAddOnPrice.trim()) {
+      return;
+    }
+
+    const price = Number(newAddOnPrice);
+
+    if (!Number.isFinite(price) || price < 0) {
+      return;
+    }
+
+    setNewAddOnName("");
+    setNewAddOnPrice("");
+  };
+
+  const addNewMenuItem = async () => {
+    if (
+      !selectedAdminMenu ||
+      newItemCategoryIndex === null ||
+      !newItemName.trim() ||
+      !newItemPrice.trim()
+    ) {
+      return;
+    }
+
+    const price = Number(newItemPrice);
+
+    const hasAddOn = newAddOnName.trim() !== "";
+
+    const addOnPrice = hasAddOn ? Number(newAddOnPrice) : 0;
+
+    if (
+      hasAddOn &&
+      (!newAddOnPrice.trim() || !Number.isFinite(addOnPrice) || addOnPrice < 0)
+    ) {
+      return;
+    }
+
+    if (!hasAddOn && newAddOnPrice.trim()) {
+      return;
+    }
+
+    if (!Number.isFinite(price) || price < 0) {
+      return;
+    }
+
+    try {
+      const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+      const category = updatedCategories[newItemCategoryIndex];
+
+      if (!category) {
+        return;
+      }
+
+      updatedCategories[newItemCategoryIndex] = {
+        ...category,
+        items: [
+          ...(category.items || []),
+          {
+            name: newItemName.trim(),
+            description: newItemDescription.trim(),
+            price,
+            status: "Available",
+            ...(hasAddOn && {
+              addOn: {
+                name: newAddOnName.trim(),
+                price: addOnPrice,
+              },
+            }),
+          },
+        ],
+      };
+
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        categories: updatedCategories,
+      });
+
+      setSelectedAdminMenu({
+        ...selectedAdminMenu,
+        categories: updatedCategories,
+      });
+
+      setNewItemName("");
+      setNewItemDescription("");
+      setNewItemPrice("");
+      setNewAddOnName("");
+      setNewAddOnPrice("");
+      setNewItemCategoryIndex(null);
+
+      await loadAdminMenus();
+    } catch (error) {
+      console.error("Error adding menu item:", error);
     }
   };
 
@@ -2259,6 +2364,68 @@ export default function App() {
           <View key={group.field}>
             <Text style={styles.menuSectionTitle}>{group.name}</Text>
 
+            {group.field.startsWith("categories.") && (
+              <View style={styles.card}>
+                <Text style={styles.label}>Add Item to {group.name}</Text>
+
+                <TextInput
+                  style={styles.input}
+                  value={
+                    newItemCategoryIndex === Number(group.field.split(".")[1])
+                      ? newItemName
+                      : ""
+                  }
+                  onChangeText={(text) => {
+                    setNewItemCategoryIndex(Number(group.field.split(".")[1]));
+                    setNewItemName(text);
+                  }}
+                  placeholder="Item name"
+                />
+
+                {newItemCategoryIndex === Number(group.field.split(".")[1]) && (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      value={newItemDescription}
+                      onChangeText={setNewItemDescription}
+                      placeholder="Description"
+                    />
+
+                    <TextInput
+                      style={styles.input}
+                      value={newItemPrice}
+                      onChangeText={setNewItemPrice}
+                      placeholder="Price"
+                      keyboardType="decimal-pad"
+                    />
+
+                    <Text style={styles.label}>Optional Add-on</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={newAddOnName}
+                      onChangeText={setNewAddOnName}
+                      placeholder="Add-on name (e.g., Bacon or Sausage)"
+                    />
+
+                    <TextInput
+                      style={styles.input}
+                      value={newAddOnPrice}
+                      onChangeText={setNewAddOnPrice}
+                      placeholder="Add-on price"
+                      keyboardType="decimal-pad"
+                    />
+
+                    <Pressable
+                      style={styles.adminButton}
+                      onPress={addNewMenuItem}
+                    >
+                      <Text style={styles.adminButtonText}>Add Item</Text>
+                    </Pressable>
+                  </>
+                )}
+              </View>
+            )}
+
             {group.items.length === 0 ? (
               <Text style={styles.cardSubtitle}>
                 No items have been added yet.
@@ -2275,6 +2442,13 @@ export default function App() {
                   <Text style={styles.cardSubtitle}>
                     ${Number(item.price).toFixed(2)}
                   </Text>
+
+                  {item.addOn && (
+                    <Text style={styles.cardSubtitle}>
+                      Add-on: {item.addOn.name} (+$
+                      {Number(item.addOn.price).toFixed(2)})
+                    </Text>
+                  )}
 
                   <Text style={styles.cardSubtitle}>Status: {item.status}</Text>
 
@@ -2386,6 +2560,14 @@ export default function App() {
   const getAdminMenuItemGroups = (menu: any) => {
     if (!menu) {
       return [];
+    }
+
+    if (menu.categories && menu.categories.length > 0) {
+      return menu.categories.map((category: any, index: number) => ({
+        name: category.name,
+        field: `categories.${index}.items`,
+        items: category.items || [],
+      }));
     }
 
     if (menu.type === "foodTrailer") {
