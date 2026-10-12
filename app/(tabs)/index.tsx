@@ -135,6 +135,7 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
+  const [activeFoodTrailerMenu, setActiveFoodTrailerMenu] = useState<any>(null);
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
   const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
 
@@ -322,12 +323,19 @@ export default function App() {
   useEffect(() => {
     const loadFoodTrailerMenu = async () => {
       try {
+        setActiveFoodTrailerMenu(null);
+
         const menuSnapshot = await getDocs(collection(db, "menus"));
 
         menuSnapshot.forEach((menuDoc) => {
           const menuData = menuDoc.data();
 
           if (menuData.type === "foodTrailer" && menuData.active === true) {
+            setActiveFoodTrailerMenu({
+              id: menuDoc.id,
+              ...menuData,
+            });
+            console.log("Active Food Trailer menu:", menuData);
             setFoodTrailerLocation(menuData.location || "");
             setFoodTrailerEventName(menuData.eventName || "");
             setBreakfastHours(menuData.breakfastHours || "");
@@ -588,7 +596,7 @@ export default function App() {
 
       if (!selectedMenu) return;
 
-      if (!currentActive && selectedMenu.type === "Food Trailer") {
+      if (!currentActive && selectedMenu.type === "foodTrailer") {
         const menuSnapshot = await getDocs(collection(db, "menus"));
 
         for (const menuDoc of menuSnapshot.docs) {
@@ -596,7 +604,7 @@ export default function App() {
 
           if (
             menuDoc.id !== menuId &&
-            menu.type === "Food Trailer" &&
+            menu.type === "foodTrailer" &&
             menu.active === true
           ) {
             await updateDoc(doc(db, "menus", menuDoc.id), {
@@ -1118,7 +1126,7 @@ export default function App() {
           }
           onPress={() => {
             if (isMenuActive("Food Trailer Menu")) {
-              setSelectedMenuType("Food Trailer");
+              setSelectedMenuType("foodTrailer");
               setSelectedLocation(foodTrailerLocation);
               setSelectedEvent(foodTrailerEventName);
               setScreen("foodTrailer");
@@ -1182,7 +1190,7 @@ export default function App() {
           }
           onPress={() => {
             if (isMenuActive("Food Trailer Menu")) {
-              setSelectedMenuType("Food Trailer");
+              setSelectedMenuType("foodTrailer");
               setSelectedLocation(foodTrailerLocation);
               setSelectedEvent(foodTrailerEventName);
               setScreen("foodTrailer");
@@ -2790,7 +2798,7 @@ export default function App() {
       return [];
     }
 
-    if (menu.categories && menu.categories.length > 0) {
+    if (Array.isArray(menu.categories)) {
       return menu.categories.map((category: any, index: number) => ({
         name: category.name,
         field: `categories.${index}.items`,
@@ -2864,7 +2872,13 @@ export default function App() {
           onPress={() => setMenuTypeDropdown(!menuTypeDropdown)}
         >
           <Text style={styles.dropdownText}>
-            {newMenuType || "Select menu type"}
+            {newMenuType === "foodTrailer"
+              ? "Food Trailer"
+              : newMenuType === "dropOffCatering"
+                ? "Drop-Off Catering"
+                : newMenuType === "onsiteEventCatering"
+                  ? "Onsite Event Catering"
+                  : "Select menu type"}
           </Text>
 
           <Text style={styles.dropdownArrow}>
@@ -2880,7 +2894,13 @@ export default function App() {
                   key={type}
                   style={styles.dropdownOption}
                   onPress={() => {
-                    setNewMenuType(type);
+                    setNewMenuType(
+                      type === "Food Trailer"
+                        ? "foodTrailer"
+                        : type === "Drop-Off Catering"
+                          ? "dropOffCatering"
+                          : "onsiteEventCatering",
+                    );
                     setMenuTypeDropdown(false);
                   }}
                 >
