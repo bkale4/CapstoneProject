@@ -1610,16 +1610,15 @@ export default function App() {
                           ? `${item.name} + ${item.addOn.name}`
                           : item.name;
 
-                        console.log("Selected item add-on:", item.addOn);
-                        console.log("Has add-on:", hasAddOn);
-                        console.log("Base price:", item.price);
-                        console.log("Add-on price:", item.addOn?.price);
                         const finalPrice =
                           Number(item.price) +
                           (hasAddOn ? Number(item.addOn?.price ?? 0) : 0);
-                        console.log("Final cart price:", finalPrice);
 
                         addToCart(cartId, cartName, finalPrice);
+
+                        setSelectedAddOns((previous) =>
+                          previous.filter((id) => id !== itemId),
+                        );
                       }}
                     >
                       <Text style={styles.adminButtonText}>
