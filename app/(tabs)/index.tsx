@@ -167,6 +167,8 @@ export default function App() {
 
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
 
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+
   // Catering Menu
   const [cateringMenuTitle, setCateringMenuTitle] = useState("");
   const [cateringHalfServingSize, setCateringHalfServingSize] = useState("");
@@ -1553,6 +1555,29 @@ export default function App() {
                     <Text style={styles.sectionText}>
                       ${Number(item.price).toFixed(2)}
                     </Text>
+                    {item.addOn?.name && (
+                      <Pressable
+                        onPress={() => {
+                          const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
+
+                          setSelectedAddOns((previous) =>
+                            previous.includes(itemId)
+                              ? previous.filter((id) => id !== itemId)
+                              : [...previous, itemId],
+                          );
+                        }}
+                      >
+                        <Text style={[styles.addOnText, { fontSize: 20 }]}>
+                          {selectedAddOns.includes(
+                            `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`,
+                          )
+                            ? "☑"
+                            : "☐"}{" "}
+                          {item.addOn.name} (+$
+                          {Number(item.addOn.price).toFixed(2)})
+                        </Text>
+                      </Pressable>
+                    )}
                     {(item.status === "Limited" ||
                       item.status === "Sold Out") && (
                       <Text
@@ -1566,20 +1591,36 @@ export default function App() {
                         {item.status}
                       </Text>
                     )}
-
                     <Pressable
                       style={[
                         styles.adminButton,
                         item.status === "Sold Out" && { opacity: 0.5 },
                       ]}
                       disabled={item.status === "Sold Out"}
-                      onPress={() =>
-                        addToCart(
-                          `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`,
-                          item.name,
-                          Number(item.price),
-                        )
-                      }
+                      onPress={() => {
+                        const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
+
+                        const hasAddOn =
+                          Boolean(item.addOn?.name) &&
+                          selectedAddOns.includes(itemId);
+
+                        const cartId = hasAddOn ? `${item.Id}-addOn` : itemId;
+
+                        const cartName = hasAddOn
+                          ? `${item.name} + ${item.addOn.name}`
+                          : item.name;
+
+                        console.log("Selected item add-on:", item.addOn);
+                        console.log("Has add-on:", hasAddOn);
+                        console.log("Base price:", item.price);
+                        console.log("Add-on price:", item.addOn?.price);
+                        const finalPrice =
+                          Number(item.price) +
+                          (hasAddOn ? Number(item.addOn?.price ?? 0) : 0);
+                        console.log("Final cart price:", finalPrice);
+
+                        addToCart(cartId, cartName, finalPrice);
+                      }}
                     >
                       <Text style={styles.adminButtonText}>
                         {item.stauts === "Sold Out"
