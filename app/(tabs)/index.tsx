@@ -140,14 +140,6 @@ export default function App() {
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
   const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
 
-  // Food Trailer - Lunch
-  const [lunchHours, setLunchHours] = useState("");
-  const [lunchSandwichesWraps, setLunchSandwichesWraps] = useState<any[]>([]);
-  const [sandwichFriesAddOns, setSandwichFriesAddOns] = useState<any>(null);
-  const [sideOfFries, setSideOfFries] = useState<any>(null);
-  const [lunchSalads, setLunchSalads] = useState<any[]>([]);
-  const [lunchBakedPotatoFries, setLunchBakedPotatoFries] = useState<any[]>([]);
-
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
 
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
@@ -331,17 +323,6 @@ export default function App() {
                 );
                 setFoodTrailerLocation(menuData.location || "");
                 setFoodTrailerEventName(menuData.eventName || "");
-
-                setLunchHours(menuData.lunchHours || "");
-                setLunchSandwichesWraps(menuData.lunchSandwichesWraps || []);
-                setSandwichFriesAddOns(menuData.sandwichFriesAddOns || null);
-                console.log(
-                  "Sandwich fries add-on:",
-                  menuData.sandwichFriesAddOns,
-                );
-                setSideOfFries(menuData.sideOfFries || null);
-                setLunchSalads(menuData.lunchSalads || []);
-                setLunchBakedPotatoFries(menuData.lunchBakedPotatoFries || []);
               }
             });
           },
@@ -2615,26 +2596,6 @@ export default function App() {
         field: `categories.${index}.items`,
         items: category.items || [],
       }));
-    }
-
-    if (menu.type === "foodTrailer") {
-      return [
-        {
-          name: "Lunch Sandwiches & Wraps",
-          field: "lunchSandwichesWraps",
-          items: menu.lunchSandwichesWraps || [],
-        },
-        {
-          name: "Lunch Salads",
-          field: "lunchSalads",
-          items: menu.lunchSalads || [],
-        },
-        {
-          name: "Lunch Baked Potatoes & Fries",
-          field: "lunchBakedPotatoFries",
-          items: menu.lunchBakedPotatoFries || [],
-        },
-      ];
     }
 
     return [
