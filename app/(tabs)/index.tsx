@@ -1566,6 +1566,27 @@ export default function App() {
                         {item.status}
                       </Text>
                     )}
+
+                    <Pressable
+                      style={[
+                        styles.adminButton,
+                        item.status === "Sold Out" && { opacity: 0.5 },
+                      ]}
+                      disabled={item.status === "Sold Out"}
+                      onPress={() =>
+                        addToCart(
+                          `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`,
+                          item.name,
+                          Number(item.price),
+                        )
+                      }
+                    >
+                      <Text style={styles.adminButtonText}>
+                        {item.stauts === "Sold Out"
+                          ? "Sold Out"
+                          : "Add to Cart"}
+                      </Text>
+                    </Pressable>
                   </View>
                 ))}
             </View>
