@@ -140,19 +140,6 @@ export default function App() {
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
   const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
 
-  // Food Trailer - Breakfast
-  const [breakfastHours, setBreakfastHours] = useState("");
-  const [breakfastSandwiches, setBreakfastSandwiches] = useState<any[]>([]);
-  const [breakfastSandwichesDescription, setBreakfastSandwichesDescription] =
-    useState("");
-  const [breakfastItems, setBreakfastItems] = useState<any[]>([]);
-  const [breakfastBowlAddOnOptions, setBreakfastBowlAddOnOptions] =
-    useState("");
-  const [breakfastBowlAddOnPrice, setBreakfastBowlAddOnPrice] = useState(0);
-  const [selectedBreakfastBowlAddOn, setSelectedBreakfastBowlAddOn] = useState<
-    string | null
-  >(null);
-
   // Food Trailer - Lunch
   const [lunchHours, setLunchHours] = useState("");
   const [lunchSandwichesWraps, setLunchSandwichesWraps] = useState<any[]>([]);
@@ -160,10 +147,6 @@ export default function App() {
   const [sideOfFries, setSideOfFries] = useState<any>(null);
   const [lunchSalads, setLunchSalads] = useState<any[]>([]);
   const [lunchBakedPotatoFries, setLunchBakedPotatoFries] = useState<any[]>([]);
-
-  // Breakfast/Lunch dropdowns
-  const [breakfastExpanded, setBreakfastExpanded] = useState(false);
-  const [lunchExpanded, setLunchExpanded] = useState(false);
 
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
 
@@ -348,18 +331,6 @@ export default function App() {
                 );
                 setFoodTrailerLocation(menuData.location || "");
                 setFoodTrailerEventName(menuData.eventName || "");
-                setBreakfastHours(menuData.breakfastHours || "");
-                setBreakfastSandwiches(menuData.breakfastSandwiches || []);
-                setBreakfastSandwichesDescription(
-                  menuData.breakfastSandwichesDescription || "",
-                );
-                setBreakfastItems(menuData.breakfastItems || []);
-                setBreakfastBowlAddOnOptions(
-                  menuData.breakfastBowlAddOnOptions || "",
-                );
-                setBreakfastBowlAddOnPrice(
-                  menuData.breakfastBowlAddOnPrice || 0,
-                );
 
                 setLunchHours(menuData.lunchHours || "");
                 setLunchSandwichesWraps(menuData.lunchSandwichesWraps || []);
@@ -2648,16 +2619,6 @@ export default function App() {
 
     if (menu.type === "foodTrailer") {
       return [
-        {
-          name: "Breakfast Sandwiches",
-          field: "breakfastSandwiches",
-          items: menu.breakfastSandwiches || [],
-        },
-        {
-          name: "Breakfast Items",
-          field: "breakfastItems",
-          items: menu.breakfastItems || [],
-        },
         {
           name: "Lunch Sandwiches & Wraps",
           field: "lunchSandwichesWraps",
