@@ -11,6 +11,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -163,6 +164,8 @@ export default function App() {
   // Breakfast/Lunch dropdowns
   const [breakfastExpanded, setBreakfastExpanded] = useState(false);
   const [lunchExpanded, setLunchExpanded] = useState(false);
+
+  const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
 
   // Catering Menu
   const [cateringMenuTitle, setCateringMenuTitle] = useState("");
@@ -321,48 +324,67 @@ export default function App() {
   const [cateringNotes, setCateringNotes] = useState("");
 
   useEffect(() => {
-    const loadFoodTrailerMenu = async () => {
+    const loadFoodTrailerMenu = () => {
       try {
-        setActiveFoodTrailerMenu(null);
+        const stopListening = onSnapshot(
+          collection(db, "menus"),
+          (menuSnapshot) => {
+            setActiveFoodTrailerMenu(null);
 
-        const menuSnapshot = await getDocs(collection(db, "menus"));
+            menuSnapshot.forEach((menuDoc) => {
+              const menuData = menuDoc.data();
 
-        menuSnapshot.forEach((menuDoc) => {
-          const menuData = menuDoc.data();
+              if (menuData.type === "foodTrailer" && menuData.active === true) {
+                setActiveFoodTrailerMenu({
+                  id: menuDoc.id,
+                  ...menuData,
+                });
+                console.log(
+                  "Active Food Trailer menu:",
+                  menuData.name,
+                  menuData.categories,
+                );
+                setFoodTrailerLocation(menuData.location || "");
+                setFoodTrailerEventName(menuData.eventName || "");
+                setBreakfastHours(menuData.breakfastHours || "");
+                setBreakfastSandwiches(menuData.breakfastSandwiches || []);
+                setBreakfastSandwichesDescription(
+                  menuData.breakfastSandwichesDescription || "",
+                );
+                setBreakfastItems(menuData.breakfastItems || []);
+                setBreakfastBowlAddOnOptions(
+                  menuData.breakfastBowlAddOnOptions || "",
+                );
+                setBreakfastBowlAddOnPrice(
+                  menuData.breakfastBowlAddOnPrice || 0,
+                );
 
-          if (menuData.type === "foodTrailer" && menuData.active === true) {
-            setActiveFoodTrailerMenu({
-              id: menuDoc.id,
-              ...menuData,
+                setLunchHours(menuData.lunchHours || "");
+                setLunchSandwichesWraps(menuData.lunchSandwichesWraps || []);
+                setSandwichFriesAddOns(menuData.sandwichFriesAddOns || null);
+                console.log(
+                  "Sandwich fries add-on:",
+                  menuData.sandwichFriesAddOns,
+                );
+                setSideOfFries(menuData.sideOfFries || null);
+                setLunchSalads(menuData.lunchSalads || []);
+                setLunchBakedPotatoFries(menuData.lunchBakedPotatoFries || []);
+              }
             });
-            console.log("Active Food Trailer menu:", menuData);
-            setFoodTrailerLocation(menuData.location || "");
-            setFoodTrailerEventName(menuData.eventName || "");
-            setBreakfastHours(menuData.breakfastHours || "");
-            setBreakfastSandwiches(menuData.breakfastSandwiches || []);
-            setBreakfastSandwichesDescription(
-              menuData.breakfastSandwichesDescription || "",
-            );
-            setBreakfastItems(menuData.breakfastItems || []);
-            setBreakfastBowlAddOnOptions(
-              menuData.breakfastBowlAddOnOptions || "",
-            );
-            setBreakfastBowlAddOnPrice(menuData.breakfastBowlAddOnPrice || 0);
+          },
+        );
 
-            setLunchHours(menuData.lunchHours || "");
-            setLunchSandwichesWraps(menuData.lunchSandwichesWraps || []);
-            setSandwichFriesAddOns(menuData.sandwichFriesAddOns || null);
-            console.log("Sandwich fries add-on:", menuData.sandwichFriesAddOns);
-            setSideOfFries(menuData.sideOfFries || null);
-            setLunchSalads(menuData.lunchSalads || []);
-            setLunchBakedPotatoFries(menuData.lunchBakedPotatoFries || []);
-          }
-        });
+        return stopListening;
       } catch (error) {
         console.error("Error loading food trailer menu:", error);
       }
     };
-    loadFoodTrailerMenu();
+
+    const stopListening = loadFoodTrailerMenu();
+
+    return () => {
+      stopListening?.();
+    };
   }, []);
 
   useEffect(() => {
@@ -1120,12 +1142,12 @@ export default function App() {
         <ServiceCard
           title="Food Trailer"
           subtitle={
-            isMenuActive("Food Trailer Menu")
+            activeFoodTrailerMenu != null
               ? "Browse the active food trailer menu and place a quick order."
               : "The Food Trailer menu is currently unavailable."
           }
           onPress={() => {
-            if (isMenuActive("Food Trailer Menu")) {
+            if (activeFoodTrailerMenu !== null) {
               setSelectedMenuType("foodTrailer");
               setSelectedLocation(foodTrailerLocation);
               setSelectedEvent(foodTrailerEventName);
@@ -1501,6 +1523,53 @@ export default function App() {
               </View>
             ))}
           </>
+        )}
+        {activeFoodTrailerMenu?.categories?.map(
+          (category: any, categoryIndex: number) => (
+            <View key={categoryIndex}>
+              <Pressable
+                style={styles.menuDropdownButton}
+                onPress={() =>
+                  setExpandedCategories((previous) =>
+                    previous.includes(categoryIndex)
+                      ? previous.filter((index) => index != categoryIndex)
+                      : [...previous, categoryIndex],
+                  )
+                }
+              >
+                <Text style={styles.menuDropdownText}>
+                  {category.name}{" "}
+                  {expandedCategories.includes(categoryIndex) ? "▲" : "▼"}
+                </Text>
+              </Pressable>
+
+              {expandedCategories.includes(categoryIndex) &&
+                category.items?.map((item: any, itemIndex: number) => (
+                  <View key={itemIndex} style={styles.card}>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+                    <Text style={styles.menuDescription}>
+                      {item.description}
+                    </Text>
+                    <Text style={styles.sectionText}>
+                      ${Number(item.price).toFixed(2)}
+                    </Text>
+                    {(item.status === "Limited" ||
+                      item.status === "Sold Out") && (
+                      <Text
+                        style={[
+                          styles.statusText,
+                          item.status === "Sold Out"
+                            ? styles.soldOutText
+                            : styles.limitedText,
+                        ]}
+                      >
+                        {item.status}
+                      </Text>
+                    )}
+                  </View>
+                ))}
+            </View>
+          ),
         )}
       </ScrollView>
 
