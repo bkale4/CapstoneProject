@@ -210,6 +210,7 @@ export default function App() {
   const [newMenuEventName, setNewMenuEventName] = useState("");
   const [newMenuActive, setNewMenuActive] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryDescription, setNewCategoryDescription] = useState("");
 
   const [newItemName, setNewItemName] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
@@ -623,6 +624,7 @@ export default function App() {
         ...(selectedAdminMenu.categories || []),
         {
           name: newCategoryName.trim(),
+          description: newCategoryDescription.trim(),
           items: [],
         },
       ];
@@ -637,6 +639,7 @@ export default function App() {
       });
 
       setNewCategoryName("");
+      setNewCategoryDescription("");
       await loadAdminMenus();
     } catch (error) {
       console.error("Error adding category:", error);
@@ -1194,6 +1197,13 @@ export default function App() {
                   {expandedCategories.includes(categoryIndex) ? "▲" : "▼"}
                 </Text>
               </Pressable>
+
+              {expandedCategories.includes(categoryIndex) &&
+                category.description?.trim() && (
+                  <Text style={styles.menuDescription}>
+                    {category.description}
+                  </Text>
+                )}
 
               {expandedCategories.includes(categoryIndex) &&
                 category.items?.map((item: any, itemIndex: number) => (
@@ -2224,6 +2234,14 @@ export default function App() {
           value={newCategoryName}
           onChangeText={setNewCategoryName}
           placeholder="Enter category name"
+        />
+
+        <TextInput
+          style={styles.input}
+          value={newCategoryDescription}
+          onChangeText={setNewCategoryDescription}
+          placeholder="Enter category description (optional)"
+          multiline
         />
 
         <Pressable style={styles.adminButton} onPress={addNewCategory}>
