@@ -45,6 +45,7 @@ type Screen =
   | "orderConfirmation"
   | "catering"
   | "cateringMenu"
+  | "cateringMenuOptions"
   | "availabilityCalendar"
   | "cateringRequest"
   | "cateringConfirmation"
@@ -139,6 +140,22 @@ export default function App() {
   const [activeFoodTrailerMenu, setActiveFoodTrailerMenu] = useState<any>(null);
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
   const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
+
+  const [activeCateringMenu, setActiveCateringMenu] = useState<any[]>([]);
+  const [selectedCateringMenuId, setSelectedCateringMenuId] = useState<
+    string | null
+  >(null);
+  const selectedCateringMenu = activeCateringMenu.find(
+    (menu) =>
+      menu.id === selectedCateringMenuId ||
+      (menu.type === "dropOffCatering" && !selectedCateringMenuId),
+  );
+  const onsiteCateringMenu = activeCateringMenu.filter(
+    (menu) => menu.type === "onsiteEventCatering",
+  );
+  const dropOffCateringMenus = activeCateringMenu.filter(
+    (menu) => menu.type === "dropOffCatering",
+  );
 
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
 
@@ -283,6 +300,7 @@ export default function App() {
           collection(db, "menus"),
           (menuSnapshot) => {
             setActiveFoodTrailerMenu(null);
+            setActiveCateringMenu([]);
 
             menuSnapshot.forEach((menuDoc) => {
               const menuData = menuDoc.data();
@@ -299,6 +317,20 @@ export default function App() {
                 );
                 setFoodTrailerLocation(menuData.location || "");
                 setFoodTrailerEventName(menuData.eventName || "");
+              }
+
+              if (
+                (menuData.type === "dropOffCatering" ||
+                  menuData.type === "onsiteEventCatering") &&
+                menuData.active === true
+              ) {
+                setActiveCateringMenu((previous) => [
+                  ...previous,
+                  {
+                    id: menuDoc.id,
+                    ...menuData,
+                  },
+                ]);
               }
             });
           },
@@ -1285,11 +1317,80 @@ export default function App() {
     </>
   );
 
+  const CateringMenuOptionsScreen = () => (
+    <>
+      <Header title="Drop-Off Catering Menus" />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        {dropOffCateringMenus.map((menu) => (
+          <Pressable
+            key={menu.id}
+            style={styles.menuDropdownButton}
+            onPress={() => {
+              setSelectedCateringMenuId(menu.id);
+              setScreen("cateringMenu");
+            }}
+          >
+            <Text style={styles.menuDropdownText}>{menu.name}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </>
+  );
+
   const CateringMenuScreen = () => (
     <>
       <Header title="Catering Menu" />
 
       <ScrollView contentContainerStyle={styles.content}>
+        {selectedCateringMenu?.type === "dropOffCatering" && (
+          <Text style={styles.cateringMenuTitle}>
+            {selectedCateringMenu.name}
+          </Text>
+        )}
+        {selectedCateringMenu?.type === "dropOffCatering" &&
+          selectedCateringMenu.categories?.map(
+            (category: any, categoryIndex: number) => (
+              <View key={categoryIndex}>
+                <Pressable
+                  style={styles.menuDropdownButton}
+                  onPress={() =>
+                    setExpandedCategories((previous) =>
+                      previous.includes(categoryIndex)
+                        ? previous.filter((index) => index !== categoryIndex)
+                        : [...previous, categoryIndex],
+                    )
+                  }
+                >
+                  <Text style={styles.menuDropdownText}>
+                    {category.name}{" "}
+                    {expandedCategories.includes(categoryIndex) ? "▲" : "▼"}
+                  </Text>
+                </Pressable>
+                {expandedCategories.includes(categoryIndex) &&
+                  category.items?.map((item: any, itemIndex: number) => (
+                    <View key={itemIndex} style={styles.card}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                      <Text style={styles.menuDescription}>
+                        {item.description}
+                      </Text>
+                      <Text style={styles.cateringPrice}>
+                        ${Number(item.price).toFixed(2)}
+                      </Text>
+
+                      {item.status === "Limited" && (
+                        <Text style={styles.sectionText}>
+                          Limited Availability
+                        </Text>
+                      )}
+                      {item.status === "Sold Out" && (
+                        <Text style={styles.sectionText}>Sold Out</Text>
+                      )}
+                    </View>
+                  ))}
+              </View>
+            ),
+          )}
         <Text style={styles.cateringNote}>
           Contact us with for special requests and dietary restriction requests.
         </Text>
@@ -1625,7 +1726,7 @@ export default function App() {
         <Pressable
           style={styles.card}
           onPress={() => {
-            setScreen("cateringMenu");
+            setScreen("cateringMenuOptions");
           }}
         >
           <Text style={styles.cardTitle}>Drop-Off Catering</Text>
@@ -2585,6 +2686,7 @@ export default function App() {
       {screen === "createAccount" && CreateAccountScreen()}
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
+      {screen === "cateringMenuOptions" && CateringMenuOptionsScreen()}
       {screen === "cateringMenu" && CateringMenuScreen()}
       {screen === "availabilityCalendar" && <AvailabilityCalendarScreen />}
       {screen === "cateringRequest" && CateringRequestScreen()}
