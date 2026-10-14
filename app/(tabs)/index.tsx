@@ -37,7 +37,8 @@ type Screen =
   | "about"
   | "order"
   | "foodTrailer"
-  | "onsiteEvent"
+  | "onsiteEventCatering"
+  | "onsiteEventMenuOptions"
   | "cart"
   | "checkout"
   | "customerLogin"
@@ -147,17 +148,27 @@ export default function App() {
   >(null);
   const selectedCateringMenu = activeCateringMenu.find(
     (menu) =>
-      menu.id === selectedCateringMenuId ||
-      (menu.type === "dropOffCatering" && !selectedCateringMenuId),
+      menu.id === selectedCateringMenuId && menu.type === "dropOffCatering",
   );
-  const onsiteCateringMenu = activeCateringMenu.filter(
+  const onsiteCateringMenus = activeCateringMenu.filter(
     (menu) => menu.type === "onsiteEventCatering",
   );
+
+  const selectedOnsiteCateringMenu = onsiteCateringMenus.find(
+    (menu) => menu.id === selectedCateringMenuId,
+  );
+
   const dropOffCateringMenus = activeCateringMenu.filter(
     (menu) => menu.type === "dropOffCatering",
   );
 
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
+  const [expandedOnsiteCategories, setExpandedOnsiteCategories] = useState<
+    number[]
+  >([]);
+  const [expandedDropOffCategories, setExpandedDropOffCategories] = useState<
+    number[]
+  >([]);
 
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
 
@@ -1288,30 +1299,85 @@ export default function App() {
 
   const OnsiteEventScreen = () => (
     <>
-      <Header title="Onsite Event Menu" />
+      <Header title={selectedOnsiteCateringMenu?.name || "Onsite Event Menu"} />
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.sectionText}>Current Event: {onsiteEventName}</Text>
+        {selectedOnsiteCateringMenu?.eventName && (
+          <Text style={styles.sectionText}>
+            Current Event: {selectedOnsiteCateringMenu.eventName}
+          </Text>
+        )}
 
-        <Text style={styles.sectionText}>Location: {onsiteEventLocation}</Text>
+        {selectedOnsiteCateringMenu?.location && (
+          <Text style={styles.sectionText}>
+            Location: {selectedOnsiteCateringMenu.location}
+          </Text>
+        )}
 
-        <Text style={styles.sectionText}>Hours: {onsiteEventHours}</Text>
+        {selectedOnsiteCateringMenu?.categories?.map(
+          (category: any, categoryIndex: number) => (
+            <View key={categoryIndex}>
+              <Pressable
+                style={styles.menuDropdownButton}
+                onPress={() =>
+                  setExpandedOnsiteCategories((previous) =>
+                    previous.includes(categoryIndex)
+                      ? previous.filter((index) => index !== categoryIndex)
+                      : [...previous, categoryIndex],
+                  )
+                }
+              >
+                <Text style={styles.menuDropdownText}>
+                  {category.name}{" "}
+                  {expandedOnsiteCategories.includes(categoryIndex) ? "▲" : "▼"}
+                </Text>
+              </Pressable>
 
-        {onsiteEventItems.map((item, index) => (
-          <MenuItem
-            key={index}
-            id={`onsite-event-${index}`}
-            name={item.name}
-            description={item.description}
-            price={item.price}
-            status={
-              item.status === "soldOut"
-                ? "Sold Out"
-                : item.status === "limited"
-                  ? "Limited"
-                  : "Available"
-            }
-            allowOrdering={false}
-          />
+              {expandedOnsiteCategories.includes(categoryIndex) &&
+                category.items?.map((item: any, itemIndex: number) => (
+                  <View key={itemIndex} style={styles.card}>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+                    <Text style={styles.menuDescription}>
+                      {item.description}
+                    </Text>
+                    <Text style={styles.cateringPrice}>
+                      ${Number(item.price).toFixed(2)}
+                    </Text>
+
+                    {item.status === "Limited" && (
+                      <Text style={styles.sectionText}>
+                        Limited Availability
+                      </Text>
+                    )}
+
+                    {item.status === "Sold Out" && (
+                      <Text style={styles.sectionText}>Sold Out</Text>
+                    )}
+                  </View>
+                ))}
+            </View>
+          ),
+        )}
+      </ScrollView>
+    </>
+  );
+
+  const OnsiteEventMenuOptionsScreen = () => (
+    <>
+      <Header title="Onsite Event Catering Menus" />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        {onsiteCateringMenus.map((menu) => (
+          <Pressable
+            key={menu.id}
+            style={styles.menuDropdownButton}
+            onPress={() => {
+              setSelectedCateringMenuId(menu.id);
+              setExpandedOnsiteCategories([]);
+              setScreen("onsiteEventCatering");
+            }}
+          >
+            <Text style={styles.menuDropdownText}>{menu.name}</Text>
+          </Pressable>
         ))}
       </ScrollView>
     </>
@@ -1328,6 +1394,7 @@ export default function App() {
             style={styles.menuDropdownButton}
             onPress={() => {
               setSelectedCateringMenuId(menu.id);
+              setExpandedDropOffCategories([]);
               setScreen("cateringMenu");
             }}
           >
@@ -1355,7 +1422,7 @@ export default function App() {
                 <Pressable
                   style={styles.menuDropdownButton}
                   onPress={() =>
-                    setExpandedCategories((previous) =>
+                    setExpandedDropOffCategories((previous) =>
                       previous.includes(categoryIndex)
                         ? previous.filter((index) => index !== categoryIndex)
                         : [...previous, categoryIndex],
@@ -1364,10 +1431,12 @@ export default function App() {
                 >
                   <Text style={styles.menuDropdownText}>
                     {category.name}{" "}
-                    {expandedCategories.includes(categoryIndex) ? "▲" : "▼"}
+                    {expandedDropOffCategories.includes(categoryIndex)
+                      ? "▲"
+                      : "▼"}
                   </Text>
                 </Pressable>
-                {expandedCategories.includes(categoryIndex) &&
+                {expandedDropOffCategories.includes(categoryIndex) &&
                   category.items?.map((item: any, itemIndex: number) => (
                     <View key={itemIndex} style={styles.card}>
                       <Text style={styles.cardTitle}>{item.name}</Text>
@@ -1737,7 +1806,10 @@ export default function App() {
           </Text>
         </Pressable>
 
-        <Pressable style={styles.card} onPress={() => setScreen("onsiteEvent")}>
+        <Pressable
+          style={styles.card}
+          onPress={() => setScreen("onsiteEventMenuOptions")}
+        >
           <Text style={styles.cardTitle}>Onsite Event Catering</Text>
           <Text style={styles.cardSubtitle}>
             Explore catering options for events with food service, including
@@ -2679,7 +2751,8 @@ export default function App() {
       {screen === "about" && <AboutScreen />}
       {screen === "order" && <OrderScreen />}
       {screen === "foodTrailer" && FoodTrailerScreen()}
-      {screen === "onsiteEvent" && <OnsiteEventScreen />}
+      {screen === "onsiteEventCatering" && <OnsiteEventScreen />}
+      {screen === "onsiteEventMenuOptions" && OnsiteEventMenuOptionsScreen()}
       {screen === "cart" && <CartScreen />}
       {screen === "checkout" && CheckoutScreen()}
       {screen === "customerLogin" && CustomerLoginScreen()}
