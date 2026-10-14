@@ -1343,14 +1343,18 @@ export default function App() {
                       ${Number(item.price).toFixed(2)}
                     </Text>
 
-                    {item.status === "Limited" && (
-                      <Text style={styles.sectionText}>
-                        Limited Availability
+                    {(item.status === "Limited" ||
+                      item.status === "Sold Out") && (
+                      <Text
+                        style={[
+                          styles.statusText,
+                          item.status === "Sold Out"
+                            ? styles.soldOutText
+                            : styles.limitedText,
+                        ]}
+                      >
+                        {item.status}
                       </Text>
-                    )}
-
-                    {item.status === "Sold Out" && (
-                      <Text style={styles.sectionText}>Sold Out</Text>
                     )}
                   </View>
                 ))}
@@ -1447,13 +1451,18 @@ export default function App() {
                         ${Number(item.price).toFixed(2)}
                       </Text>
 
-                      {item.status === "Limited" && (
-                        <Text style={styles.sectionText}>
-                          Limited Availability
+                      {(item.status === "Limited" ||
+                        item.status === "Sold Out") && (
+                        <Text
+                          style={[
+                            styles.statusText,
+                            item.status === "Sold Out"
+                              ? styles.soldOutText
+                              : styles.limitedText,
+                          ]}
+                        >
+                          {item.status}
                         </Text>
-                      )}
-                      {item.status === "Sold Out" && (
-                        <Text style={styles.sectionText}>Sold Out</Text>
                       )}
                     </View>
                   ))}
