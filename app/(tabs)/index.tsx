@@ -163,6 +163,9 @@ export default function App() {
   );
 
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
+  const [expandedParentCategories, setExpandedParentCategories] = useState<
+    string[]
+  >([]);
   const [expandedOnsiteCategories, setExpandedOnsiteCategories] = useState<
     number[]
   >([]);
@@ -214,11 +217,13 @@ export default function App() {
   const [newMenuActive, setNewMenuActive] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
+  const [newCategoryParent, setNewCategoryParent] = useState("");
   const [editingCategoryIndex, setEditingCategoryIndex] = useState<
     number | null
   >(null);
   const [editCategoryName, setEditCategoryName] = useState("");
   const [editCategoryDescription, setEditCategoryDescription] = useState("");
+  const [editCategoryParent, setEditCategoryParent] = useState("");
 
   const [newItemName, setNewItemName] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
@@ -641,6 +646,7 @@ export default function App() {
         ...updatedCategories[editingCategoryIndex],
         name: editCategoryName.trim(),
         description: editCategoryDescription.trim(),
+        parentCategory: editCategoryParent.trim(),
       };
 
       await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
@@ -670,6 +676,7 @@ export default function App() {
         {
           name: newCategoryName.trim(),
           description: newCategoryDescription.trim(),
+          parentCategory: newCategoryParent.trim(),
           items: [],
         },
       ];
@@ -685,6 +692,7 @@ export default function App() {
 
       setNewCategoryName("");
       setNewCategoryDescription("");
+      setNewCategoryParent("");
       await loadAdminMenus();
     } catch (error) {
       console.error("Error adding category:", error);
@@ -1232,210 +1240,279 @@ export default function App() {
     </>
   );
 
-  const FoodTrailerScreen = () => (
-    <View style={{ flex: 1 }}>
-      <Header title="Food Trailer Menu" />
+  const FoodTrailerScreen = () => {
+    const parentCategories: string[] = [
+      ...new Set<string>(
+        (activeFoodTrailerMenu?.categories || []).map(
+          (category: any) => category.parentCategory?.trim() || "Other",
+        ),
+      ),
+    ];
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
-        <Text style={styles.sectionText}>
-          Now Serving: {foodTrailerLocation}
-        </Text>
+    return (
+      <View style={{ flex: 1 }}>
+        <Header title="Food Trailer Menu" />
 
-        <Text style={styles.sectionText}>Event: {foodTrailerEventName}</Text>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+          <Text style={styles.sectionText}>
+            Now Serving: {foodTrailerLocation}
+          </Text>
 
-        {activeFoodTrailerMenu?.categories?.map(
-          (category: any, categoryIndex: number) => (
-            <View key={categoryIndex}>
+          <Text style={styles.sectionText}>Event: {foodTrailerEventName}</Text>
+
+          {parentCategories.map((parentCategory) => (
+            <View key={parentCategory}>
               <Pressable
                 style={styles.menuDropdownButton}
                 onPress={() =>
-                  setExpandedCategories((previous) =>
-                    previous.includes(categoryIndex)
-                      ? previous.filter((index) => index != categoryIndex)
-                      : [...previous, categoryIndex],
+                  setExpandedParentCategories((previous) =>
+                    previous.includes(parentCategory)
+                      ? previous.filter((name) => name !== parentCategory)
+                      : [...previous, parentCategory],
                   )
                 }
               >
                 <Text style={styles.menuDropdownText}>
-                  {category.name}{" "}
-                  {expandedCategories.includes(categoryIndex) ? "▲" : "▼"}
+                  {parentCategory}{" "}
+                  {expandedParentCategories.includes(parentCategory)
+                    ? "▲"
+                    : "▼"}
                 </Text>
               </Pressable>
 
-              {expandedCategories.includes(categoryIndex) &&
-                category.description?.trim() && (
-                  <Text style={styles.menuDescription}>
-                    {category.description}
-                  </Text>
-                )}
-
-              {expandedCategories.includes(categoryIndex) &&
-                category.items?.map((item: any, itemIndex: number) => (
-                  <View key={itemIndex} style={styles.card}>
-                    <Text style={styles.cardTitle}>{item.name}</Text>
-                    <Text style={styles.menuDescription}>
-                      {item.description}
-                    </Text>
-                    <Text style={styles.sectionText}>
-                      ${Number(item.price).toFixed(2)}
-                    </Text>
-                    {item.addOn?.name && (
-                      <Pressable
-                        onPress={() => {
-                          const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
-
-                          if (item.addOns?.length > 1) {
-                            setSelectedAddOnOptions((previous) => ({
-                              ...previous,
-                              [itemId]: previous[itemId] === 0 ? -1 : 0,
-                            }));
-                          } else {
-                            setSelectedAddOns((previous) =>
-                              previous.includes(itemId)
-                                ? previous.filter((id) => id !== itemId)
-                                : [...previous, itemId],
-                            );
+              {expandedParentCategories.includes(parentCategory) &&
+                activeFoodTrailerMenu?.categories?.map(
+                  (category: any, categoryIndex: number) =>
+                    (category.parentCategory?.trim() || "Other") ===
+                    parentCategory ? (
+                      <View key={categoryIndex}>
+                        <Pressable
+                          style={styles.subCategoryDropdownButton}
+                          onPress={() =>
+                            setExpandedCategories((previous) =>
+                              previous.includes(categoryIndex)
+                                ? previous.filter(
+                                    (index) => index != categoryIndex,
+                                  )
+                                : [...previous, categoryIndex],
+                            )
                           }
-                        }}
-                      >
-                        <Text style={[styles.addOnText, { fontSize: 20 }]}>
-                          {item.addOns?.length > 1
-                            ? selectedAddOnOptions[
-                                `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`
-                              ] === 0
-                              ? "☑ "
-                              : "☐ "
-                            : selectedAddOns.includes(
-                                  `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`,
-                                )
-                              ? "☑ "
-                              : "☐ "}
-                          {item.addOn.name} (+$
-                          {Number(item.addOn.price).toFixed(2)})
-                        </Text>
-                      </Pressable>
-                    )}
+                        >
+                          <Text
+                            style={[
+                              styles.menuDropdownText,
+                              { color: "#35543D" },
+                            ]}
+                          >
+                            {category.name}{" "}
+                            {expandedCategories.includes(categoryIndex)
+                              ? "▲"
+                              : "▼"}
+                          </Text>
+                        </Pressable>
 
-                    {item.addOns?.length > 1 &&
-                      item.addOns
-                        .slice(1)
-                        .map(
-                          (
-                            addOn: { name: string; price: number },
-                            addOnIndex: number,
-                          ) => {
-                            const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
-                            const optionIndex = addOnIndex + 1;
+                        {expandedCategories.includes(categoryIndex) &&
+                          category.description?.trim() && (
+                            <Text style={styles.menuDescription}>
+                              {category.description}
+                            </Text>
+                          )}
 
-                            return (
-                              <Pressable
-                                key={optionIndex}
-                                onPress={() => {
-                                  setSelectedAddOnOptions((previous) => ({
-                                    ...previous,
-                                    [itemId]:
-                                      previous[itemId] === optionIndex
-                                        ? -1
-                                        : optionIndex,
-                                  }));
-                                }}
-                              >
-                                <Text
-                                  style={[styles.addOnText, { fontSize: 20 }]}
-                                >
-                                  {selectedAddOnOptions[itemId] === optionIndex
-                                    ? "☑ "
-                                    : "☐ "}
-                                  {addOn.name} (+$
-                                  {Number(addOn.price).toFixed(2)})
+                        {expandedCategories.includes(categoryIndex) &&
+                          category.items?.map(
+                            (item: any, itemIndex: number) => (
+                              <View key={itemIndex} style={styles.card}>
+                                <Text style={styles.cardTitle}>
+                                  {item.name}
                                 </Text>
-                              </Pressable>
-                            );
-                          },
-                        )}
+                                <Text style={styles.menuDescription}>
+                                  {item.description}
+                                </Text>
+                                <Text style={styles.sectionText}>
+                                  ${Number(item.price).toFixed(2)}
+                                </Text>
+                                {item.addOn?.name && (
+                                  <Pressable
+                                    onPress={() => {
+                                      const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
 
-                    {(item.status === "Limited" ||
-                      item.status === "Sold Out") && (
-                      <Text
-                        style={[
-                          styles.statusText,
-                          item.status === "Sold Out"
-                            ? styles.soldOutText
-                            : styles.limitedText,
-                        ]}
-                      >
-                        {item.status}
-                      </Text>
-                    )}
-                    <Pressable
-                      style={[
-                        styles.adminButton,
-                        item.status === "Sold Out" && { opacity: 0.5 },
-                      ]}
-                      disabled={item.status === "Sold Out"}
-                      onPress={() => {
-                        const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
+                                      if (item.addOns?.length > 1) {
+                                        setSelectedAddOnOptions((previous) => ({
+                                          ...previous,
+                                          [itemId]:
+                                            previous[itemId] === 0 ? -1 : 0,
+                                        }));
+                                      } else {
+                                        setSelectedAddOns((previous) =>
+                                          previous.includes(itemId)
+                                            ? previous.filter(
+                                                (id) => id !== itemId,
+                                              )
+                                            : [...previous, itemId],
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    <Text
+                                      style={[
+                                        styles.addOnText,
+                                        { fontSize: 20 },
+                                      ]}
+                                    >
+                                      {item.addOns?.length > 1
+                                        ? selectedAddOnOptions[
+                                            `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`
+                                          ] === 0
+                                          ? "☑ "
+                                          : "☐ "
+                                        : selectedAddOns.includes(
+                                              `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`,
+                                            )
+                                          ? "☑ "
+                                          : "☐ "}
+                                      {item.addOn.name} (+$
+                                      {Number(item.addOn.price).toFixed(2)})
+                                    </Text>
+                                  </Pressable>
+                                )}
 
-                        const selectedOptionIndex =
-                          selectedAddOnOptions[itemId];
+                                {item.addOns?.length > 1 &&
+                                  item.addOns
+                                    .slice(1)
+                                    .map(
+                                      (
+                                        addOn: { name: string; price: number },
+                                        addOnIndex: number,
+                                      ) => {
+                                        const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
+                                        const optionIndex = addOnIndex + 1;
 
-                        const selectedAddOn =
-                          item.addOns?.length > 1
-                            ? selectedOptionIndex >= 0
-                              ? item.addOns[selectedOptionIndex]
-                              : undefined
-                            : selectedAddOns.includes(itemId)
-                              ? item.addOn
-                              : undefined;
+                                        return (
+                                          <Pressable
+                                            key={optionIndex}
+                                            onPress={() => {
+                                              setSelectedAddOnOptions(
+                                                (previous) => ({
+                                                  ...previous,
+                                                  [itemId]:
+                                                    previous[itemId] ===
+                                                    optionIndex
+                                                      ? -1
+                                                      : optionIndex,
+                                                }),
+                                              );
+                                            }}
+                                          >
+                                            <Text
+                                              style={[
+                                                styles.addOnText,
+                                                { fontSize: 20 },
+                                              ]}
+                                            >
+                                              {selectedAddOnOptions[itemId] ===
+                                              optionIndex
+                                                ? "☑ "
+                                                : "☐ "}
+                                              {addOn.name} (+$
+                                              {Number(addOn.price).toFixed(2)})
+                                            </Text>
+                                          </Pressable>
+                                        );
+                                      },
+                                    )}
 
-                        const hasAddOn = Boolean(selectedAddOn?.name);
+                                {(item.status === "Limited" ||
+                                  item.status === "Sold Out") && (
+                                  <Text
+                                    style={[
+                                      styles.statusText,
+                                      item.status === "Sold Out"
+                                        ? styles.soldOutText
+                                        : styles.limitedText,
+                                    ]}
+                                  >
+                                    {item.status}
+                                  </Text>
+                                )}
+                                <Pressable
+                                  style={[
+                                    styles.adminButton,
+                                    item.status === "Sold Out" && {
+                                      opacity: 0.5,
+                                    },
+                                  ]}
+                                  disabled={item.status === "Sold Out"}
+                                  onPress={() => {
+                                    const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
 
-                        const cartId = hasAddOn
-                          ? `${itemId}-addOn-${selectedAddOn.name}`
-                          : itemId;
+                                    const selectedOptionIndex =
+                                      selectedAddOnOptions[itemId];
 
-                        const cartName = hasAddOn
-                          ? `${item.name} + ${selectedAddOn.name}`
-                          : item.name;
+                                    const selectedAddOn =
+                                      item.addOns?.length > 1
+                                        ? selectedOptionIndex >= 0
+                                          ? item.addOns[selectedOptionIndex]
+                                          : undefined
+                                        : selectedAddOns.includes(itemId)
+                                          ? item.addOn
+                                          : undefined;
 
-                        const finalPrice =
-                          Number(item.price) +
-                          (hasAddOn ? Number(selectedAddOn?.price ?? 0) : 0);
+                                    const hasAddOn = Boolean(
+                                      selectedAddOn?.name,
+                                    );
 
-                        addToCart(cartId, cartName, finalPrice);
+                                    const cartId = hasAddOn
+                                      ? `${itemId}-addOn-${selectedAddOn.name}`
+                                      : itemId;
 
-                        setSelectedAddOnOptions((previous) => {
-                          const updated = { ...previous };
-                          delete updated[itemId];
-                          return updated;
-                        });
-                      }}
-                    >
-                      <Text style={styles.adminButtonText}>
-                        {item.status === "Sold Out"
-                          ? "Sold Out"
-                          : "Add to Cart"}
-                      </Text>
-                    </Pressable>
-                  </View>
-                ))}
+                                    const cartName = hasAddOn
+                                      ? `${item.name} + ${selectedAddOn.name}`
+                                      : item.name;
+
+                                    const finalPrice =
+                                      Number(item.price) +
+                                      (hasAddOn
+                                        ? Number(selectedAddOn?.price ?? 0)
+                                        : 0);
+
+                                    addToCart(cartId, cartName, finalPrice);
+
+                                    setSelectedAddOnOptions((previous) => {
+                                      const updated = { ...previous };
+                                      delete updated[itemId];
+                                      return updated;
+                                    });
+                                  }}
+                                >
+                                  <Text style={styles.adminButtonText}>
+                                    {item.status === "Sold Out"
+                                      ? "Sold Out"
+                                      : "Add to Cart"}
+                                  </Text>
+                                </Pressable>
+                              </View>
+                            ),
+                          )}
+                      </View>
+                    ) : null,
+                )}
             </View>
-          ),
-        )}
-      </ScrollView>
+          ))}
+        </ScrollView>
 
-      <View style={{ paddingHorizontal: 14, paddingVertical: 10 }}>
-        <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("cart")}
-        >
-          <Text style={styles.primaryButtonText}>
-            View Cart - ${cartTotal.toFixed(2)}
-          </Text>
-        </Pressable>
+        <View style={{ paddingHorizontal: 14, paddingVertical: 10 }}>
+          <Pressable
+            style={styles.primaryButton}
+            onPress={() => setScreen("cart")}
+          >
+            <Text style={styles.primaryButtonText}>
+              View Cart - ${cartTotal.toFixed(2)}
+            </Text>
+          </Pressable>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const OnsiteEventScreen = () => (
     <>
@@ -2374,6 +2451,14 @@ export default function App() {
           multiline
         />
 
+        <Text style={styles.label}>Parent Category</Text>
+        <TextInput
+          style={styles.input}
+          value={newCategoryParent}
+          onChangeText={setNewCategoryParent}
+          placeholder="Enter parent category (e.g., Breakfast or Lunch)"
+        />
+
         <Pressable style={styles.adminButton} onPress={addNewCategory}>
           <Text style={styles.adminButtonText}>Add Category</Text>
         </Pressable>
@@ -2392,6 +2477,7 @@ export default function App() {
                   setEditingCategoryIndex(categoryIndex);
                   setEditCategoryName(category?.name || "");
                   setEditCategoryDescription(category?.description || "");
+                  setEditCategoryParent(category?.parentCategory || "");
                 }}
               >
                 <Text style={styles.adminButtonText}>Edit Category</Text>
@@ -2416,6 +2502,14 @@ export default function App() {
                     onChangeText={setEditCategoryDescription}
                     placeholder="Category description (optional)"
                     multiline
+                  />
+
+                  <Text style={styles.label}>Parent Category</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={editCategoryParent}
+                    onChangeText={setEditCategoryParent}
+                    placeholder="Enter parent category (e.g., Breakfast or Lunch"
                   />
 
                   <Pressable
@@ -3137,6 +3231,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 4,
     textAlign: "center",
+  },
+  subCategoryDropdownButton: {
+    backgroundColor: "#E8EDE5",
+    padding: 14,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginBottom: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#4D7054",
   },
   menuDropdownButton: {
     backgroundColor: "#4F6F53",
