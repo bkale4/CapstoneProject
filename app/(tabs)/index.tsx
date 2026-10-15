@@ -171,6 +171,9 @@ export default function App() {
   >([]);
 
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+  const [selectedAddOnOptions, setSelectedAddOnOptions] = useState<{
+    [itemId: string]: number;
+  }>({});
 
   const [onsiteEventItems, setOnsiteEventItems] = useState<any[]>([]);
   const [onsiteEventLocation, setOnsiteEventLocation] = useState("");
@@ -211,6 +214,11 @@ export default function App() {
   const [newMenuActive, setNewMenuActive] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
+  const [editingCategoryIndex, setEditingCategoryIndex] = useState<
+    number | null
+  >(null);
+  const [editCategoryName, setEditCategoryName] = useState("");
+  const [editCategoryDescription, setEditCategoryDescription] = useState("");
 
   const [newItemName, setNewItemName] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
@@ -220,6 +228,9 @@ export default function App() {
   >(null);
   const [newAddOnName, setNewAddOnName] = useState("");
   const [newAddOnPrice, setNewAddOnPrice] = useState("");
+  const [additionalAddOns, setAdditionalAddOns] = useState<
+    { name: string; price: string }[]
+  >([]);
 
   const [selectedAdminMenu, setSelectedAdminMenu] = useState<any>(null);
   const [selectedAdminItem, setSelectedAdminItem] = useState<any>(null);
@@ -614,6 +625,40 @@ export default function App() {
     }
   };
 
+  const saveCategoryChanges = async () => {
+    if (
+      !selectedAdminMenu ||
+      editingCategoryIndex === null ||
+      !editCategoryName.trim()
+    ) {
+      return;
+    }
+
+    try {
+      const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+      updatedCategories[editingCategoryIndex] = {
+        ...updatedCategories[editingCategoryIndex],
+        name: editCategoryName.trim(),
+        description: editCategoryDescription.trim(),
+      };
+
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        categories: updatedCategories,
+      });
+
+      setSelectedAdminMenu({
+        ...selectedAdminMenu,
+        categories: updatedCategories,
+      });
+
+      setEditingCategoryIndex(null);
+      await loadAdminMenus();
+    } catch (error) {
+      console.error("Error saving category changes:", error);
+    }
+  };
+
   const addNewCategory = async () => {
     if (!selectedAdminMenu || !newCategoryName.trim()) {
       return;
@@ -677,6 +722,14 @@ export default function App() {
 
     const addOnPrice = hasAddOn ? Number(newAddOnPrice) : 0;
 
+    const allAddOns = [
+      ...(hasAddOn ? [{ name: newAddOnName.trim(), price: addOnPrice }] : []),
+      ...additionalAddOns.map((addOn) => ({
+        name: addOn.name.trim(),
+        price: Number(addOn.price),
+      })),
+    ];
+
     if (
       hasAddOn &&
       (!newAddOnPrice.trim() || !Number.isFinite(addOnPrice) || addOnPrice < 0)
@@ -689,6 +742,18 @@ export default function App() {
     }
 
     if (!Number.isFinite(price) || price < 0) {
+      return;
+    }
+
+    if (
+      additionalAddOns.some(
+        (addOn) =>
+          !addOn.name.trim() ||
+          !addOn.price.trim() ||
+          !Number.isFinite(Number(addOn.price)) ||
+          Number(addOn.price) < 0,
+      )
+    ) {
       return;
     }
 
@@ -710,11 +775,9 @@ export default function App() {
             description: newItemDescription.trim(),
             price,
             status: "Available",
-            ...(hasAddOn && {
-              addOn: {
-                name: newAddOnName.trim(),
-                price: addOnPrice,
-              },
+            ...(allAddOns.length > 0 && {
+              addOns: allAddOns,
+              addOn: allAddOns[0],
             }),
           },
         ],
@@ -734,6 +797,7 @@ export default function App() {
       setNewItemPrice("");
       setNewAddOnName("");
       setNewAddOnPrice("");
+      setAdditionalAddOns([]);
       setNewItemCategoryIndex(null);
 
       await loadAdminMenus();
@@ -1220,24 +1284,76 @@ export default function App() {
                         onPress={() => {
                           const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
 
-                          setSelectedAddOns((previous) =>
-                            previous.includes(itemId)
-                              ? previous.filter((id) => id !== itemId)
-                              : [...previous, itemId],
-                          );
+                          if (item.addOns?.length > 1) {
+                            setSelectedAddOnOptions((previous) => ({
+                              ...previous,
+                              [itemId]: previous[itemId] === 0 ? -1 : 0,
+                            }));
+                          } else {
+                            setSelectedAddOns((previous) =>
+                              previous.includes(itemId)
+                                ? previous.filter((id) => id !== itemId)
+                                : [...previous, itemId],
+                            );
+                          }
                         }}
                       >
                         <Text style={[styles.addOnText, { fontSize: 20 }]}>
-                          {selectedAddOns.includes(
-                            `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`,
-                          )
-                            ? "☑"
-                            : "☐"}{" "}
+                          {item.addOns?.length > 1
+                            ? selectedAddOnOptions[
+                                `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`
+                              ] === 0
+                              ? "☑ "
+                              : "☐ "
+                            : selectedAddOns.includes(
+                                  `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`,
+                                )
+                              ? "☑ "
+                              : "☐ "}
                           {item.addOn.name} (+$
                           {Number(item.addOn.price).toFixed(2)})
                         </Text>
                       </Pressable>
                     )}
+
+                    {item.addOns?.length > 1 &&
+                      item.addOns
+                        .slice(1)
+                        .map(
+                          (
+                            addOn: { name: string; price: number },
+                            addOnIndex: number,
+                          ) => {
+                            const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
+                            const optionIndex = addOnIndex + 1;
+
+                            return (
+                              <Pressable
+                                key={optionIndex}
+                                onPress={() => {
+                                  setSelectedAddOnOptions((previous) => ({
+                                    ...previous,
+                                    [itemId]:
+                                      previous[itemId] === optionIndex
+                                        ? -1
+                                        : optionIndex,
+                                  }));
+                                }}
+                              >
+                                <Text
+                                  style={[styles.addOnText, { fontSize: 20 }]}
+                                >
+                                  {selectedAddOnOptions[itemId] === optionIndex
+                                    ? "☑ "
+                                    : "☐ "}
+                                  {addOn.name} (+$
+                                  {Number(addOn.price).toFixed(2)})
+                                </Text>
+                              </Pressable>
+                            );
+                          },
+                        )}
+
                     {(item.status === "Limited" ||
                       item.status === "Sold Out") && (
                       <Text
@@ -1260,29 +1376,43 @@ export default function App() {
                       onPress={() => {
                         const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
 
-                        const hasAddOn =
-                          Boolean(item.addOn?.name) &&
-                          selectedAddOns.includes(itemId);
+                        const selectedOptionIndex =
+                          selectedAddOnOptions[itemId];
 
-                        const cartId = hasAddOn ? `${item.Id}-addOn` : itemId;
+                        const selectedAddOn =
+                          item.addOns?.length > 1
+                            ? selectedOptionIndex >= 0
+                              ? item.addOns[selectedOptionIndex]
+                              : undefined
+                            : selectedAddOns.includes(itemId)
+                              ? item.addOn
+                              : undefined;
+
+                        const hasAddOn = Boolean(selectedAddOn?.name);
+
+                        const cartId = hasAddOn
+                          ? `${itemId}-addOn-${selectedAddOn.name}`
+                          : itemId;
 
                         const cartName = hasAddOn
-                          ? `${item.name} + ${item.addOn.name}`
+                          ? `${item.name} + ${selectedAddOn.name}`
                           : item.name;
 
                         const finalPrice =
                           Number(item.price) +
-                          (hasAddOn ? Number(item.addOn?.price ?? 0) : 0);
+                          (hasAddOn ? Number(selectedAddOn?.price ?? 0) : 0);
 
                         addToCart(cartId, cartName, finalPrice);
 
-                        setSelectedAddOns((previous) =>
-                          previous.filter((id) => id !== itemId),
-                        );
+                        setSelectedAddOnOptions((previous) => {
+                          const updated = { ...previous };
+                          delete updated[itemId];
+                          return updated;
+                        });
                       }}
                     >
                       <Text style={styles.adminButtonText}>
-                        {item.stauts === "Sold Out"
+                        {item.status === "Sold Out"
                           ? "Sold Out"
                           : "Add to Cart"}
                       </Text>
@@ -2257,6 +2387,51 @@ export default function App() {
                 style={styles.adminButton}
                 onPress={() => {
                   const categoryIndex = Number(group.field.split(".")[1]);
+                  const category =
+                    selectedAdminMenu?.categories?.[categoryIndex];
+                  setEditingCategoryIndex(categoryIndex);
+                  setEditCategoryName(category?.name || "");
+                  setEditCategoryDescription(category?.description || "");
+                }}
+              >
+                <Text style={styles.adminButtonText}>Edit Category</Text>
+              </Pressable>
+            )}
+
+            {group.field.startsWith("categories.") &&
+              editingCategoryIndex === Number(group.field.split(".")[1]) && (
+                <View style={styles.card}>
+                  <Text style={styles.label}>Category Name</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={editCategoryName}
+                    onChangeText={setEditCategoryName}
+                    placeholder="Category Name"
+                  />
+
+                  <Text style={styles.label}>Category Description</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={editCategoryDescription}
+                    onChangeText={setEditCategoryDescription}
+                    placeholder="Category description (optional)"
+                    multiline
+                  />
+
+                  <Pressable
+                    style={styles.adminButton}
+                    onPress={() => saveCategoryChanges()}
+                  >
+                    <Text style={styles.adminButtonText}>Save Changes</Text>
+                  </Pressable>
+                </View>
+              )}
+
+            {group.field.startsWith("categories.") && (
+              <Pressable
+                style={styles.adminButton}
+                onPress={() => {
+                  const categoryIndex = Number(group.field.split(".")[1]);
 
                   if (Platform.OS === "web") {
                     const confirmed = window.confirm(
@@ -2337,6 +2512,55 @@ export default function App() {
                       placeholder="Add-on price"
                       keyboardType="decimal-pad"
                     />
+
+                    <Pressable
+                      style={styles.adminButton}
+                      onPress={() =>
+                        setAdditionalAddOns((previous) => [
+                          ...previous,
+                          { name: "", price: "" },
+                        ])
+                      }
+                    >
+                      <Text style={styles.adminButtonText}>
+                        Add Another Add-on
+                      </Text>
+                    </Pressable>
+
+                    {additionalAddOns.map((addOn, index) => (
+                      <View key={index}>
+                        <TextInput
+                          style={styles.input}
+                          value={addOn.name}
+                          onChangeText={(text) =>
+                            setAdditionalAddOns((previous) =>
+                              previous.map((option, optionIndex) =>
+                                optionIndex === index
+                                  ? { ...option, name: text }
+                                  : option,
+                              ),
+                            )
+                          }
+                          placeholder={`Additional add-on ${index + 1} name`}
+                        />
+
+                        <TextInput
+                          style={styles.input}
+                          value={addOn.price}
+                          onChangeText={(text) =>
+                            setAdditionalAddOns((previous) =>
+                              previous.map((option, optionIndex) =>
+                                optionIndex === index
+                                  ? { ...option, price: text }
+                                  : option,
+                              ),
+                            )
+                          }
+                          placeholder="Additional add-on price"
+                          keyboardType="decimal-pad"
+                        />
+                      </View>
+                    ))}
 
                     <Pressable
                       style={styles.adminButton}
