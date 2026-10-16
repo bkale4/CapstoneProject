@@ -210,6 +210,10 @@ export default function App() {
   const [adminMenus, setAdminMenus] = useState<any>([]);
 
   const [newMenuName, setNewMenuName] = useState("");
+  const [newMenuDescription, setNewMenuDescription] = useState("");
+  const [editMenuDescription, setEditMenuDescription] = useState("");
+  const [isEditingMenuDescription, setIsEditingMenuDescription] =
+    useState(false);
   const [newMenuType, setNewMenuType] = useState("");
   const [menuTypeDropdown, setMenuTypeDropdown] = useState(false);
   const [newMenuLocation, setNewMenuLocation] = useState("");
@@ -609,6 +613,7 @@ export default function App() {
     try {
       await addDoc(collection(db, "menus"), {
         name: newMenuName,
+        description: newMenuDescription,
         type: newMenuType,
         location: newMenuLocation,
         eventName: newMenuEventName,
@@ -618,6 +623,7 @@ export default function App() {
       });
 
       setNewMenuName("");
+      setNewMenuDescription("");
       setNewMenuType("");
       setNewMenuLocation("");
       setNewMenuEventName("");
@@ -662,6 +668,28 @@ export default function App() {
       await loadAdminMenus();
     } catch (error) {
       console.error("Error saving category changes:", error);
+    }
+  };
+
+  const saveMenuDescription = async () => {
+    if (!selectedAdminMenu) {
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        description: editMenuDescription.trim(),
+      });
+
+      setSelectedAdminMenu({
+        ...selectedAdminMenu,
+        description: editMenuDescription.trim(),
+      });
+
+      await loadAdminMenus();
+      setIsEditingMenuDescription(false);
+    } catch (error) {
+      console.error("Error saving menu description:", error);
     }
   };
 
@@ -1822,6 +1850,14 @@ export default function App() {
             {selectedCateringMenu.name}
           </Text>
         )}
+
+        {selectedCateringMenu?.type === "dropOffCatering" &&
+          selectedCateringMenu.description?.trim() && (
+            <Text style={styles.menuDescription}>
+              {selectedCateringMenu.description}
+            </Text>
+          )}
+
         {selectedCateringMenu?.type === "dropOffCatering" &&
           selectedCateringMenu.categories?.map(
             (category: any, categoryIndex: number) => (
@@ -2591,6 +2627,8 @@ export default function App() {
               style={styles.adminButton}
               onPress={() => {
                 setSelectedAdminMenu(menu);
+                setEditMenuDescription(menu.description || "");
+                setIsEditingMenuDescription(false);
                 setScreen("manageMenuItems");
               }}
             >
@@ -2615,6 +2653,40 @@ export default function App() {
         </Pressable>
 
         <Text style={styles.cardTitle}>{selectedAdminMenu?.name}</Text>
+
+        <Text style={styles.label}>Menu Description</Text>
+
+        {isEditingMenuDescription ? (
+          <>
+            <TextInput
+              style={styles.input}
+              value={editMenuDescription}
+              onChangeText={setEditMenuDescription}
+              placeholder="Enter menu description"
+              multiline
+            />
+
+            <Pressable
+              style={styles.adminButton}
+              onPress={() => saveMenuDescription()}
+            >
+              <Text style={styles.adminButtonText}>Save Description</Text>
+            </Pressable>
+          </>
+        ) : (
+          <>
+            <Text style={styles.menuDescription}>
+              {selectedAdminMenu?.description || "No description added."}
+            </Text>
+
+            <Pressable
+              style={styles.adminButton}
+              onPress={() => setIsEditingMenuDescription(true)}
+            >
+              <Text style={styles.adminButtonText}>Edit Menu Description</Text>
+            </Pressable>
+          </>
+        )}
 
         <Text style={styles.cardSubtitle}>
           Add, edit, price, and remove menu items.
@@ -3104,8 +3176,16 @@ export default function App() {
           placeholder="Enter menu name"
         />
 
-        <Text style={styles.label}>Menu Type</Text>
+        <Text style={styles.label}>Menu Description</Text>
+        <TextInput
+          style={styles.input}
+          value={newMenuDescription}
+          onChangeText={setNewMenuDescription}
+          placeholder="Enter menu description"
+          multiline
+        />
 
+        <Text style={styles.label}>Menu Type</Text>
         <Pressable
           style={styles.dropdown}
           onPress={() => setMenuTypeDropdown(!menuTypeDropdown)}
