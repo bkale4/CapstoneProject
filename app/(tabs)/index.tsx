@@ -232,6 +232,11 @@ export default function App() {
   const [newItemName, setNewItemName] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
+  const [newItemPricingType, setNewItemPricingType] = useState<
+    "single" | "halfFull"
+  >("single");
+  const [newItemHalfPrice, setNewItemHalfPrice] = useState("");
+  const [newItemFullPrice, setNewItemFullPrice] = useState("");
   const [newItemCategoryIndex, setNewItemCategoryIndex] = useState<
     number | null
   >(null);
@@ -251,6 +256,11 @@ export default function App() {
   const [editItemName, setEditItemName] = useState("");
   const [editItemDescription, setEditItemDescription] = useState("");
   const [editItemPrice, setEditItemPrice] = useState("");
+  const [editItemPricingType, setEditItemPricingType] = useState<
+    "single" | "halfFull"
+  >("single");
+  const [editItemHalfPrice, setEditItemHalfPrice] = useState("");
+  const [editItemFullPrice, setEditItemFullPrice] = useState("");
   const [editItemStatus, setEditItemStatus] = useState("");
   const [editItemAddOnName, setEditItemAddOnName] = useState("");
   const [editItemAddOnPrice, setEditItemAddOnPrice] = useState("");
@@ -411,6 +421,27 @@ export default function App() {
       return;
     }
 
+    if (editItemPricingType == "single") {
+      if (
+        !editItemPrice.trim() ||
+        !Number.isFinite(Number(editItemPrice)) ||
+        Number(editItemPrice) < 0
+      ) {
+        return;
+      }
+    } else {
+      if (
+        !editItemHalfPrice.trim() ||
+        !editItemFullPrice.trim() ||
+        !Number.isFinite(Number(editItemHalfPrice)) ||
+        Number(editItemHalfPrice) < 0 ||
+        !Number.isFinite(Number(editItemFullPrice)) ||
+        Number(editItemFullPrice) < 0
+      ) {
+        return;
+      }
+    }
+
     const hasAddOn = editItemAddOnName.trim() !== "";
     const addOnPrice = hasAddOn ? Number(editItemAddOnPrice) : 0;
 
@@ -438,7 +469,15 @@ export default function App() {
         ...updatedItems[selectedAdminItemIndex],
         name: editItemName,
         description: editItemDescription,
-        price: Number(editItemPrice),
+        pricingType: editItemPricingType,
+        ...(editItemPricingType === "single"
+          ? {
+              price: Number(editItemPrice),
+            }
+          : {
+              halfPrice: Number(editItemHalfPrice),
+              fullPrice: Number(editItemFullPrice),
+            }),
         status: editItemStatus,
         ...(hasAddOn && {
           addOn: {
@@ -450,6 +489,13 @@ export default function App() {
 
       if (!hasAddOn) {
         delete updatedItems[selectedAdminItemIndex].addOn;
+      }
+
+      if (editItemPricingType === "single") {
+        delete updatedItems[selectedAdminItemIndex].halfPrice;
+        delete updatedItems[selectedAdminItemIndex].fullPrice;
+      } else {
+        delete updatedItems[selectedAdminItemIndex].price;
       }
 
       if (isCustomCategory) {
@@ -747,7 +793,9 @@ export default function App() {
       !selectedAdminMenu ||
       newItemCategoryIndex === null ||
       !newItemName.trim() ||
-      !newItemPrice.trim()
+      (newItemPricingType === "single" && !newItemPrice.trim()) ||
+      (newItemPricingType === "halfFull" &&
+        (!newItemHalfPrice.trim() || !newItemFullPrice.trim()))
     ) {
       return;
     }
@@ -777,8 +825,22 @@ export default function App() {
       return;
     }
 
-    if (!Number.isFinite(price) || price < 0) {
-      return;
+    if (newItemPricingType === "single") {
+      if (!Number.isFinite(price) || price < 0) {
+        return;
+      }
+    } else {
+      const halfPrice = Number(newItemHalfPrice);
+      const fullPrice = Number(newItemFullPrice);
+
+      if (
+        !Number.isFinite(halfPrice) ||
+        halfPrice < 0 ||
+        !Number.isFinite(fullPrice) ||
+        fullPrice < 0
+      ) {
+        return;
+      }
     }
 
     if (
@@ -809,7 +871,13 @@ export default function App() {
           {
             name: newItemName.trim(),
             description: newItemDescription.trim(),
-            price,
+            pricingType: newItemPricingType,
+            ...(newItemPricingType === "single"
+              ? { price }
+              : {
+                  halfPrice: Number(newItemHalfPrice),
+                  fullPrice: Number(newItemFullPrice),
+                }),
             status: "Available",
             ...(allAddOns.length > 0 && {
               addOns: allAddOns,
@@ -831,6 +899,9 @@ export default function App() {
       setNewItemName("");
       setNewItemDescription("");
       setNewItemPrice("");
+      setNewItemPricingType("single");
+      setNewItemHalfPrice("");
+      setNewItemFullPrice("");
       setNewAddOnName("");
       setNewAddOnPrice("");
       setAdditionalAddOns([]);
@@ -1886,9 +1957,20 @@ export default function App() {
                       <Text style={styles.menuDescription}>
                         {item.description}
                       </Text>
-                      <Text style={styles.cateringPrice}>
-                        ${Number(item.price).toFixed(2)}
-                      </Text>
+                      {item.pricingType === "halfFull" ? (
+                        <>
+                          <Text style={styles.cateringPrice}>
+                            Half: ${Number(item.halfPrice).toFixed(2)}
+                          </Text>
+                          <Text style={styles.cateringPrice}>
+                            Full: ${Number(item.fullPrice).toFixed(2)}
+                          </Text>
+                        </>
+                      ) : (
+                        <Text style={styles.cateringPrice}>
+                          ${Number(item.price).toFixed(2)}
+                        </Text>
+                      )}
 
                       {(item.status === "Limited" ||
                         item.status === "Sold Out") && (
@@ -2841,13 +2923,51 @@ export default function App() {
                       placeholder="Description"
                     />
 
-                    <TextInput
-                      style={styles.input}
-                      value={newItemPrice}
-                      onChangeText={setNewItemPrice}
-                      placeholder="Price"
-                      keyboardType="decimal-pad"
-                    />
+                    <Text style={styles.label}>Pricing Type</Text>
+                    <Pressable
+                      style={styles.adminButton}
+                      onPress={() =>
+                        setNewItemPricingType(
+                          newItemPricingType === "single"
+                            ? "halfFull"
+                            : "single",
+                        )
+                      }
+                    >
+                      <Text style={styles.adminButtonText}>
+                        {newItemPricingType === "single"
+                          ? "Single Price (Tap for Half/Full"
+                          : "Half/Full Pricing (Tap for Single)"}
+                      </Text>
+                    </Pressable>
+
+                    {newItemPricingType === "single" ? (
+                      <TextInput
+                        style={styles.input}
+                        value={newItemPrice}
+                        onChangeText={setNewItemPrice}
+                        placeholder="Price"
+                        keyboardType="decimal-pad"
+                      />
+                    ) : (
+                      <>
+                        <TextInput
+                          style={styles.input}
+                          value={newItemHalfPrice}
+                          onChangeText={setNewItemHalfPrice}
+                          placeholder="Half Price"
+                          keyboardType="decimal-pad"
+                        />
+
+                        <TextInput
+                          style={styles.input}
+                          value={newItemFullPrice}
+                          onChangeText={setNewItemFullPrice}
+                          placeholder="Full Price"
+                          keyboardType="decimal-pad"
+                        />
+                      </>
+                    )}
 
                     <Text style={styles.label}>Optional Add-on</Text>
                     <TextInput
@@ -2938,9 +3058,20 @@ export default function App() {
                     <Text style={styles.cardSubtitle}>{item.description}</Text>
                   )}
 
-                  <Text style={styles.cardSubtitle}>
-                    ${Number(item.price).toFixed(2)}
-                  </Text>
+                  {item.pricingType === "halfFull" ? (
+                    <>
+                      <Text style={styles.cardSubtitle}>
+                        Half: ${Number(item.halfPrice).toFixed(2)}
+                      </Text>
+                      <Text style={styles.cardSubtitle}>
+                        Full: ${Number(item.fullPrice).toFixed(2)}
+                      </Text>
+                    </>
+                  ) : (
+                    <Text style={styles.cardSubtitle}>
+                      ${Number(item.price).toFixed(2)}
+                    </Text>
+                  )}
 
                   {item.addOn && (
                     <Text style={styles.cardSubtitle}>
@@ -2961,6 +3092,13 @@ export default function App() {
                       setEditItemName(item.name || "");
                       setEditItemDescription(item.description || "");
                       setEditItemPrice(item.price ?? "");
+                      setEditItemPricingType(item.pricingType || "single");
+                      setEditItemHalfPrice(
+                        item.halfPrice != null ? String(item.halfPrice) : "",
+                      );
+                      setEditItemFullPrice(
+                        item.fullPrice != null ? String(item.fullPrice) : "",
+                      );
                       setEditItemStatus(item.status || "");
                       setEditItemAddOnName(item.addOn?.name || "");
                       setEditItemAddOnPrice(
@@ -3067,14 +3205,54 @@ export default function App() {
           placeholder="Enter description"
         />
 
-        <Text style={styles.label}>Price</Text>
-        <TextInput
-          style={styles.input}
-          value={editItemPrice}
-          onChangeText={setEditItemPrice}
-          placeholder="Enter price"
-          keyboardType="decimal-pad"
-        />
+        <Text style={styles.label}>Pricing Type</Text>
+        <Pressable
+          style={styles.adminButton}
+          onPress={() =>
+            setEditItemPricingType(
+              editItemPricingType === "single" ? "halfFull" : "single",
+            )
+          }
+        >
+          <Text style={styles.adminButtonText}>
+            {editItemPricingType === "single"
+              ? "Single Price (Tap for Half/Full)"
+              : "Half/Full Pricing (Tap for Single)"}
+          </Text>
+        </Pressable>
+
+        {editItemPricingType === "single" ? (
+          <>
+            <Text style={styles.label}>Price</Text>
+            <TextInput
+              style={styles.input}
+              value={editItemPrice}
+              onChangeText={setEditItemPrice}
+              placeholder="Enter price"
+              keyboardType="decimal-pad"
+            />
+          </>
+        ) : (
+          <>
+            <Text style={styles.label}>Half Price</Text>
+            <TextInput
+              style={styles.input}
+              value={editItemHalfPrice}
+              onChangeText={setEditItemHalfPrice}
+              placeholder="Enter half price"
+              keyboardType="decimal-pad"
+            />
+
+            <Text style={styles.label}>Full Price</Text>
+            <TextInput
+              style={styles.input}
+              value={editItemFullPrice}
+              onChangeText={setEditItemFullPrice}
+              placeholder="Enter full price"
+              keyboardType="decimal-pad"
+            />
+          </>
+        )}
 
         <Text style={styles.label}>Optional Add-on</Text>
         <TextInput
