@@ -1841,9 +1841,20 @@ export default function App() {
                     <Text style={styles.menuDescription}>
                       {item.description}
                     </Text>
-                    <Text style={styles.cateringPrice}>
-                      ${Number(item.price).toFixed(2)}
-                    </Text>
+                    {item.pricingType === "halfFull" ? (
+                      <>
+                        <Text style={styles.cateringPrice}>
+                          Half: ${Number(item.halfPrice).toFixed(2)}
+                        </Text>
+                        <Text style={styles.cateringPrice}>
+                          Full: ${Number(item.fullPrice).toFixed(2)}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text style={styles.cateringPrice}>
+                        ${Number(item.price).toFixed(2)}
+                      </Text>
+                    )}
 
                     {(item.status === "Limited" ||
                       item.status === "Sold Out") && (
