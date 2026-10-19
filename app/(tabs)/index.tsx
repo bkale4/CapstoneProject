@@ -208,6 +208,7 @@ export default function App() {
   const [guestEmail, setGuestEmail] = useState("");
 
   const [adminMenus, setAdminMenus] = useState<any>([]);
+  const [adminOrders, setAdminOrders] = useState<any[]>([]);
 
   const [newMenuName, setNewMenuName] = useState("");
   const [newMenuDescription, setNewMenuDescription] = useState("");
@@ -610,6 +611,21 @@ export default function App() {
       setAdminMenus(menus);
     } catch (error) {
       console.error("Error loading admin menus:", error);
+    }
+  };
+
+  const loadAdminOrders = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "orders"));
+
+      const orders = snapshot.docs.map((orderDoc) => ({
+        id: orderDoc.id,
+        ...orderDoc.data(),
+      }));
+
+      setAdminOrders(orders);
+    } catch (error) {
+      console.error("Error loading customer orders:", error);
     }
   };
 
@@ -2592,7 +2608,10 @@ export default function App() {
       <ScrollView contentContainerStyle={styles.content}>
         <Pressable
           style={styles.card}
-          onPress={() => setScreen("ordersManagement")}
+          onPress={async () => {
+            await loadAdminOrders();
+            setScreen("ordersManagement");
+          }}
         >
           <Text style={styles.cardTitle}>Incoming Orders</Text>
           <Text style={styles.cardSubtitle}>
@@ -2637,25 +2656,29 @@ export default function App() {
   const OrdersManagementScreen = () => (
     <>
       <Header title="Incoming Orders" />
+
       <ScrollView contentContainerStyle={styles.content}>
         <BusinessBackButton />
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Order #1042</Text>
-          <Text style={styles.cardSubtitle}>Customer: John Doe</Text>
-          <Text style={styles.cardSubtitle}>
-            Items: Pulled Pork Sandwich, Sweet Tea
-          </Text>
-          <Text style={styles.cardSubtitle}>Status: Preparing</Text>
-        </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Order #1043</Text>
-          <Text style={styles.cardSubtitle}>Customer: Jane Doe</Text>
-          <Text style={styles.cardSubtitle}>
-            Items: BBQ Chicken Plate, Lemonade
-          </Text>
-          <Text style={styles.cardSubtitle}>Status: Ready for Pickup</Text>
-        </View>
+        {adminOrders.length === 0 ? (
+          <Text style={styles.cardSubtitle}>No customer orders found.</Text>
+        ) : (
+          adminOrders
+            .filter((order: any) => order.status === "Open")
+            .map((order: any) => (
+              <View key={order.id} style={styles.card}>
+                <Text style={styles.cardTitle}>
+                  Order #{order.id.slice(0, 8)}
+                </Text>
+
+                <Text style={styles.cardSubtitle}>
+                  Customer: {order.customerName}
+                </Text>
+
+                <Text style={styles.cardSubtitle}>Status: {order.status}</Text>
+              </View>
+            ))
+        )}
       </ScrollView>
     </>
   );
