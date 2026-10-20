@@ -809,7 +809,6 @@ export default function App() {
       !selectedAdminMenu ||
       newItemCategoryIndex === null ||
       !newItemName.trim() ||
-      (newItemPricingType === "single" && !newItemPrice.trim()) ||
       (newItemPricingType === "halfFull" &&
         (!newItemHalfPrice.trim() || !newItemFullPrice.trim()))
     ) {
@@ -842,7 +841,10 @@ export default function App() {
     }
 
     if (newItemPricingType === "single") {
-      if (!Number.isFinite(price) || price < 0) {
+      if (
+        newItemPrice.trim() !== "" &&
+        (!Number.isFinite(price) || price < 0)
+      ) {
         return;
       }
     } else {
@@ -889,7 +891,9 @@ export default function App() {
             description: newItemDescription.trim(),
             pricingType: newItemPricingType,
             ...(newItemPricingType === "single"
-              ? { price }
+              ? {
+                  price: newItemPrice.trim() === "" ? null : price,
+                }
               : {
                   halfPrice: Number(newItemHalfPrice),
                   fullPrice: Number(newItemFullPrice),
@@ -1868,7 +1872,11 @@ export default function App() {
                       </>
                     ) : (
                       <Text style={styles.cateringPrice}>
-                        ${Number(item.price).toFixed(2)}
+                        {item.price === null ||
+                        item.price === undefined ||
+                        item.price === ""
+                          ? "Contact for Pricing"
+                          : `${Number(item.price).toFixed(2)}`}
                       </Text>
                     )}
 
@@ -3103,7 +3111,11 @@ export default function App() {
                     </>
                   ) : (
                     <Text style={styles.cardSubtitle}>
-                      ${Number(item.price).toFixed(2)}
+                      {item.price === null ||
+                      item.price === undefined ||
+                      item.price === ""
+                        ? "Contact for Pricing"
+                        : `$${Number(item.price).toFixed(2)}`}
                     </Text>
                   )}
 
