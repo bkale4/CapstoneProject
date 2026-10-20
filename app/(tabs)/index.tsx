@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   createUserWithEmailAndPassword,
@@ -209,6 +209,8 @@ export default function App() {
 
   const [adminMenus, setAdminMenus] = useState<any>([]);
   const [adminOrders, setAdminOrders] = useState<any[]>([]);
+  const manageMenuScrollRef = useRef<ScrollView>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const [newMenuName, setNewMenuName] = useState("");
   const [newMenuDescription, setNewMenuDescription] = useState("");
@@ -2768,7 +2770,14 @@ export default function App() {
     <>
       <Header title="Manage Menu Items" />
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        ref={manageMenuScrollRef}
+        contentContainerStyle={styles.content}
+        onScroll={(event) => {
+          setShowBackToTop(event.nativeEvent.contentOffset.y > 20);
+        }}
+        scrollEventThrottle={16}
+      >
         <Pressable
           style={styles.backButton}
           onPress={() => setScreen("menuManagement")}
@@ -2848,6 +2857,19 @@ export default function App() {
         {getAdminMenuItemGroups(selectedAdminMenu).map((group: any) => (
           <View key={group.field}>
             <Text style={styles.menuSectionTitle}>{group.name}</Text>
+
+            {group.field.startsWith("categories.") &&
+            selectedAdminMenu?.categories?.[Number(group.field.split(".")[1])]
+              ?.parentCategory ? (
+              <Text style={[styles.cardSubtitle, { textAlign: "center" }]}>
+                Parent Category:{" "}
+                {
+                  selectedAdminMenu.categories[
+                    Number(group.field.split(".")[1])
+                  ].parentCategory
+                }
+              </Text>
+            ) : null}
 
             {group.field.startsWith("categories.") && (
               <Pressable
@@ -3195,6 +3217,20 @@ export default function App() {
           </View>
         ))}
       </ScrollView>
+
+      {showBackToTop && (
+        <Pressable
+          style={styles.backToTopButton}
+          onPress={() =>
+            manageMenuScrollRef.current?.scrollTo({
+              y: 0,
+              animated: true,
+            })
+          }
+        >
+          <Text style={styles.backToTopButtonText}>↑ Back to Top</Text>
+        </Pressable>
+      )}
     </>
   );
 
@@ -3625,6 +3661,21 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  backToTopButton: {
+    position: "absolute",
+    bottom: 85,
+    right: 20,
+    backgroundColor: "#405F3D",
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 25,
+    elevation: 5,
+    zIndex: 10,
+  },
+  backToTopButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
   container: {
     flex: 1,
     backgroundColor: "#F6F1E7",
