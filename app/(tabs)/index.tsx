@@ -2677,7 +2677,7 @@ export default function App() {
             .filter((order: any) => order.status === "Open")
             .map((order: any) => (
               <View key={order.id} style={styles.card}>
-                <Text style={styles.cardTitle}>
+                <Text style={styles.orderNumberTitle}>
                   Order #{order.id.slice(0, 8)}
                 </Text>
 
@@ -2686,6 +2686,17 @@ export default function App() {
                 </Text>
 
                 <Text style={styles.cardSubtitle}>Status: {order.status}</Text>
+
+                <Text style={styles.cardSubtitle}>
+                  Payment Status: {order.paymentStatus}
+                </Text>
+
+                <Text style={styles.orderedItemsTitle}>Ordered Items:</Text>
+                {order.items?.map((item: any, index: number) => (
+                  <Text key={index} style={styles.cardSubtitle}>
+                    {item.name} - Quantity: {item.quantity}
+                  </Text>
+                ))}
               </View>
             ))
         )}
@@ -3989,6 +4000,16 @@ const styles = StyleSheet.create({
   },
   selectedOptionText: {
     color: "#ffffff",
+  },
+  orderNumberTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+  orderedItemsTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 16,
+    marginBottom: 2,
   },
   input: {
     backgroundColor: "#FFFFFF",
