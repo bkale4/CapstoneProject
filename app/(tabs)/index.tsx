@@ -631,6 +631,42 @@ export default function App() {
     }
   };
 
+  const markOrderAsFilled = async (orderId: string) => {
+    try {
+      await updateDoc(doc(db, "orders", orderId), {
+        status: "Filled",
+      });
+
+      await loadAdminOrders();
+    } catch (error) {
+      console.error("Error marking order as filled:", error);
+    }
+  };
+
+  const markOrderAsOpen = async (orderId: string) => {
+    try {
+      await updateDoc(doc(db, "orders", orderId), {
+        status: "Open",
+      });
+
+      await loadAdminOrders();
+    } catch (error) {
+      console.error("Error marking order as open:", error);
+    }
+  };
+
+  const markOrderAsCancelled = async (orderId: string) => {
+    try {
+      await updateDoc(doc(db, "orders", orderId), {
+        status: "Cancelled",
+      });
+
+      await loadAdminOrders();
+    } catch (error) {
+      console.error("Error marking order as cancelled:", error);
+    }
+  };
+
   const isMenuActive = (menuName: string) => {
     const menu = adminMenus.find((menu: any) => menu.name === menuName);
 
@@ -2673,32 +2709,70 @@ export default function App() {
         {adminOrders.length === 0 ? (
           <Text style={styles.cardSubtitle}>No customer orders found.</Text>
         ) : (
-          adminOrders
-            .filter((order: any) => order.status === "Open")
-            .map((order: any) => (
-              <View key={order.id} style={styles.card}>
-                <Text style={styles.orderNumberTitle}>
-                  Order #{order.id.slice(0, 8)}
-                </Text>
+          ["Open", "Filled", "Cancelled"].map((status) => (
+            <View key={status}>
+              <Text style={styles.menuSectionTitle}>{status} Orders</Text>
+              {adminOrders
+                .filter((order: any) => order.status === status)
+                .map((order: any) => (
+                  <View key={order.id} style={styles.card}>
+                    <Text style={styles.orderNumberTitle}>
+                      Order #{order.id.slice(0, 8)}
+                    </Text>
 
-                <Text style={styles.cardSubtitle}>
-                  Customer: {order.customerName}
-                </Text>
+                    <Text style={styles.cardSubtitle}>
+                      Customer: {order.customerName}
+                    </Text>
 
-                <Text style={styles.cardSubtitle}>Status: {order.status}</Text>
+                    <Text style={styles.cardSubtitle}>
+                      Status: {order.status}
+                    </Text>
 
-                <Text style={styles.cardSubtitle}>
-                  Payment Status: {order.paymentStatus}
-                </Text>
+                    <Text style={styles.cardSubtitle}>
+                      Payment Status: {order.paymentStatus}
+                    </Text>
 
-                <Text style={styles.orderedItemsTitle}>Ordered Items:</Text>
-                {order.items?.map((item: any, index: number) => (
-                  <Text key={index} style={styles.cardSubtitle}>
-                    {item.name} - Quantity: {item.quantity}
-                  </Text>
+                    <Text style={styles.orderedItemsTitle}>Ordered Items:</Text>
+                    {order.items?.map((item: any, index: number) => (
+                      <Text key={index} style={styles.cardSubtitle}>
+                        {item.name} - Quantity: {item.quantity}
+                      </Text>
+                    ))}
+
+                    {order.status !== "Filled" && (
+                      <Pressable
+                        style={styles.adminButton}
+                        onPress={() => markOrderAsFilled(order.id)}
+                      >
+                        <Text style={styles.adminButtonText}>
+                          Mark as Filled
+                        </Text>
+                      </Pressable>
+                    )}
+
+                    {order.status !== "Open" && (
+                      <Pressable
+                        style={styles.adminButton}
+                        onPress={() => markOrderAsOpen(order.id)}
+                      >
+                        <Text style={styles.adminButtonText}>Mark as Open</Text>
+                      </Pressable>
+                    )}
+
+                    {order.status !== "Cancelled" && (
+                      <Pressable
+                        style={styles.adminButton}
+                        onPress={() => markOrderAsCancelled(order.id)}
+                      >
+                        <Text style={styles.adminButtonText}>
+                          Mark as Cancelled
+                        </Text>
+                      </Pressable>
+                    )}
+                  </View>
                 ))}
-              </View>
-            ))
+            </View>
+          ))
         )}
       </ScrollView>
     </>
