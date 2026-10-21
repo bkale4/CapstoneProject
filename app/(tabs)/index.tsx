@@ -56,6 +56,7 @@ type Screen =
   | "cateringManagement"
   | "menuManagement"
   | "addMenu"
+  | "editMenu"
   | "manageMenuItems"
   | "editMenuItem"
   | "availabilityManagement";
@@ -213,14 +214,19 @@ export default function App() {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   const [newMenuName, setNewMenuName] = useState("");
+  const [editMenuName, setEditMenuName] = useState("");
   const [newMenuDescription, setNewMenuDescription] = useState("");
   const [editMenuDescription, setEditMenuDescription] = useState("");
   const [isEditingMenuDescription, setIsEditingMenuDescription] =
     useState(false);
   const [newMenuType, setNewMenuType] = useState("");
+  const [editMenuType, setEditMenuType] = useState("");
+  const [editMenuTypeDropdown, setEditMenuTypeDropdown] = useState(false);
   const [menuTypeDropdown, setMenuTypeDropdown] = useState(false);
   const [newMenuLocation, setNewMenuLocation] = useState("");
+  const [editMenuLocation, setEditMenuLocation] = useState("");
   const [newMenuEventName, setNewMenuEventName] = useState("");
+  const [editMenuEventName, setEditMenuEventName] = useState("");
   const [newMenuActive, setNewMenuActive] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
@@ -426,7 +432,7 @@ export default function App() {
 
     if (editItemPricingType == "single") {
       if (
-        !editItemPrice.trim() ||
+        (String(editItemPrice ?? "").trim() === "" && editItemPrice !== null) ||
         !Number.isFinite(Number(editItemPrice)) ||
         Number(editItemPrice) < 0
       ) {
@@ -475,7 +481,10 @@ export default function App() {
         pricingType: editItemPricingType,
         ...(editItemPricingType === "single"
           ? {
-              price: Number(editItemPrice),
+              price:
+                editItemPrice === null || String(editItemPrice).trim() === ""
+                  ? null
+                  : Number(editItemPrice),
             }
           : {
               halfPrice: Number(editItemHalfPrice),
@@ -2838,6 +2847,21 @@ export default function App() {
               style={styles.adminButton}
               onPress={() => {
                 setSelectedAdminMenu(menu);
+                setEditMenuName(menu.name || "");
+                setEditMenuDescription(menu.description || "");
+                setEditMenuType(menu.type || "");
+                setEditMenuLocation(menu.location || "");
+                setEditMenuEventName(menu.eventName || "");
+                setScreen("editMenu");
+              }}
+            >
+              <Text style={styles.adminButtonText}>Edit Menu</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.adminButton}
+              onPress={() => {
+                setSelectedAdminMenu(menu);
                 setEditMenuDescription(menu.description || "");
                 setIsEditingMenuDescription(false);
                 setScreen("manageMenuItems");
@@ -3501,6 +3525,26 @@ export default function App() {
     ];
   };
 
+  const saveMenuChanges = async () => {
+    if (!selectedAdminMenu) return;
+
+    try {
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        name: editMenuName,
+        description: editMenuDescription,
+        type: editMenuType,
+        ...(editMenuType !== selectedAdminMenu.type ? { active: false } : {}),
+        location: editMenuLocation,
+        eventName: editMenuEventName,
+      });
+
+      await loadAdminMenus();
+      setScreen("menuManagement");
+    } catch (error) {
+      console.error("Error saving menu changes:", error);
+    }
+  };
+
   const AddMenuScreen = () => (
     <>
       <Header title="Add Menu" />
@@ -3602,6 +3646,103 @@ export default function App() {
 
         <Pressable style={styles.adminButton} onPress={addNewMenu}>
           <Text style={styles.adminButtonText}>Add Menu</Text>
+        </Pressable>
+      </ScrollView>
+    </>
+  );
+
+  const EditMenuScreen = () => (
+    <>
+      <Header title="Edit Menu" />
+
+      <ScrollView contentContainerStyle={styles.content}>
+        <Pressable
+          style={styles.backButton}
+          onPress={() => setScreen("menuManagement")}
+        >
+          <Text style={styles.backButtonText}>🡄 Back</Text>
+        </Pressable>
+
+        <Text style={styles.label}>Menu Name</Text>
+        <TextInput
+          style={styles.input}
+          value={editMenuName}
+          onChangeText={setEditMenuName}
+          placeholder="Enter menu name"
+        />
+
+        <Text style={styles.label}>Menu Description</Text>
+        <TextInput
+          style={styles.input}
+          value={editMenuDescription}
+          onChangeText={setEditMenuDescription}
+          placeholder="Enter menu description"
+          multiline
+        />
+
+        <Text style={styles.label}>Menu Type</Text>
+        <Pressable
+          style={styles.dropdown}
+          onPress={() => setEditMenuTypeDropdown(!editMenuTypeDropdown)}
+        >
+          <Text style={styles.dropdownText}>
+            {editMenuType === "foodTrailer"
+              ? "Food Trailer"
+              : editMenuType === "dropOffCatering"
+                ? "Drop-Off Catering"
+                : editMenuType === "onsiteEventCatering"
+                  ? "Onsite Event Catering"
+                  : "No menu type selected"}
+          </Text>
+
+          <Text style={styles.dropdownArrow}>
+            {editMenuTypeDropdown ? "▲" : "▼"}
+          </Text>
+        </Pressable>
+
+        {editMenuTypeDropdown && (
+          <view style={styles.dropdownOptions}>
+            {["Food Trailer", "Drop-Off Catering", "Onsite Event Catering"].map(
+              (type) => (
+                <Pressable
+                  key={type}
+                  style={styles.dropdownOption}
+                  onPress={() => {
+                    setEditMenuType(
+                      type === "Food Trailer"
+                        ? "foodTrailer"
+                        : type === "Drop-Off Catering"
+                          ? "dropOffCatering"
+                          : "onsiteEventCatering",
+                    );
+                    setEditMenuTypeDropdown(false);
+                  }}
+                >
+                  <Text style={styles.dropdownOptionText}>{type}</Text>
+                </Pressable>
+              ),
+            )}
+          </view>
+        )}
+
+        <Text style={styles.label}>Location</Text>
+        <TextInput
+          style={styles.input}
+          value={editMenuLocation}
+          onChangeText={setEditMenuLocation}
+          placeholder="Enter location"
+        />
+
+        <Text style={styles.label}>Event Name</Text>
+        <TextInput
+          style={styles.input}
+          value={editMenuEventName}
+          onChangeText={setEditMenuEventName}
+          placeholder="Enter event name"
+        />
+
+        <Pressable style={styles.adminButton} onPress={saveMenuChanges}>
+          <Text style={styles.adminButtonText}>Save Changes</Text>
         </Pressable>
       </ScrollView>
     </>
@@ -3737,6 +3878,7 @@ export default function App() {
       {screen === "availabilityManagement" && <AvailabilityManagementScreen />}
       {screen === "menuManagement" && <MenuManagementScreen />}
       {screen === "addMenu" && AddMenuScreen()}
+      {screen === "editMenu" && EditMenuScreen()}
       {screen === "manageMenuItems" && ManageMenuItemsScreen()}
       {screen === "editMenuItem" && EditMenuItemScreen()}
       {screen === "cateringManagement" && <CateringManagementScreen />}
