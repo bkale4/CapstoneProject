@@ -8,6 +8,7 @@ import {
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -1001,6 +1002,15 @@ export default function App() {
 
     loadAvailability();
   }, []);
+
+  const deleteMenu = async (menuId: string) => {
+    try {
+      await deleteDoc(doc(db, "menus", menuId));
+      await loadAdminMenus();
+    } catch (error) {
+      console.error("Error deleting menu:", error);
+    }
+  };
 
   const toggleAvailability = async (dateKey: string) => {
     const newAvailability = availability[dateKey] === false;
@@ -2856,6 +2866,36 @@ export default function App() {
               }}
             >
               <Text style={styles.adminButtonText}>Edit Menu</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.adminButton}
+              onPress={() => {
+                if (Platform.OS === "web") {
+                  const confirmed = window.confirm(
+                    `Are you sure you want to delete ${menu.name}?`,
+                  );
+
+                  if (confirmed) {
+                    deleteMenu(menu.id);
+                  }
+                  return;
+                }
+                Alert.alert(
+                  "Delete Menu",
+                  `Are you sure you want to delete "${menu.name}"? This will also delete all its categories and items.`,
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: () => deleteMenu(menu.id),
+                    },
+                  ],
+                );
+              }}
+            >
+              <Text style={styles.adminButtonText}>Delete Menu</Text>
             </Pressable>
 
             <Pressable
