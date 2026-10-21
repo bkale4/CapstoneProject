@@ -727,7 +727,7 @@ export default function App() {
         type: newMenuType,
         location: newMenuLocation,
         eventName: newMenuEventName,
-        active: newMenuActive,
+        active: newMenuType === "foodTrailer" ? false : newMenuActive,
         items: [],
         categories: [],
       });
