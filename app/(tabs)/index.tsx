@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { styles } from "../../styles/styles";
 
-import type { CartItem, Screen } from "../../types";
+import type { BusinessLoginScreenProps, CartItem, Screen } from "../../types";
 
 import {
   createUserWithEmailAndPassword,
@@ -35,17 +35,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-
-type BusinessLoginScreenProps = {
-  Header: ({ title }: { title: string }) => React.JSX.Element;
-  styles: any;
-  adminUsername: string;
-  setAdminUsername: React.Dispatch<React.SetStateAction<string>>;
-  adminPassword: string;
-  setAdminPassword: React.Dispatch<React.SetStateAction<string>>;
-  handleBusinessLogin: () => void;
-  loginMessage: string;
-};
 
 function BusinessLoginScreen({
   Header,
