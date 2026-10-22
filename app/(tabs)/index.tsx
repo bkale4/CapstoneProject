@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { styles } from "../../styles/styles";
 
+import type { Screen } from "../../types";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -31,37 +33,8 @@ import {
   ScrollView,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
-
-type Screen =
-  | "home"
-  | "about"
-  | "order"
-  | "foodTrailer"
-  | "onsiteEventCatering"
-  | "onsiteEventMenuOptions"
-  | "cart"
-  | "checkout"
-  | "customerLogin"
-  | "createAccount"
-  | "orderConfirmation"
-  | "catering"
-  | "cateringMenu"
-  | "cateringMenuOptions"
-  | "availabilityCalendar"
-  | "cateringRequest"
-  | "cateringConfirmation"
-  | "businessLogin"
-  | "business"
-  | "ordersManagement"
-  | "cateringManagement"
-  | "menuManagement"
-  | "addMenu"
-  | "editMenu"
-  | "manageMenuItems"
-  | "editMenuItem"
-  | "availabilityManagement";
 
 type BusinessLoginScreenProps = {
   Header: ({ title }: { title: string }) => React.JSX.Element;
