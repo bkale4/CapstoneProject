@@ -26,3 +26,10 @@ export type Screen =
   | "manageMenuItems"
   | "editMenuItem"
   | "availabilityManagement";
+
+export type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};

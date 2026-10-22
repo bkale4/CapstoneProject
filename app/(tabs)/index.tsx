@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { styles } from "../../styles/styles";
 
-import type { Screen } from "../../types";
+import type { CartItem, Screen } from "../../types";
 
 import {
   createUserWithEmailAndPassword,
@@ -103,12 +103,7 @@ function BusinessLoginScreen({
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
-  type CartItem = {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-  };
+
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
