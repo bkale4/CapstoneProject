@@ -14,6 +14,8 @@ import { ServiceCard as SharedServiceCard } from "../../components/ServiceCard";
 
 import { MenuItem as SharedMenuItem } from "../../components/MenuItem";
 
+import { HomeScreen as SharedHomeScreen } from "../../screens/HomeScreen";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -1147,35 +1149,16 @@ export default function App() {
   ) => <SharedMenuItem {...props} addToCart={addToCart} />;
 
   const HomeScreen = () => (
-    <>
-      <Header title="Root & Ranch Catering and Concessions" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.welcome}>Choose a service</Text>
-
-        <ServiceCard
-          title="Food Trailer"
-          subtitle={
-            activeFoodTrailerMenu != null
-              ? "Browse the active food trailer menu and place a quick order."
-              : "The Food Trailer menu is currently unavailable."
-          }
-          onPress={() => {
-            if (activeFoodTrailerMenu !== null) {
-              setSelectedMenuType("foodTrailer");
-              setSelectedLocation(foodTrailerLocation);
-              setSelectedEvent(foodTrailerEventName);
-              setScreen("foodTrailer");
-            }
-          }}
-        />
-
-        <ServiceCard
-          title="Catering"
-          subtitle="Check catering options and submit a request."
-          onPress={() => setScreen("catering")}
-        />
-      </ScrollView>
-    </>
+    <SharedHomeScreen
+      Header={Header}
+      activeFoodTrailerMenu={activeFoodTrailerMenu}
+      foodTrailerLocation={foodTrailerLocation}
+      foodTrailerEventName={foodTrailerEventName}
+      setSelectedMenuType={setSelectedMenuType}
+      setSelectedLocation={setSelectedLocation}
+      setSelectedEvent={setSelectedEvent}
+      setScreen={setScreen}
+    />
   );
 
   const AboutScreen = () => (
