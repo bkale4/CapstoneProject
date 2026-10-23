@@ -12,6 +12,8 @@ import { NavBar as SharedNavBar } from "../../components/NavBar";
 
 import { ServiceCard as SharedServiceCard } from "../../components/ServiceCard";
 
+import { MenuItem as SharedMenuItem } from "../../components/MenuItem";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -1140,57 +1142,9 @@ export default function App() {
 
   const ServiceCard = SharedServiceCard;
 
-  const MenuItem = ({
-    id,
-    name,
-    description,
-    price,
-    status,
-    allowOrdering = true,
-  }: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    status?: "Available" | "Limited" | "Sold Out";
-    allowOrdering?: boolean;
-  }) => {
-    const isSoldOut = status === "Sold Out";
-
-    return (
-      <View style={styles.menuItem}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.menuName}>{name}</Text>
-          <Text style={styles.menuDescription}>{description}</Text>
-          <Text style={styles.menuPrice}>${price.toFixed(2)}</Text>
-
-          {status && status !== "Available" && (
-            <Text
-              style={[
-                styles.statusText,
-                status === "Sold Out" ? styles.soldOutText : styles.limitedText,
-              ]}
-            >
-              {status}
-            </Text>
-          )}
-        </View>
-
-        {allowOrdering && (
-          <Pressable
-            style={[styles.addButton, isSoldOut && styles.disabledButton]}
-            onPress={() => {
-              if (!isSoldOut) addToCart(id, name, price);
-            }}
-          >
-            <Text style={styles.addButtonText}>
-              {isSoldOut ? "Unavailable" : "Add"}
-            </Text>
-          </Pressable>
-        )}
-      </View>
-    );
-  };
+  const MenuItem = (
+    props: Omit<React.ComponentProps<typeof SharedMenuItem>, "addToCart">,
+  ) => <SharedMenuItem {...props} addToCart={addToCart} />;
 
   const HomeScreen = () => (
     <>
