@@ -6,6 +6,8 @@ import type { CartItem, Screen } from "../../types";
 
 import { BusinessLoginScreen } from "../../screens/BusinessScreens";
 
+import { Header as SharedHeader } from "../../components/Header";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -28,14 +30,13 @@ import { auth, db } from "../../firebaseConfig";
 
 import {
   Alert,
-  Image,
   Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
   Text,
   TextInput,
-  View,
+  View
 } from "react-native";
 
 export default function App() {
@@ -1126,16 +1127,7 @@ export default function App() {
   );
 
   const Header = ({ title }: { title: string }) => (
-    <View style={styles.header}>
-      <Pressable style={styles.logoContainer} onPress={() => setScreen("home")}>
-        <Image
-          source={require("../../assets/images/root-ranch-logo.png")}
-          style={styles.logoImage}
-        />
-      </Pressable>
-
-      <Text style={styles.headerTitle}>{title}</Text>
-    </View>
+    <SharedHeader title={title} onHomePress={() => setScreen("home")} />
   );
 
   const NavBar = () => (
