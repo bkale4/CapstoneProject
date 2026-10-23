@@ -10,6 +10,8 @@ import { Header as SharedHeader } from "../../components/Header";
 
 import { NavBar as SharedNavBar } from "../../components/NavBar";
 
+import { ServiceCard as SharedServiceCard } from "../../components/ServiceCard";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -1136,20 +1138,7 @@ export default function App() {
     <SharedNavBar setScreen={setScreen} isAdminLoggedIn={isAdminLoggedIn} />
   );
 
-  const ServiceCard = ({
-    title,
-    subtitle,
-    onPress,
-  }: {
-    title: string;
-    subtitle: string;
-    onPress: () => void;
-  }) => (
-    <Pressable style={styles.card} onPress={onPress}>
-      <Text style={styles.cardTitle}>{title}</Text>
-      <Text style={styles.cardSubtitle}>{subtitle}</Text>
-    </Pressable>
-  );
+  const ServiceCard = SharedServiceCard;
 
   const MenuItem = ({
     id,
