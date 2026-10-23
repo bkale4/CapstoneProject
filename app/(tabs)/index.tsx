@@ -18,6 +18,9 @@ import { HomeScreen as SharedHomeScreen } from "../../screens/HomeScreen";
 
 import { AboutScreen as SharedAboutScreen } from "../../screens/AboutScreen";
 
+// Imports the Order screen component from its separate file
+import { OrderScreen as SharedOrderScreen } from "../../screens/OrderScreen";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -1165,30 +1168,18 @@ export default function App() {
 
   const AboutScreen = () => <SharedAboutScreen Header={Header} />;
 
+  // Connects the Order screen to the application's menu data, navigation, and customer ordering selections
   const OrderScreen = () => (
-    <>
-      <Header title="Order Food" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.welcome}>Choose an ordering option</Text>
-
-        <ServiceCard
-          title="Food Trailer"
-          subtitle={
-            isMenuActive("Food Trailer Menu")
-              ? "Browse the active food trailer menu and place a quick order."
-              : "The Food Trailer menu is currently unavailable."
-          }
-          onPress={() => {
-            if (isMenuActive("Food Trailer Menu")) {
-              setSelectedMenuType("foodTrailer");
-              setSelectedLocation(foodTrailerLocation);
-              setSelectedEvent(foodTrailerEventName);
-              setScreen("foodTrailer");
-            }
-          }}
-        />
-      </ScrollView>
-    </>
+    <SharedOrderScreen
+      Header={Header}
+      isMenuActive={isMenuActive}
+      foodTrailerLocation={foodTrailerLocation}
+      foodTrailerEventName={foodTrailerEventName}
+      setSelectedMenuType={setSelectedMenuType}
+      setSelectedLocation={setSelectedLocation}
+      setSelectedEvent={setSelectedEvent}
+      setScreen={setScreen}
+    />
   );
 
   const FoodTrailerScreen = () => {
