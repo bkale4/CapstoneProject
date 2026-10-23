@@ -8,6 +8,8 @@ import { BusinessLoginScreen } from "../../screens/BusinessScreens";
 
 import { Header as SharedHeader } from "../../components/Header";
 
+import { NavBar as SharedNavBar } from "../../components/NavBar";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -36,7 +38,7 @@ import {
   ScrollView,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
 
 export default function App() {
@@ -1131,30 +1133,7 @@ export default function App() {
   );
 
   const NavBar = () => (
-    <View style={styles.navBar}>
-      <Pressable onPress={() => setScreen("home")}>
-        <Text style={styles.navText}>Home</Text>
-      </Pressable>
-      <Pressable onPress={() => setScreen("about")}>
-        <Text style={styles.navText}>About</Text>
-      </Pressable>
-      <Pressable onPress={() => setScreen("order")}>
-        <Text style={styles.navText}>Order</Text>
-      </Pressable>
-      <Pressable onPress={() => setScreen("catering")}>
-        <Text style={styles.navText}>Catering</Text>
-      </Pressable>
-      <Pressable onPress={() => setScreen("cart")}>
-        <Text style={styles.navText}>Cart</Text>
-      </Pressable>
-      <Pressable
-        onPress={() =>
-          setScreen(isAdminLoggedIn ? "business" : "businessLogin")
-        }
-      >
-        <Text style={styles.navText}>Business</Text>
-      </Pressable>
-    </View>
+    <SharedNavBar setScreen={setScreen} isAdminLoggedIn={isAdminLoggedIn} />
   );
 
   const ServiceCard = ({
