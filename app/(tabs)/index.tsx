@@ -16,6 +16,8 @@ import { MenuItem as SharedMenuItem } from "../../components/MenuItem";
 
 import { HomeScreen as SharedHomeScreen } from "../../screens/HomeScreen";
 
+import { AboutScreen as SharedAboutScreen } from "../../screens/AboutScreen";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -1161,37 +1163,7 @@ export default function App() {
     />
   );
 
-  const AboutScreen = () => (
-    <>
-      <Header title="About Root & Ranch" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>About Us</Text>
-          <Text style={styles.cardSubtitle}>
-            Root & Ranch focuses on food quality and sustainability using
-            locally sourced ingredients while also having a positive impact on
-            our customers and community with the support of our enthusiastic and
-            friendly team.
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Contact Information</Text>
-          <Text style={styles.cardSubtitle}>Phone: (443) 289-6423</Text>
-          <Text style={styles.cardSubtitle}>
-            Email: rootandranchub@outlook.com
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Social Media</Text>
-          <Text style={styles.cardSubtitle}>
-            Facebook: Root & Ranch Catering and Concessions
-          </Text>
-        </View>
-      </ScrollView>
-    </>
-  );
+  const AboutScreen = () => <SharedAboutScreen Header={Header} />;
 
   const OrderScreen = () => (
     <>
