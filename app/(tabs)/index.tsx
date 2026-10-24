@@ -22,11 +22,13 @@ import { AboutScreen as SharedAboutScreen } from "../../screens/AboutScreen";
 import { OrderScreen as SharedOrderScreen } from "../../screens/OrderScreen";
 
 // Imports the Food Trailer screen from its separate file.
-// Uses an alias to avoid conflicting with the original component
 import { FoodTrailerScreen as SharedFoodTrailerScreen } from "../../screens/FoodTrailerScreen";
 
 // Imports the shared Catering Menu Options screen
-import { CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen } from "../../screens/CateringScreens";
+import {
+  CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
+  CateringMenuScreen as SharedCateringMenuScreen,
+} from "../../screens/CateringScreens";
 
 import {
   createUserWithEmailAndPassword,
@@ -1326,90 +1328,14 @@ export default function App() {
     />
   );
 
+  // Displays the Catering Menu screen using the shared component
   const CateringMenuScreen = () => (
-    <>
-      <Header title="Catering Menu" />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        {selectedCateringMenu?.type === "dropOffCatering" && (
-          <Text style={styles.cateringMenuTitle}>
-            {selectedCateringMenu.name}
-          </Text>
-        )}
-
-        {selectedCateringMenu?.type === "dropOffCatering" &&
-          selectedCateringMenu.description?.trim() && (
-            <Text style={styles.menuDescription}>
-              {selectedCateringMenu.description}
-            </Text>
-          )}
-
-        {selectedCateringMenu?.type === "dropOffCatering" &&
-          selectedCateringMenu.categories?.map(
-            (category: any, categoryIndex: number) => (
-              <View key={categoryIndex}>
-                <Pressable
-                  style={styles.menuDropdownButton}
-                  onPress={() =>
-                    setExpandedDropOffCategories((previous) =>
-                      previous.includes(categoryIndex)
-                        ? previous.filter((index) => index !== categoryIndex)
-                        : [...previous, categoryIndex],
-                    )
-                  }
-                >
-                  <Text style={styles.menuDropdownText}>
-                    {category.name}{" "}
-                    {expandedDropOffCategories.includes(categoryIndex)
-                      ? "▲"
-                      : "▼"}
-                  </Text>
-                </Pressable>
-                {expandedDropOffCategories.includes(categoryIndex) &&
-                  category.items?.map((item: any, itemIndex: number) => (
-                    <View key={itemIndex} style={styles.card}>
-                      <Text style={styles.cardTitle}>{item.name}</Text>
-                      <Text style={styles.menuDescription}>
-                        {item.description}
-                      </Text>
-                      {item.pricingType === "halfFull" ? (
-                        <>
-                          <Text style={styles.cateringPrice}>
-                            Half: ${Number(item.halfPrice).toFixed(2)}
-                          </Text>
-                          <Text style={styles.cateringPrice}>
-                            Full: ${Number(item.fullPrice).toFixed(2)}
-                          </Text>
-                        </>
-                      ) : (
-                        <Text style={styles.cateringPrice}>
-                          ${Number(item.price).toFixed(2)}
-                        </Text>
-                      )}
-
-                      {(item.status === "Limited" ||
-                        item.status === "Sold Out") && (
-                        <Text
-                          style={[
-                            styles.statusText,
-                            item.status === "Sold Out"
-                              ? styles.soldOutText
-                              : styles.limitedText,
-                          ]}
-                        >
-                          {item.status}
-                        </Text>
-                      )}
-                    </View>
-                  ))}
-              </View>
-            ),
-          )}
-        <Text style={styles.cateringNote}>
-          Contact us with for special requests and dietary restriction requests.
-        </Text>
-      </ScrollView>
-    </>
+    <SharedCateringMenuScreen
+      Header={Header}
+      selectedCateringMenu={selectedCateringMenu}
+      expandedDropOffCategories={expandedDropOffCategories}
+      setExpandedDropOffCategories={setExpandedDropOffCategories}
+    />
   );
 
   const CartScreen = () => (
