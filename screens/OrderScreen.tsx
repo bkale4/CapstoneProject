@@ -2,18 +2,7 @@ import React from "react";
 import { ScrollView, Text } from "react-native";
 import { ServiceCard } from "../components/ServiceCard";
 import { styles } from "../styles/styles";
-import type { Screen } from "../types";
-
-type OrderScreenProps = {
-  Header: ({ title }: { title: string }) => React.JSX.Element;
-  isMenuActive: (menuName: string) => boolean;
-  foodTrailerLocation: string;
-  foodTrailerEventName: string;
-  setSelectedMenuType: (value: string) => void;
-  setSelectedLocation: (value: string) => void;
-  setSelectedEvent: (value: string) => void;
-  setScreen: (screen: Screen) => void;
-};
+import type { OrderScreenProps } from "../types";
 
 // Displays the Order screen and receives the data functions needed for customer navigation
 export const OrderScreen = ({

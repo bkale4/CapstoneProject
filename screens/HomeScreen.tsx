@@ -2,18 +2,7 @@ import React from "react";
 import { ScrollView, Text } from "react-native";
 import { ServiceCard } from "../components/ServiceCard";
 import { styles } from "../styles/styles";
-import type { Screen } from "../types";
-
-type HomeScreenProps = {
-  Header: ({ title }: { title: string }) => React.JSX.Element;
-  activeFoodTrailerMenu: any;
-  foodTrailerLocation: string;
-  foodTrailerEventName: string;
-  setSelectedMenuType: (value: string) => void;
-  setSelectedLocation: (value: string) => void;
-  setSelectedEvent: (value: string) => void;
-  setScreen: (screen: Screen) => void;
-};
+import type { HomeScreenProps } from "../types";
 
 export const HomeScreen = ({
   Header,

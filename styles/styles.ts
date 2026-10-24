@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 
+// Shared application styles
 export const styles = StyleSheet.create({
   backToTopButton: {
     position: "absolute",

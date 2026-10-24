@@ -3,44 +3,11 @@ import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 // Imports the application's screen navigation type
-import type { Screen } from "../types";
 
 // Immports the application's shared styling
 import { styles } from "../styles/styles";
 
-// Defines the data and functions that the Food Trailer screen receives from the main application
-type FoodTrailerScreenProps = {
-  // Defines the Header component used to display the screen title
-  Header: ({ title }: { title: string }) => React.JSX.Element;
-
-  // Active menu information loaded from Firestore
-  activeFoodTrailerMenu: any;
-  foodTrailerLocation: string;
-  foodTrailerEventName: string;
-
-  // Controls which menu categories are expanded
-  expandedCategories: number[];
-  setExpandedCategories: React.Dispatch<React.SetStateAction<number[]>>;
-  expandedParentCategories: string[];
-  setExpandedParentCategories: React.Dispatch<React.SetStateAction<string[]>>;
-
-  // Tracks the customer's selected menu item add-ons
-  selectedAddOns: string[];
-  setSelectedAddOns: React.Dispatch<React.SetStateAction<string[]>>;
-  selectedAddOnOptions: Record<string, number>;
-  setSelectedAddOnOptions: React.Dispatch<
-    React.SetStateAction<Record<string, number>>
-  >;
-
-  // Adds the selected menu item to the customer's cart
-  addToCart: (id: string, name: string, price: number) => void;
-
-  // Navigates to another screen in the application
-  setScreen: (screen: Screen) => void;
-
-  // Displays the current total price of items in the cart
-  cartTotal: number;
-};
+import { FoodTrailerScreenProps } from "../types";
 
 // Displays the active Food Trailer menu using data from Firestore.
 // Receives category controls, add-on selections, and cart functionality from the main application

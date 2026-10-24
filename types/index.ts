@@ -1,3 +1,4 @@
+// Defines the available screens in the application
 export type Screen =
   | "home"
   | "about"
@@ -27,6 +28,7 @@ export type Screen =
   | "editMenuItem"
   | "availabilityManagement";
 
+// Defines the information stored for each cart item
 export type CartItem = {
   id: string;
   name: string;
@@ -34,6 +36,7 @@ export type CartItem = {
   quantity: number;
 };
 
+// Defines the properties required by the Business Login screen
 export type BusinessLoginScreenProps = {
   Header: ({ title }: { title: string }) => React.JSX.Element;
   styles: any;
@@ -43,4 +46,67 @@ export type BusinessLoginScreenProps = {
   setAdminPassword: React.Dispatch<React.SetStateAction<string>>;
   handleBusinessLogin: () => void;
   loginMessage: string;
+};
+
+// Defines the properties required by the Home screen
+export type HomeScreenProps = {
+  Header: ({ title }: { title: string }) => React.JSX.Element;
+  activeFoodTrailerMenu: any;
+  foodTrailerLocation: string;
+  foodTrailerEventName: string;
+  setSelectedMenuType: (value: string) => void;
+  setSelectedLocation: (value: string) => void;
+  setSelectedEvent: (value: string) => void;
+  setScreen: (screen: Screen) => void;
+};
+
+// Defines the properties required by the About screen
+export type AboutScreenProps = {
+  Header: ({ title }: { title: string }) => React.JSX.Element;
+};
+
+// Defines the properties required by the Order screen
+export type OrderScreenProps = {
+  Header: ({ title }: { title: string }) => React.JSX.Element;
+  isMenuActive: (menuName: string) => boolean;
+  foodTrailerLocation: string;
+  foodTrailerEventName: string;
+  setSelectedMenuType: (value: string) => void;
+  setSelectedLocation: (value: string) => void;
+  setSelectedEvent: (value: string) => void;
+  setScreen: (screen: Screen) => void;
+};
+
+// Defines the properties required by the Food Trailer screen
+export type FoodTrailerScreenProps = {
+  // Defines the Header component used to display the screen title
+  Header: ({ title }: { title: string }) => React.JSX.Element;
+
+  // Active menu information loaded from Firestore
+  activeFoodTrailerMenu: any;
+  foodTrailerLocation: string;
+  foodTrailerEventName: string;
+
+  // Controls which menu categories are expanded
+  expandedCategories: number[];
+  setExpandedCategories: React.Dispatch<React.SetStateAction<number[]>>;
+  expandedParentCategories: string[];
+  setExpandedParentCategories: React.Dispatch<React.SetStateAction<string[]>>;
+
+  // Tracks the customer's selected menu item add-ons
+  selectedAddOns: string[];
+  setSelectedAddOns: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedAddOnOptions: Record<string, number>;
+  setSelectedAddOnOptions: React.Dispatch<
+    React.SetStateAction<Record<string, number>>
+  >;
+
+  // Adds the selected menu item to the customer's cart
+  addToCart: (id: string, name: string, price: number) => void;
+
+  // Navigates to another screen in the application
+  setScreen: (screen: Screen) => void;
+
+  // Displays the current total price of items in the cart
+  cartTotal: number;
 };

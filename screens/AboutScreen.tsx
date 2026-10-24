@@ -1,10 +1,7 @@
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import { styles } from "../styles/styles";
-
-type AboutScreenProps = {
-  Header: ({ title }: { title: string }) => React.JSX.Element;
-};
+import type { AboutScreenProps } from "../types";
 
 export const AboutScreen = ({ Header }: AboutScreenProps) => (
   <>
