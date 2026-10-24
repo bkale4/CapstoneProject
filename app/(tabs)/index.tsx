@@ -25,6 +25,9 @@ import { OrderScreen as SharedOrderScreen } from "../../screens/OrderScreen";
 // Uses an alias to avoid conflicting with the original component
 import { FoodTrailerScreen as SharedFoodTrailerScreen } from "../../screens/FoodTrailerScreen";
 
+// Imports the shared Catering Menu Options screen
+import { CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen } from "../../screens/CateringScreens";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -1312,26 +1315,15 @@ export default function App() {
     </>
   );
 
+  // Displays the Catering Menu Options screen using the shared component
   const CateringMenuOptionsScreen = () => (
-    <>
-      <Header title="Drop-Off Catering Menus" />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        {dropOffCateringMenus.map((menu) => (
-          <Pressable
-            key={menu.id}
-            style={styles.menuDropdownButton}
-            onPress={() => {
-              setSelectedCateringMenuId(menu.id);
-              setExpandedDropOffCategories([]);
-              setScreen("cateringMenu");
-            }}
-          >
-            <Text style={styles.menuDropdownText}>{menu.name}</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-    </>
+    <SharedCateringMenuOptionsScreen
+      Header={Header}
+      dropOffCateringMenus={dropOffCateringMenus}
+      setSelectedCateringMenuId={setSelectedCateringMenuId}
+      setExpandedDropOffCategories={setExpandedDropOffCategories}
+      setScreen={setScreen}
+    />
   );
 
   const CateringMenuScreen = () => (

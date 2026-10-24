@@ -110,3 +110,12 @@ export type FoodTrailerScreenProps = {
   // Displays the current total price of items in the cart
   cartTotal: number;
 };
+
+// Defines the properties required by the Catering Menu Options screen
+export type CateringMenuOptionsScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  dropOffCateringMenus: { id: string; name: string }[];
+  setSelectedCateringMenuId: (id: string) => void;
+  setExpandedDropOffCategories: React.Dispatch<React.SetStateAction<number[]>>;
+  setScreen: (screen: Screen) => void;
+};
