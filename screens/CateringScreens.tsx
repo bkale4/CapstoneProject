@@ -7,8 +7,9 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Catering Menu Options screen
 import type {
-    CateringMenuOptionsScreenProps,
-    CateringMenuScreenProps,
+  CateringMenuOptionsScreenProps,
+  CateringMenuScreenProps,
+  CateringScreenProps,
 } from "../types";
 
 // Displays the available Drop-Off Catering menus for customers to select
@@ -128,6 +129,50 @@ export const CateringMenuScreen = ({
       <Text style={styles.cateringNote}>
         Contact us with for special requests and dietary restriction requests.
       </Text>
+    </ScrollView>
+  </>
+);
+
+// Displays the Catering Services screen and its available service options
+export const CateringScreen = ({ Header, setScreen }: CateringScreenProps) => (
+  <>
+    <Header title="Catering Services" />
+
+    <ScrollView contentContainerStyle={styles.content}>
+      <Pressable
+        style={styles.card}
+        onPress={() => {
+          setScreen("cateringMenuOptions");
+        }}
+      >
+        <Text style={styles.cardTitle}>Drop-Off Catering</Text>
+
+        <Text style={styles.cardSubtitle}>
+          Explore catering menu options for meals prepared and delivered without
+          onsite event service.
+        </Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.card}
+        onPress={() => setScreen("onsiteEventMenuOptions")}
+      >
+        <Text style={styles.cardTitle}>Onsite Event Catering</Text>
+        <Text style={styles.cardSubtitle}>
+          Explore catering options for events with food service, including
+          plated dinners, buffets, and stations.
+        </Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.card}
+        onPress={() => setScreen("availabilityCalendar")}
+      >
+        <Text style={styles.cardTitle}>Availability Calendar</Text>
+        <Text style={styles.cardSubtitle}>
+          View available and unavailable dates for catering.
+        </Text>
+      </Pressable>
     </ScrollView>
   </>
 );

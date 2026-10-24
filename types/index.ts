@@ -146,3 +146,9 @@ export type CateringMenuScreenProps = {
   expandedDropOffCategories: number[];
   setExpandedDropOffCategories: React.Dispatch<React.SetStateAction<number[]>>;
 };
+
+// Defines the properties required by the Catering Services screen
+export type CateringScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  setScreen: (screen: Screen) => void;
+};
