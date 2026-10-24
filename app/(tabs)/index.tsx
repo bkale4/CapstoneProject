@@ -28,6 +28,7 @@ import { FoodTrailerScreen as SharedFoodTrailerScreen } from "../../screens/Food
 import {
   CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
   CateringMenuScreen as SharedCateringMenuScreen,
+  CateringRequestScreen as SharedCateringRequestScreen,
   CateringScreen as SharedCateringScreen,
 } from "../../screens/CateringScreens";
 
@@ -1780,78 +1781,30 @@ export default function App() {
     </>
   );
 
+  // Displays the Catering Request screen using the shared component
   const CateringRequestScreen = () => (
-    <>
-      <Header title="Catering Request Form" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.input}>
-          <Text style={styles.selectedDateText}>
-            Preferred Date: {formatCateringDate(selectedCateringDate)}
-          </Text>
-        </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Customer Name"
-          placeholderTextColor="#555"
-          value={cateringCustomerName}
-          onChangeText={setCateringCustomerName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Preferred Time"
-          placeholderTextColor="#555"
-          value={cateringTime}
-          onChangeText={setCateringTime}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Estimated Guest Count"
-          placeholderTextColor="#555"
-          value={cateringGuestCount}
-          onChangeText={setCateringGuestCount}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Menu Preferences"
-          placeholderTextColor="#555"
-          value={cateringMenuPreferences}
-          onChangeText={setCateringMenuPreferences}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email Address"
-          placeholderTextColor="#555"
-          value={cateringContact}
-          onChangeText={setCateringContact}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Venue Name"
-          placeholderTextColor="#555"
-          value={cateringVenueName}
-          onChangeText={setCateringVenueName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Venue Address"
-          placeholderTextColor="#555"
-          value={cateringVenueAddress}
-          onChangeText={setCateringVenueAddress}
-        />
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          placeholder="Special Notes"
-          placeholderTextColor="#555"
-          value={cateringNotes}
-          onChangeText={setCateringNotes}
-          multiline
-        />
-
-        <Pressable style={styles.primaryButton} onPress={submitCateringRequest}>
-          <Text style={styles.primaryButtonText}>Submit Catering Request</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedCateringRequestScreen
+      Header={Header}
+      selectedCateringDate={selectedCateringDate}
+      formatCateringDate={formatCateringDate}
+      cateringCustomerName={cateringCustomerName}
+      setCateringCustomerName={setCateringCustomerName}
+      cateringTime={cateringTime}
+      setCateringTime={setCateringTime}
+      cateringGuestCount={cateringGuestCount}
+      setCateringGuestCount={setCateringGuestCount}
+      cateringMenuPreferences={cateringMenuPreferences}
+      setCateringMenuPreferences={setCateringMenuPreferences}
+      cateringContact={cateringContact}
+      setCateringContact={setCateringContact}
+      cateringVenueName={cateringVenueName}
+      setCateringVenueName={setCateringVenueName}
+      cateringVenueAddress={cateringVenueAddress}
+      setCateringVenueAddress={setCateringVenueAddress}
+      cateringNotes={cateringNotes}
+      setCateringNotes={setCateringNotes}
+      submitCateringRequest={submitCateringRequest}
+    />
   );
 
   const CateringConfirmationScreen = () => (

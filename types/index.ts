@@ -152,3 +152,27 @@ export type CateringScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   setScreen: (screen: Screen) => void;
 };
+
+// Defines the properties required by the Catering Request screen
+export type CateringRequestScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  selectedCateringDate: string;
+  formatCateringDate: (date: string) => string;
+  cateringCustomerName: string;
+  setCateringCustomerName: React.Dispatch<React.SetStateAction<string>>;
+  cateringTime: string;
+  setCateringTime: React.Dispatch<React.SetStateAction<string>>;
+  cateringGuestCount: string;
+  setCateringGuestCount: React.Dispatch<React.SetStateAction<string>>;
+  cateringMenuPreferences: string;
+  setCateringMenuPreferences: React.Dispatch<React.SetStateAction<string>>;
+  cateringContact: string;
+  setCateringContact: React.Dispatch<React.SetStateAction<string>>;
+  cateringVenueName: string;
+  setCateringVenueName: React.Dispatch<React.SetStateAction<string>>;
+  cateringVenueAddress: string;
+  setCateringVenueAddress: React.Dispatch<React.SetStateAction<string>>;
+  cateringNotes: string;
+  setCateringNotes: React.Dispatch<React.SetStateAction<string>>;
+  submitCateringRequest: () => void | Promise<void>;
+};

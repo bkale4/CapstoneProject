@@ -1,6 +1,6 @@
 // Import React and the components used to display catering menus
 import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 // Imports shared application styles
 import { styles } from "../styles/styles";
@@ -9,6 +9,7 @@ import { styles } from "../styles/styles";
 import type {
   CateringMenuOptionsScreenProps,
   CateringMenuScreenProps,
+  CateringRequestScreenProps,
   CateringScreenProps,
 } from "../types";
 
@@ -172,6 +173,102 @@ export const CateringScreen = ({ Header, setScreen }: CateringScreenProps) => (
         <Text style={styles.cardSubtitle}>
           View available and unavailable dates for catering.
         </Text>
+      </Pressable>
+    </ScrollView>
+  </>
+);
+
+// Imports the properties required by the Catering screens
+export const CateringRequestScreen = ({
+  Header,
+  selectedCateringDate,
+  formatCateringDate,
+  cateringCustomerName,
+  setCateringCustomerName,
+  cateringTime,
+  setCateringTime,
+  cateringGuestCount,
+  setCateringGuestCount,
+  cateringMenuPreferences,
+  setCateringMenuPreferences,
+  cateringContact,
+  setCateringContact,
+  cateringVenueName,
+  setCateringVenueName,
+  cateringVenueAddress,
+  setCateringVenueAddress,
+  cateringNotes,
+  setCateringNotes,
+  submitCateringRequest,
+}: CateringRequestScreenProps) => (
+  <>
+    <Header title="Catering Request Form" />
+    <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.input}>
+        <Text style={styles.selectedDateText}>
+          Preferred Date: {formatCateringDate(selectedCateringDate)}
+        </Text>
+      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Customer Name"
+        placeholderTextColor="#555"
+        value={cateringCustomerName}
+        onChangeText={setCateringCustomerName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Preferred Time"
+        placeholderTextColor="#555"
+        value={cateringTime}
+        onChangeText={setCateringTime}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Estimated Guest Count"
+        placeholderTextColor="#555"
+        value={cateringGuestCount}
+        onChangeText={setCateringGuestCount}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Menu Preferences"
+        placeholderTextColor="#555"
+        value={cateringMenuPreferences}
+        onChangeText={setCateringMenuPreferences}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email Address"
+        placeholderTextColor="#555"
+        value={cateringContact}
+        onChangeText={setCateringContact}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Venue Name"
+        placeholderTextColor="#555"
+        value={cateringVenueName}
+        onChangeText={setCateringVenueName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Venue Address"
+        placeholderTextColor="#555"
+        value={cateringVenueAddress}
+        onChangeText={setCateringVenueAddress}
+      />
+      <TextInput
+        style={[styles.input, styles.notesInput]}
+        placeholder="Special Notes"
+        placeholderTextColor="#555"
+        value={cateringNotes}
+        onChangeText={setCateringNotes}
+        multiline
+      />
+
+      <Pressable style={styles.primaryButton} onPress={submitCateringRequest}>
+        <Text style={styles.primaryButtonText}>Submit Catering Request</Text>
       </Pressable>
     </ScrollView>
   </>
