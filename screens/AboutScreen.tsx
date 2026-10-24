@@ -3,6 +3,7 @@ import { ScrollView, Text, View } from "react-native";
 import { styles } from "../styles/styles";
 import type { AboutScreenProps } from "../types";
 
+// Displays information about Root & Ranch, including contact details and social media
 export const AboutScreen = ({ Header }: AboutScreenProps) => (
   <>
     <Header title="About Root & Ranch" />

@@ -8,6 +8,7 @@ type NavBarProps = {
   isAdminLoggedIn: boolean;
 };
 
+// Displays the navigation bar and handles navigation between screens
 export const NavBar = ({ setScreen, isAdminLoggedIn }: NavBarProps) => (
   <View style={styles.navBar}>
     <Pressable onPress={() => setScreen("home")}>

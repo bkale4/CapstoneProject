@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, Text } from "react-native";
 import { styles } from "../styles/styles";
 
+// Displays a clickable card with a service title and description
 export const ServiceCard = ({
   title,
   subtitle,

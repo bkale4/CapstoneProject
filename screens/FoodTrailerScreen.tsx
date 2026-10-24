@@ -2,15 +2,13 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-// Imports the application's screen navigation type
-
-// Immports the application's shared styling
+// Imports the application's shared styling
 import { styles } from "../styles/styles";
 
-import { FoodTrailerScreenProps } from "../types";
+// Imports the properties required by the Food Trailer screen
+import type { FoodTrailerScreenProps } from "../types";
 
-// Displays the active Food Trailer menu using data from Firestore.
-// Receives category controls, add-on selections, and cart functionality from the main application
+// Displays the Food Trailer menu, including categories, items, add-ons, and cart functionality
 export const FoodTrailerScreen = ({
   Header,
   activeFoodTrailerMenu,
@@ -28,6 +26,7 @@ export const FoodTrailerScreen = ({
   setScreen,
   cartTotal,
 }: FoodTrailerScreenProps) => {
+  // Gets the parent categories used to organize the Food Trailer menu
   const parentCategories: string[] = [
     ...new Set<string>(
       (activeFoodTrailerMenu?.categories || [])
@@ -45,6 +44,7 @@ export const FoodTrailerScreen = ({
           Now Serving: {foodTrailerLocation}
         </Text>
         <Text style={styles.sectionText}>Event: {foodTrailerEventName}</Text>
+        {/* Displays expandable parent categories in the Food Trailer menu */}
         {parentCategories.map((parentCategory) => (
           <View key={parentCategory}>
             <Pressable
@@ -63,6 +63,7 @@ export const FoodTrailerScreen = ({
               </Text>
             </Pressable>
 
+            {/* Displays subcategories when a parent category is expanded */}
             {expandedParentCategories.includes(parentCategory) &&
               activeFoodTrailerMenu?.categories?.map(
                 (category: any, categoryIndex: number) =>
@@ -100,7 +101,7 @@ export const FoodTrailerScreen = ({
                             {category.description}
                           </Text>
                         )}
-
+                      {/* Displays menu items when a subcategory is expanded */}
                       {expandedCategories.includes(categoryIndex) &&
                         category.items?.map((item: any, itemIndex: number) => (
                           <View key={itemIndex} style={styles.card}>
@@ -111,6 +112,7 @@ export const FoodTrailerScreen = ({
                             <Text style={styles.sectionText}>
                               ${Number(item.price).toFixed(2)}
                             </Text>
+                            {/* Displays optional add-ons available for a menu item */}
                             {item.addOn?.name && (
                               <Pressable
                                 onPress={() => {
@@ -150,6 +152,7 @@ export const FoodTrailerScreen = ({
                               </Pressable>
                             )}
 
+                            {/* Displays additional add-on options for a menu item */}
                             {item.addOns?.length > 1 &&
                               item.addOns
                                 .slice(1)
@@ -194,6 +197,7 @@ export const FoodTrailerScreen = ({
                                   },
                                 )}
 
+                            {/* Displays Limited or Sold Out status for menu items */}
                             {(item.status === "Limited" ||
                               item.status === "Sold Out") && (
                               <Text
@@ -207,6 +211,7 @@ export const FoodTrailerScreen = ({
                                 {item.status}
                               </Text>
                             )}
+                            {/* Adds the selected item and any add-ons to the cart */}
                             <Pressable
                               style={[
                                 styles.adminButton,
@@ -268,7 +273,7 @@ export const FoodTrailerScreen = ({
               )}
           </View>
         ))}
-        {/* categories without a parent */}
+        {/* Displays menu categories that do not have a parent category */}
         {activeFoodTrailerMenu?.categories?.map(
           (category: any, categoryIndex: number) =>
             !category.parentCategory?.trim() ? (
@@ -305,6 +310,7 @@ export const FoodTrailerScreen = ({
                       <Text style={styles.sectionText}>
                         ${Number(item.price).toFixed(2)}
                       </Text>
+                      {/* Displays optional add-ons available for a menu item */}
                       {item.addOn?.name && (
                         <Pressable
                           onPress={() => {
@@ -341,7 +347,7 @@ export const FoodTrailerScreen = ({
                           </Text>
                         </Pressable>
                       )}
-
+                      {/* Displays additional add-on options for a menu item */}
                       {item.addOns?.length > 1 &&
                         item.addOns
                           .slice(1)
@@ -380,7 +386,7 @@ export const FoodTrailerScreen = ({
                               );
                             },
                           )}
-
+                      {/* Displays Limited or Sold Out status for menu items */}
                       {(item.status === "Limited" ||
                         item.status === "Sold Out") && (
                         <Text
@@ -394,6 +400,7 @@ export const FoodTrailerScreen = ({
                           {item.status}
                         </Text>
                       )}
+                      {/* Adds the selected item and any add-ons to the cart */}
                       <Pressable
                         style={[
                           styles.adminButton,
@@ -453,6 +460,7 @@ export const FoodTrailerScreen = ({
         )}
       </ScrollView>
 
+      {/* Displays the current cart total and a button to open the Cart screen */}
       <View style={{ paddingHorizontal: 14, paddingVertical: 10 }}>
         <Pressable
           style={styles.primaryButton}

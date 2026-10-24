@@ -4,6 +4,7 @@ import { ServiceCard } from "../components/ServiceCard";
 import { styles } from "../styles/styles";
 import type { HomeScreenProps } from "../types";
 
+// Displays the Home screen with the Food Trailer and Catering service options
 export const HomeScreen = ({
   Header,
   activeFoodTrailerMenu,

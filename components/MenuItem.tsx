@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { styles } from "../styles/styles";
 
+// Displays a menu item's name, description, price, availability, and Add to cart button
 export const MenuItem = ({
   id,
   name,

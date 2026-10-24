@@ -4,7 +4,7 @@ import { ServiceCard } from "../components/ServiceCard";
 import { styles } from "../styles/styles";
 import type { OrderScreenProps } from "../types";
 
-// Displays the Order screen and receives the data functions needed for customer navigation
+// Displays the Order screen and allows customers to select the Food Trailer menu
 export const OrderScreen = ({
   Header,
   isMenuActive,

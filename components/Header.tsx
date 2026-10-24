@@ -7,6 +7,7 @@ type HeaderProps = {
   onHomePress: () => void;
 };
 
+// Displays the screen title and logo with Home navigation
 export function Header({ title, onHomePress }: HeaderProps) {
   return (
     <View style={styles.header}>
