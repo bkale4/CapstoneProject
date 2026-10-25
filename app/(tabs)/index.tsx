@@ -38,7 +38,10 @@ import {
 import { CartScreen as SharedCartScreen } from "../../screens/CartScreen";
 
 // Imports the Shared Checkout screen
-import { CheckoutScreen as SharedCheckoutScreen } from "../../screens/CheckoutScreen";
+import {
+  CheckoutScreen as SharedCheckoutScreen,
+  OrderConfirmationScreen as SharedOrderConfirmationScreen,
+} from "../../screens/CheckoutScreen";
 
 import {
   createUserWithEmailAndPassword,
@@ -1476,35 +1479,14 @@ export default function App() {
     />
   );
 
+  // Displays the Order Confirmation screen using the shared component
   const OrderConfirmationScreen = () => (
-    <>
-      <Header title="Order Confirmed" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.summaryBox}>
-          <Text style={styles.summaryTitle}>Thank You!</Text>
-          <Text style={styles.summaryLine}>
-            Your order has been successfully placed.
-          </Text>
-          <Text style={styles.summaryLine}>Order Number: #1042</Text>
-          <Text style={styles.summaryLine}>
-            Estimated Ready Time: 20 minutes
-          </Text>
-          <Text style={styles.summaryLine}>
-            Payment Method: {paymentMethod}
-          </Text>
-          <Text style={styles.summaryTotal}>
-            Total: ${cartTotal.toFixed(2)}
-          </Text>
-        </View>
-
-        <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("home")}
-        >
-          <Text style={styles.primaryButtonText}>Return Home</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedOrderConfirmationScreen
+      Header={Header}
+      paymentMethod={paymentMethod}
+      cartTotal={cartTotal}
+      setScreen={setScreen}
+    />
   );
 
   // Displays the Catering Services screen using the shared component

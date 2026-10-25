@@ -6,7 +6,10 @@ import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { styles } from "../styles/styles";
 
 // Imports the properties required by the Checkout screen
-import type { CheckoutScreenProps } from "../types";
+import type {
+    CheckoutScreenProps,
+    OrderConfirmationScreenProps,
+} from "../types";
 
 // Displays customer information, payment options, and the final order
 export const CheckoutScreen = ({
@@ -148,6 +151,34 @@ export const CheckoutScreen = ({
 
       <Pressable style={styles.primaryButton} onPress={submitOrder}>
         <Text style={styles.primaryButtonText}>Place Order</Text>
+      </Pressable>
+    </ScrollView>
+  </>
+);
+
+// Displays the order confirmation details after a customer places an order
+export const OrderConfirmationScreen = ({
+  Header,
+  paymentMethod,
+  cartTotal,
+  setScreen,
+}: OrderConfirmationScreenProps) => (
+  <>
+    <Header title="Order Confirmed" />
+    <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.summaryBox}>
+        <Text style={styles.summaryTitle}>Thank You!</Text>
+        <Text style={styles.summaryLine}>
+          Your order has been successfully placed.
+        </Text>
+        <Text style={styles.summaryLine}>Order Number: #1042</Text>
+        <Text style={styles.summaryLine}>Estimated Ready Time: 20 minutes</Text>
+        <Text style={styles.summaryLine}>Payment Method: {paymentMethod}</Text>
+        <Text style={styles.summaryTotal}>Total: ${cartTotal.toFixed(2)}</Text>
+      </View>
+
+      <Pressable style={styles.primaryButton} onPress={() => setScreen("home")}>
+        <Text style={styles.primaryButtonText}>Return Home</Text>
       </Pressable>
     </ScrollView>
   </>

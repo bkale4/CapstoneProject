@@ -223,3 +223,11 @@ export type CheckoutScreenProps = {
   cartTotal: number;
   submitOrder: () => void | Promise<void>;
 };
+
+// Defines the properties required by the Order Confirmation screen
+export type OrderConfirmationScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  paymentMethod: string;
+  cartTotal: number;
+  setScreen: (screen: Screen) => void;
+};
