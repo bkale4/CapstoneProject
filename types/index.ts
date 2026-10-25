@@ -176,3 +176,9 @@ export type CateringRequestScreenProps = {
   setCateringNotes: React.Dispatch<React.SetStateAction<string>>;
   submitCateringRequest: () => void | Promise<void>;
 };
+
+// Defines the properties required by the Catering Confirmation screen
+export type CateringConfirmationScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  setScreen: (screen: Screen) => void;
+};

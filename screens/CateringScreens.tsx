@@ -7,6 +7,7 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Catering Menu Options screen
 import type {
+  CateringConfirmationScreenProps,
   CateringMenuOptionsScreenProps,
   CateringMenuScreenProps,
   CateringRequestScreenProps,
@@ -269,6 +270,32 @@ export const CateringRequestScreen = ({
 
       <Pressable style={styles.primaryButton} onPress={submitCateringRequest}>
         <Text style={styles.primaryButtonText}>Submit Catering Request</Text>
+      </Pressable>
+    </ScrollView>
+  </>
+);
+
+// Displays the Catering Confirmation screen after a request is submitted
+export const CateringConfirmationScreen = ({
+  Header,
+  setScreen,
+}: CateringConfirmationScreenProps) => (
+  <>
+    <Header title="Request Submitted" />
+    <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.summaryBox}>
+        <Text style={styles.summaryTitle}>Thank You!</Text>
+        <Text style={styles.summaryLine}>
+          Your catering request has been submitted successfully.
+        </Text>
+        <Text style={styles.summaryLine}>
+          A member of Root & Ranch Catering will review your request.
+        </Text>
+        <Text style={styles.summaryLine}>Status: Pending approval</Text>
+      </View>
+
+      <Pressable style={styles.primaryButton} onPress={() => setScreen("home")}>
+        <Text style={styles.primaryButtonText}>Return Home</Text>
       </Pressable>
     </ScrollView>
   </>

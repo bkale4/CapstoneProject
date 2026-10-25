@@ -26,6 +26,7 @@ import { FoodTrailerScreen as SharedFoodTrailerScreen } from "../../screens/Food
 
 // Imports the shared Catering Menu Options screen
 import {
+  CateringConfirmationScreen as SharedCateringConfirmationScreen,
   CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
   CateringMenuScreen as SharedCateringMenuScreen,
   CateringRequestScreen as SharedCateringRequestScreen,
@@ -1807,29 +1808,9 @@ export default function App() {
     />
   );
 
+  // Displays the Catering Confirmation screen using the shared component
   const CateringConfirmationScreen = () => (
-    <>
-      <Header title="Request Submitted" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.summaryBox}>
-          <Text style={styles.summaryTitle}>Thank You!</Text>
-          <Text style={styles.summaryLine}>
-            Your catering request has been submitted successfully.
-          </Text>
-          <Text style={styles.summaryLine}>
-            A member of Root & Ranch Catering will review your request.
-          </Text>
-          <Text style={styles.summaryLine}>Status: Pending approval</Text>
-        </View>
-
-        <Pressable
-          style={styles.primaryButton}
-          onPress={() => setScreen("home")}
-        >
-          <Text style={styles.primaryButtonText}>Return Home</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedCateringConfirmationScreen Header={Header} setScreen={setScreen} />
   );
 
   const BusinessScreen = () => (
