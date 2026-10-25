@@ -499,3 +499,19 @@ export type OrdersManagementScreenProps = {
   markOrderAsOpen: (orderId: string) => void | Promise<void>;
   markOrderAsCancelled: (orderId: string) => void | Promise<void>;
 };
+
+// Defines the properties required by the Availability Management screen
+export type AvailabilityManagementScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  BusinessBackButton: React.ComponentType;
+  currentMonth: number;
+  currentYear: number;
+  monthNames: string[];
+  goToPreviousMonth: () => void;
+  goToNextMonth: () => void;
+  firstDayOfMonth: number;
+  daysInMonth: number;
+  today: Date;
+  availability: Record<string, boolean>;
+  toggleAvailability: (dateKey: string) => void | Promise<void>;
+};
