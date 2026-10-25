@@ -14,7 +14,11 @@ import {
 import { styles } from "../styles/styles";
 
 // Imports the properties required by the Menu Management screen
-import type { AddMenuScreenProps, MenuManagementScreenProps } from "../types";
+import type {
+    AddMenuScreenProps,
+    EditMenuScreenProps,
+    MenuManagementScreenProps,
+} from "../types";
 
 // Displays menus and allows administrators to manage their settings and items
 export const MenuManagementScreen = ({
@@ -264,6 +268,126 @@ export const AddMenuScreen = ({
       {/* Saves the new menu using the existing menu creation function */}
       <Pressable style={styles.adminButton} onPress={addNewMenu}>
         <Text style={styles.adminButtonText}>Add Menu</Text>
+      </Pressable>
+    </ScrollView>
+  </>
+);
+
+// Displays the Edit Menu form and allows administrators to update menu details
+export const EditMenuScreen = ({
+  Header,
+  setScreen,
+  editMenuName,
+  setEditMenuName,
+  editMenuDescription,
+  setEditMenuDescription,
+  editMenuType,
+  setEditMenuType,
+  editMenuTypeDropdown,
+  setEditMenuTypeDropdown,
+  editMenuLocation,
+  setEditMenuLocation,
+  editMenuEventName,
+  setEditMenuEventName,
+  saveMenuChanges,
+}: EditMenuScreenProps) => (
+  <>
+    <Header title="Edit Menu" />
+
+    <ScrollView contentContainerStyle={styles.content}>
+      {/* Returns to the Menu Management screen */}
+      <Pressable
+        style={styles.backButton}
+        onPress={() => setScreen("menuManagement")}
+      >
+        <Text style={styles.backButtonText}>🡄 Back</Text>
+      </Pressable>
+
+      {/* Allows administrators to edit the menu name and description */}
+      <Text style={styles.label}>Menu Name</Text>
+      <TextInput
+        style={styles.input}
+        value={editMenuName}
+        onChangeText={setEditMenuName}
+        placeholder="Enter menu name"
+      />
+
+      <Text style={styles.label}>Menu Description</Text>
+      <TextInput
+        style={styles.input}
+        value={editMenuDescription}
+        onChangeText={setEditMenuDescription}
+        placeholder="Enter menu description"
+        multiline
+      />
+
+      {/* Allows administrators to change the menu type */}
+      <Text style={styles.label}>Menu Type</Text>
+      <Pressable
+        style={styles.dropdown}
+        onPress={() => setEditMenuTypeDropdown(!editMenuTypeDropdown)}
+      >
+        <Text style={styles.dropdownText}>
+          {editMenuType === "foodTrailer"
+            ? "Food Trailer"
+            : editMenuType === "dropOffCatering"
+              ? "Drop-Off Catering"
+              : editMenuType === "onsiteEventCatering"
+                ? "Onsite Event Catering"
+                : "No menu type selected"}
+        </Text>
+
+        <Text style={styles.dropdownArrow}>
+          {editMenuTypeDropdown ? "▲" : "▼"}
+        </Text>
+      </Pressable>
+
+      {/* Displays the available menu types */}
+      {editMenuTypeDropdown && (
+        <View style={styles.dropdownOptions}>
+          {["Food Trailer", "Drop-Off Catering", "Onsite Event Catering"].map(
+            (type) => (
+              <Pressable
+                key={type}
+                style={styles.dropdownOption}
+                onPress={() => {
+                  setEditMenuType(
+                    type === "Food Trailer"
+                      ? "foodTrailer"
+                      : type === "Drop-Off Catering"
+                        ? "dropOffCatering"
+                        : "onsiteEventCatering",
+                  );
+                  setEditMenuTypeDropdown(false);
+                }}
+              >
+                <Text style={styles.dropdownOptionText}>{type}</Text>
+              </Pressable>
+            ),
+          )}
+        </View>
+      )}
+
+      {/* Allows administrators to edit the menu location and event name */}
+      <Text style={styles.label}>Location</Text>
+      <TextInput
+        style={styles.input}
+        value={editMenuLocation}
+        onChangeText={setEditMenuLocation}
+        placeholder="Enter location"
+      />
+
+      <Text style={styles.label}>Event Name</Text>
+      <TextInput
+        style={styles.input}
+        value={editMenuEventName}
+        onChangeText={setEditMenuEventName}
+        placeholder="Enter event name"
+      />
+
+      {/* Saves the updated menu information */}
+      <Pressable style={styles.adminButton} onPress={saveMenuChanges}>
+        <Text style={styles.adminButtonText}>Save Changes</Text>
       </Pressable>
     </ScrollView>
   </>

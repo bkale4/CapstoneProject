@@ -355,3 +355,22 @@ export type AddMenuScreenProps = {
   setNewMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
   addNewMenu: () => void | Promise<void>;
 };
+
+// Defines the properties required by the Edit Menu screen
+export type EditMenuScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  setScreen: (screen: Screen) => void;
+  editMenuName: string;
+  setEditMenuName: React.Dispatch<React.SetStateAction<string>>;
+  editMenuDescription: string;
+  setEditMenuDescription: React.Dispatch<React.SetStateAction<string>>;
+  editMenuType: string;
+  setEditMenuType: React.Dispatch<React.SetStateAction<string>>;
+  editMenuTypeDropdown: boolean;
+  setEditMenuTypeDropdown: React.Dispatch<React.SetStateAction<boolean>>;
+  editMenuLocation: string;
+  setEditMenuLocation: React.Dispatch<React.SetStateAction<string>>;
+  editMenuEventName: string;
+  setEditMenuEventName: React.Dispatch<React.SetStateAction<string>>;
+  saveMenuChanges: () => void | Promise<void>;
+};

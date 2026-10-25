@@ -53,6 +53,7 @@ import {
 // Imports the shared Menu Management screen
 import {
   AddMenuScreen as SharedAddMenuScreen,
+  EditMenuScreen as SharedEditMenuScreen,
   MenuManagementScreen as SharedMenuManagementScreen,
 } from "../../screens/MenuManagementScreens";
 
@@ -2278,101 +2279,25 @@ export default function App() {
     />
   );
 
+  // Displays the Edit Menu screen using the shared component
   const EditMenuScreen = () => (
-    <>
-      <Header title="Edit Menu" />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => setScreen("menuManagement")}
-        >
-          <Text style={styles.backButtonText}>🡄 Back</Text>
-        </Pressable>
-
-        <Text style={styles.label}>Menu Name</Text>
-        <TextInput
-          style={styles.input}
-          value={editMenuName}
-          onChangeText={setEditMenuName}
-          placeholder="Enter menu name"
-        />
-
-        <Text style={styles.label}>Menu Description</Text>
-        <TextInput
-          style={styles.input}
-          value={editMenuDescription}
-          onChangeText={setEditMenuDescription}
-          placeholder="Enter menu description"
-          multiline
-        />
-
-        <Text style={styles.label}>Menu Type</Text>
-        <Pressable
-          style={styles.dropdown}
-          onPress={() => setEditMenuTypeDropdown(!editMenuTypeDropdown)}
-        >
-          <Text style={styles.dropdownText}>
-            {editMenuType === "foodTrailer"
-              ? "Food Trailer"
-              : editMenuType === "dropOffCatering"
-                ? "Drop-Off Catering"
-                : editMenuType === "onsiteEventCatering"
-                  ? "Onsite Event Catering"
-                  : "No menu type selected"}
-          </Text>
-
-          <Text style={styles.dropdownArrow}>
-            {editMenuTypeDropdown ? "▲" : "▼"}
-          </Text>
-        </Pressable>
-
-        {editMenuTypeDropdown && (
-          <view style={styles.dropdownOptions}>
-            {["Food Trailer", "Drop-Off Catering", "Onsite Event Catering"].map(
-              (type) => (
-                <Pressable
-                  key={type}
-                  style={styles.dropdownOption}
-                  onPress={() => {
-                    setEditMenuType(
-                      type === "Food Trailer"
-                        ? "foodTrailer"
-                        : type === "Drop-Off Catering"
-                          ? "dropOffCatering"
-                          : "onsiteEventCatering",
-                    );
-                    setEditMenuTypeDropdown(false);
-                  }}
-                >
-                  <Text style={styles.dropdownOptionText}>{type}</Text>
-                </Pressable>
-              ),
-            )}
-          </view>
-        )}
-
-        <Text style={styles.label}>Location</Text>
-        <TextInput
-          style={styles.input}
-          value={editMenuLocation}
-          onChangeText={setEditMenuLocation}
-          placeholder="Enter location"
-        />
-
-        <Text style={styles.label}>Event Name</Text>
-        <TextInput
-          style={styles.input}
-          value={editMenuEventName}
-          onChangeText={setEditMenuEventName}
-          placeholder="Enter event name"
-        />
-
-        <Pressable style={styles.adminButton} onPress={saveMenuChanges}>
-          <Text style={styles.adminButtonText}>Save Changes</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedEditMenuScreen
+      Header={Header}
+      setScreen={setScreen}
+      editMenuName={editMenuName}
+      setEditMenuName={setEditMenuName}
+      editMenuDescription={editMenuDescription}
+      setEditMenuDescription={setEditMenuDescription}
+      editMenuType={editMenuType}
+      setEditMenuType={setEditMenuType}
+      editMenuTypeDropdown={editMenuTypeDropdown}
+      setEditMenuTypeDropdown={setEditMenuTypeDropdown}
+      editMenuLocation={editMenuLocation}
+      setEditMenuLocation={setEditMenuLocation}
+      editMenuEventName={editMenuEventName}
+      setEditMenuEventName={setEditMenuEventName}
+      saveMenuChanges={saveMenuChanges}
+    />
   );
 
   const AvailabilityManagementScreen = () => (
