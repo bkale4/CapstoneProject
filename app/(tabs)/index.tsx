@@ -27,6 +27,7 @@ import { FoodTrailerScreen as SharedFoodTrailerScreen } from "../../screens/Food
 // Imports the shared Catering Menu Options screen
 import {
   CateringConfirmationScreen as SharedCateringConfirmationScreen,
+  CateringManagementScreen as SharedCateringManagementScreen,
   CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
   CateringMenuScreen as SharedCateringMenuScreen,
   CateringRequestScreen as SharedCateringRequestScreen,
@@ -1943,22 +1944,12 @@ export default function App() {
     </>
   );
 
+  // Displays the Catering Management screen using the shared component
   const CateringManagementScreen = () => (
-    <>
-      <Header title="Catering Requests" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <BusinessBackButton />
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Request #C201</Text>
-          <Text style={styles.cardSubtitle}>Date: May 21, 2026</Text>
-          <Text style={styles.cardSubtitle}>Guests: 45</Text>
-          <Text style={styles.cardSubtitle}>
-            Menu Preference: Sandwich Platters
-          </Text>
-          <Text style={styles.cardSubtitle}>Status: Follow Up Needed</Text>
-        </View>
-      </ScrollView>
-    </>
+    <SharedCateringManagementScreen
+      Header={Header}
+      BusinessBackButton={BusinessBackButton}
+    />
   );
 
   const MenuManagementScreen = () => (

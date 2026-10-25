@@ -8,6 +8,7 @@ import { styles } from "../styles/styles";
 // Imports the properties required by the Catering Menu Options screen
 import type {
   CateringConfirmationScreenProps,
+  CateringManagementScreenProps,
   CateringMenuOptionsScreenProps,
   CateringMenuScreenProps,
   CateringRequestScreenProps,
@@ -297,6 +298,28 @@ export const CateringConfirmationScreen = ({
       <Pressable style={styles.primaryButton} onPress={() => setScreen("home")}>
         <Text style={styles.primaryButtonText}>Return Home</Text>
       </Pressable>
+    </ScrollView>
+  </>
+);
+
+// Displays catering requests and their details for the admin
+export const CateringManagementScreen = ({
+  Header,
+  BusinessBackButton,
+}: CateringManagementScreenProps) => (
+  <>
+    <Header title="Catering Requests" />
+    <ScrollView contentContainerStyle={styles.content}>
+      <BusinessBackButton />
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Request #C201</Text>
+        <Text style={styles.cardSubtitle}>Date: May 21, 2026</Text>
+        <Text style={styles.cardSubtitle}>Guests: 45</Text>
+        <Text style={styles.cardSubtitle}>
+          Menu Preference: Sandwich Platters
+        </Text>
+        <Text style={styles.cardSubtitle}>Status: Follow Up Needed</Text>
+      </View>
     </ScrollView>
   </>
 );

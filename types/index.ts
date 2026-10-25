@@ -182,3 +182,9 @@ export type CateringConfirmationScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   setScreen: (screen: Screen) => void;
 };
+
+// Defines the properties required by the Catering Management screen
+export type CateringManagementScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  BusinessBackButton: React.ComponentType;
+};
