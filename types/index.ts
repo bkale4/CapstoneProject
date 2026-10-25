@@ -267,3 +267,36 @@ export type OnsiteEventMenuOptionsScreenProps = {
   setExpandedOnsiteCategories: React.Dispatch<React.SetStateAction<number[]>>;
   setScreen: (screen: Screen) => void;
 };
+
+// Defines the properties required by the Onsite Event screen
+export type OnsiteEventScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  selectedOnsiteCateringMenu:
+    | {
+        name: string;
+        eventName?: string;
+        location?: string;
+        categories?: {
+          name: string;
+          parentCategory?: string;
+          items?: {
+            name: string;
+            description?: string;
+            pricingType?: string;
+            halfPrice?: number | string | null;
+            fullPrice?: number | string | null;
+            price?: number | string | null;
+            status?: string;
+          }[];
+        }[];
+      }
+    | null
+    | undefined;
+  onsiteParentCategories: string[];
+  expandedOnsiteParentCategories: string[];
+  setExpandedOnsiteParentCategories: React.Dispatch<
+    React.SetStateAction<string[]>
+  >;
+  expandedOnsiteCategories: number[];
+  setExpandedOnsiteCategories: React.Dispatch<React.SetStateAction<number[]>>;
+};
