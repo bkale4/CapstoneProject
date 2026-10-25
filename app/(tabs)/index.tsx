@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
+// Imports SafeAreaView for handling screen safe areas
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import { styles } from "../../styles/styles";
 
 import type { CartItem, Screen } from "../../types";
@@ -91,7 +94,7 @@ import {
 
 import { auth, db } from "../../firebaseConfig";
 
-import { Pressable, SafeAreaView, ScrollView, Text } from "react-native";
+import { Pressable, ScrollView, Text } from "react-native";
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
