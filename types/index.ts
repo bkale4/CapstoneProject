@@ -200,3 +200,26 @@ export type CartScreenProps = {
   clearCart: () => void;
   setScreen: (screen: Screen) => void;
 };
+
+// Defines the properties requireed by the Checkout screen
+export type CheckoutScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  isCustomerLoggedIn: boolean;
+  loggedInCustomerName: string;
+  loggedInCustomerPhone: string;
+  loggedInCustomerEmail: string;
+  setScreen: (screen: Screen) => void;
+  continueAsGuest: boolean;
+  setContinueAsGuest: React.Dispatch<React.SetStateAction<boolean>>;
+  guestName: string;
+  setGuestName: React.Dispatch<React.SetStateAction<string>>;
+  guestPhone: string;
+  setGuestPhone: React.Dispatch<React.SetStateAction<string>>;
+  guestEmail: string;
+  setGuestEmail: React.Dispatch<React.SetStateAction<string>>;
+  paymentMethod: string;
+  setPaymentMethod: React.Dispatch<React.SetStateAction<string>>;
+  cartItems: CartItem[];
+  cartTotal: number;
+  submitOrder: () => void | Promise<void>;
+};

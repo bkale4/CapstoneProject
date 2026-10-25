@@ -37,6 +37,9 @@ import {
 // Imports the shared Cart screen
 import { CartScreen as SharedCartScreen } from "../../screens/CartScreen";
 
+// Imports the Shared Checkout screen
+import { CheckoutScreen as SharedCheckoutScreen } from "../../screens/CheckoutScreen";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -1448,132 +1451,29 @@ export default function App() {
     </>
   );
 
+  // Displays the Checkout screen using the shared component
   const CheckoutScreen = () => (
-    <>
-      <Header title="Checkout" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Customer Account</Text>
-
-          {isCustomerLoggedIn ? (
-            <View style={[styles.optionButton, styles.selectedOptionButton]}>
-              <Text style={styles.sectionText}>
-                Signed in to your customer account.
-              </Text>
-
-              <Text style={styles.sectionText}>
-                Name: {loggedInCustomerName}
-              </Text>
-
-              <Text style={styles.sectionText}>
-                Phone: {loggedInCustomerPhone}
-              </Text>
-
-              <Text style={styles.sectionText}>
-                Email: {loggedInCustomerEmail}
-              </Text>
-            </View>
-          ) : (
-            <>
-              <Text style={styles.sectionText}>
-                Sign in, create an account, or continue as a guest.
-              </Text>
-
-              <Pressable
-                style={styles.optionButton}
-                onPress={() => setScreen("customerLogin")}
-              >
-                <Text style={styles.optionText}>Sign In</Text>
-              </Pressable>
-
-              <Pressable
-                style={styles.optionButton}
-                onPress={() => setScreen("createAccount")}
-              >
-                <Text style={styles.optionText}>Create Account</Text>
-              </Pressable>
-
-              <Pressable
-                style={[
-                  styles.optionButton,
-                  continueAsGuest && styles.selectedOptionButton,
-                ]}
-                onPress={() => setContinueAsGuest(true)}
-              >
-                <Text style={styles.optionText}>Continue as Guest</Text>
-              </Pressable>
-            </>
-          )}
-        </View>
-
-        {continueAsGuest && (
-          <>
-            <TextInput
-              style={styles.input}
-              placeholder="Full Name"
-              placeholderTextColor="#555"
-              value={guestName}
-              onChangeText={setGuestName}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Phone Number"
-              placeholderTextColor="#555"
-              value={guestPhone}
-              onChangeText={setGuestPhone}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Email Address"
-              placeholderTextColor="#555"
-              value={guestEmail}
-              onChangeText={setGuestEmail}
-            />
-          </>
-        )}
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Payment Method</Text>
-
-          {["Cash", "Venmo", "PayPal", "Zelle"].map((method) => (
-            <Pressable
-              key={method}
-              style={[
-                styles.optionButton,
-                paymentMethod === method && styles.selectedOption,
-              ]}
-              onPress={() => setPaymentMethod(method)}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  paymentMethod === method && styles.selectedOptionText,
-                ]}
-              >
-                {method}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-
-        <View style={styles.summaryBox}>
-          <Text style={styles.summaryTitle}>Final Order</Text>
-          {cartItems.map((item) => (
-            <Text key={item.id} style={styles.summaryLine}>
-              {item.name} x {item.quantity} - $
-              {(item.price * item.quantity).toFixed(2)}
-            </Text>
-          ))}
-          <Text style={styles.summaryTotal}>
-            Total: ${cartTotal.toFixed(2)}
-          </Text>
-        </View>
-
-        <Pressable style={styles.primaryButton} onPress={submitOrder}>
-          <Text style={styles.primaryButtonText}>Place Order</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedCheckoutScreen
+      Header={Header}
+      isCustomerLoggedIn={isCustomerLoggedIn}
+      loggedInCustomerName={loggedInCustomerName}
+      loggedInCustomerPhone={loggedInCustomerPhone}
+      loggedInCustomerEmail={loggedInCustomerEmail}
+      setScreen={setScreen}
+      continueAsGuest={continueAsGuest}
+      setContinueAsGuest={setContinueAsGuest}
+      guestName={guestName}
+      setGuestName={setGuestName}
+      guestPhone={guestPhone}
+      setGuestPhone={setGuestPhone}
+      guestEmail={guestEmail}
+      setGuestEmail={setGuestEmail}
+      paymentMethod={paymentMethod}
+      setPaymentMethod={setPaymentMethod}
+      cartItems={cartItems}
+      cartTotal={cartTotal}
+      submitOrder={submitOrder}
+    />
   );
 
   const OrderConfirmationScreen = () => (
