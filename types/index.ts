@@ -374,3 +374,78 @@ export type EditMenuScreenProps = {
   setEditMenuEventName: React.Dispatch<React.SetStateAction<string>>;
   saveMenuChanges: () => void | Promise<void>;
 };
+
+// Defines the properties required by the Manage Menu Items screen
+export type ManageMenuItemsScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  manageMenuScrollRef: React.RefObject<
+    import("react-native").ScrollView | null
+  >;
+  setShowBackToTop: React.Dispatch<React.SetStateAction<boolean>>;
+  showBackToTop: boolean;
+  setScreen: (screen: Screen) => void;
+  selectedAdminMenu: any;
+  isEditingMenuDescription: boolean;
+  editMenuDescription: string;
+  setEditMenuDescription: React.Dispatch<React.SetStateAction<string>>;
+  saveMenuDescription: () => void | Promise<void>;
+  setIsEditingMenuDescription: React.Dispatch<React.SetStateAction<boolean>>;
+  newCategoryName: string;
+  setNewCategoryName: React.Dispatch<React.SetStateAction<string>>;
+  newCategoryDescription: string;
+  setNewCategoryDescription: React.Dispatch<React.SetStateAction<string>>;
+  newCategoryParent: string;
+  setNewCategoryParent: React.Dispatch<React.SetStateAction<string>>;
+  addNewCategory: () => void | Promise<void>;
+  getAdminMenuItemGroups: (menu: any) => any[];
+  editingCategoryIndex: number | null;
+  setEditingCategoryIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  editCategoryName: string;
+  setEditCategoryName: React.Dispatch<React.SetStateAction<string>>;
+  editCategoryDescription: string;
+  setEditCategoryDescription: React.Dispatch<React.SetStateAction<string>>;
+  editCategoryParent: string;
+  setEditCategoryParent: React.Dispatch<React.SetStateAction<string>>;
+  saveCategoryChanges: () => void | Promise<void>;
+  deleteMenuCategory: (index: number) => void | Promise<void>;
+  newItemCategoryIndex: number | null;
+  setNewItemCategoryIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  newItemName: string;
+  setNewItemName: React.Dispatch<React.SetStateAction<string>>;
+  newItemDescription: string;
+  setNewItemDescription: React.Dispatch<React.SetStateAction<string>>;
+  newItemPricingType: "single" | "halfFull";
+  setNewItemPricingType: React.Dispatch<
+    React.SetStateAction<"single" | "halfFull">
+  >;
+  newItemPrice: string;
+  setNewItemPrice: React.Dispatch<React.SetStateAction<string>>;
+  newItemHalfPrice: string;
+  setNewItemHalfPrice: React.Dispatch<React.SetStateAction<string>>;
+  newItemFullPrice: string;
+  setNewItemFullPrice: React.Dispatch<React.SetStateAction<string>>;
+  newAddOnName: string;
+  setNewAddOnName: React.Dispatch<React.SetStateAction<string>>;
+  newAddOnPrice: string;
+  setNewAddOnPrice: React.Dispatch<React.SetStateAction<string>>;
+  additionalAddOns: { name: string; price: string }[];
+  setAdditionalAddOns: React.Dispatch<
+    React.SetStateAction<{ name: string; price: string }[]>
+  >;
+  addNewMenuItem: () => void | Promise<void>;
+  setSelectedAdminItem: (item: any) => void;
+  setSelectedAdminItemGroup: (group: string) => void;
+  setSelectedAdminItemIndex: (index: number) => void;
+  setEditItemName: (value: string) => void;
+  setEditItemDescription: (value: string) => void;
+  setEditItemPrice: (value: any) => void;
+  setEditItemPricingType: React.Dispatch<
+    React.SetStateAction<"single" | "halfFull">
+  >;
+  setEditItemHalfPrice: (value: string) => void;
+  setEditItemFullPrice: (value: string) => void;
+  setEditItemStatus: (value: string) => void;
+  setEditItemAddOnName: (value: string) => void;
+  setEditItemAddOnPrice: (value: string) => void;
+  deleteMenuItem: (field: string, index: number) => void | Promise<void>;
+};

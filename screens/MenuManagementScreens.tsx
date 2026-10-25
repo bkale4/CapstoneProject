@@ -1,13 +1,13 @@
 // Imports React and the components used for administrative menu management
 import React from "react";
 import {
-    Alert,
-    Platform,
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 // Imports shared application styles
@@ -15,9 +15,10 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Menu Management screen
 import type {
-    AddMenuScreenProps,
-    EditMenuScreenProps,
-    MenuManagementScreenProps,
+  AddMenuScreenProps,
+  EditMenuScreenProps,
+  ManageMenuItemsScreenProps,
+  MenuManagementScreenProps,
 } from "../types";
 
 // Displays menus and allows administrators to manage their settings and items
@@ -390,5 +391,555 @@ export const EditMenuScreen = ({
         <Text style={styles.adminButtonText}>Save Changes</Text>
       </Pressable>
     </ScrollView>
+  </>
+);
+
+// Displays and manages menu categories, items, pricing, and add-ons
+export const ManageMenuItemsScreen = ({
+  Header,
+  manageMenuScrollRef,
+  setShowBackToTop,
+  showBackToTop,
+  setScreen,
+  selectedAdminMenu,
+  isEditingMenuDescription,
+  editMenuDescription,
+  setEditMenuDescription,
+  saveMenuDescription,
+  setIsEditingMenuDescription,
+  newCategoryName,
+  setNewCategoryName,
+  newCategoryDescription,
+  setNewCategoryDescription,
+  newCategoryParent,
+  setNewCategoryParent,
+  addNewCategory,
+  getAdminMenuItemGroups,
+  editingCategoryIndex,
+  setEditingCategoryIndex,
+  editCategoryName,
+  setEditCategoryName,
+  editCategoryDescription,
+  setEditCategoryDescription,
+  editCategoryParent,
+  setEditCategoryParent,
+  saveCategoryChanges,
+  deleteMenuCategory,
+  newItemCategoryIndex,
+  setNewItemCategoryIndex,
+  newItemName,
+  setNewItemName,
+  newItemDescription,
+  setNewItemDescription,
+  newItemPricingType,
+  setNewItemPricingType,
+  newItemPrice,
+  setNewItemPrice,
+  newItemHalfPrice,
+  setNewItemHalfPrice,
+  newItemFullPrice,
+  setNewItemFullPrice,
+  newAddOnName,
+  setNewAddOnName,
+  newAddOnPrice,
+  setNewAddOnPrice,
+  additionalAddOns,
+  setAdditionalAddOns,
+  addNewMenuItem,
+  setSelectedAdminItem,
+  setSelectedAdminItemGroup,
+  setSelectedAdminItemIndex,
+  setEditItemName,
+  setEditItemDescription,
+  setEditItemPrice,
+  setEditItemPricingType,
+  setEditItemHalfPrice,
+  setEditItemFullPrice,
+  setEditItemStatus,
+  setEditItemAddOnName,
+  setEditItemAddOnPrice,
+  deleteMenuItem,
+}: ManageMenuItemsScreenProps) => (
+  <>
+    <Header title="Manage Menu Items" />
+
+    <ScrollView
+      ref={manageMenuScrollRef}
+      contentContainerStyle={styles.content}
+      onScroll={(event) => {
+        setShowBackToTop(event.nativeEvent.contentOffset.y > 20);
+      }}
+      scrollEventThrottle={16}
+    >
+      {/* Returns to the Menu Management screen */}
+      <Pressable
+        style={styles.backButton}
+        onPress={() => setScreen("menuManagement")}
+      >
+        <Text style={styles.backButtonText}>🡄 Back</Text>
+      </Pressable>
+
+      <Text style={styles.cardTitle}>{selectedAdminMenu?.name}</Text>
+
+      {/* Displays and allows editing of the menu description */}
+      <Text style={styles.label}>Menu Description</Text>
+
+      {isEditingMenuDescription ? (
+        <>
+          <TextInput
+            style={styles.input}
+            value={editMenuDescription}
+            onChangeText={setEditMenuDescription}
+            placeholder="Enter menu description"
+            multiline
+          />
+
+          <Pressable
+            style={styles.adminButton}
+            onPress={() => saveMenuDescription()}
+          >
+            <Text style={styles.adminButtonText}>Save Description</Text>
+          </Pressable>
+        </>
+      ) : (
+        <>
+          <Text style={styles.menuDescription}>
+            {selectedAdminMenu?.description || "No description added."}
+          </Text>
+
+          <Pressable
+            style={styles.adminButton}
+            onPress={() => setIsEditingMenuDescription(true)}
+          >
+            <Text style={styles.adminButtonText}>Edit Menu Description</Text>
+          </Pressable>
+        </>
+      )}
+
+      <Text style={styles.cardSubtitle}>
+        Add, edit, price, and remove menu items.
+      </Text>
+
+      {/* Collects information for a new menu category */}
+      <Text style={styles.label}>New Category</Text>
+
+      <TextInput
+        style={styles.input}
+        value={newCategoryName}
+        onChangeText={setNewCategoryName}
+        placeholder="Enter category name"
+      />
+
+      <TextInput
+        style={styles.input}
+        value={newCategoryDescription}
+        onChangeText={setNewCategoryDescription}
+        placeholder="Enter category description (optional)"
+        multiline
+      />
+
+      <Text style={styles.label}>Parent Category</Text>
+      <TextInput
+        style={styles.input}
+        value={newCategoryParent}
+        onChangeText={setNewCategoryParent}
+        placeholder="Enter parent category (e.g., Breakfast or Lunch)"
+      />
+
+      <Pressable style={styles.adminButton} onPress={addNewCategory}>
+        <Text style={styles.adminButtonText}>Add Category</Text>
+      </Pressable>
+
+      {/* Displays existing categories and their management options */}
+      {getAdminMenuItemGroups(selectedAdminMenu).map((group: any) => (
+        <View key={group.field}>
+          <Text style={styles.menuSectionTitle}>{group.name}</Text>
+
+          {/* Displays the category's parent when available */}
+          {group.field.startsWith("categories.") &&
+          selectedAdminMenu?.categories?.[Number(group.field.split(".")[1])]
+            ?.parentCategory ? (
+            <Text style={[styles.cardSubtitle, { textAlign: "center" }]}>
+              Parent Category:{" "}
+              {
+                selectedAdminMenu.categories[Number(group.field.split(".")[1])]
+                  .parentCategory
+              }
+            </Text>
+          ) : null}
+
+          {/* Loads the selected category into the editing form */}
+          {group.field.startsWith("categories.") && (
+            <Pressable
+              style={styles.adminButton}
+              onPress={() => {
+                const categoryIndex = Number(group.field.split(".")[1]);
+                const category = selectedAdminMenu?.categories?.[categoryIndex];
+
+                setEditingCategoryIndex(categoryIndex);
+                setEditCategoryName(category?.name || "");
+                setEditCategoryDescription(category?.description || "");
+                setEditCategoryParent(category?.parentCategory || "");
+              }}
+            >
+              <Text style={styles.adminButtonText}>Edit Category</Text>
+            </Pressable>
+          )}
+
+          {/* Displays the form for editing a selected category */}
+          {group.field.startsWith("categories.") &&
+            editingCategoryIndex === Number(group.field.split(".")[1]) && (
+              <View style={styles.card}>
+                <Text style={styles.label}>Category Name</Text>
+                <TextInput
+                  style={styles.input}
+                  value={editCategoryName}
+                  onChangeText={setEditCategoryName}
+                  placeholder="Category Name"
+                />
+
+                <Text style={styles.label}>Category Description</Text>
+                <TextInput
+                  style={styles.input}
+                  value={editCategoryDescription}
+                  onChangeText={setEditCategoryDescription}
+                  placeholder="Category description (optional)"
+                  multiline
+                />
+
+                <Text style={styles.label}>Parent Category</Text>
+                <TextInput
+                  style={styles.input}
+                  value={editCategoryParent}
+                  onChangeText={setEditCategoryParent}
+                  placeholder="Enter parent category (e.g., Breakfast or Lunch"
+                />
+
+                <Pressable
+                  style={styles.adminButton}
+                  onPress={() => saveCategoryChanges()}
+                >
+                  <Text style={styles.adminButtonText}>Save Changes</Text>
+                </Pressable>
+              </View>
+            )}
+
+          {/* Confirms before deleting a category */}
+          {group.field.startsWith("categories.") && (
+            <Pressable
+              style={styles.adminButton}
+              onPress={() => {
+                const categoryIndex = Number(group.field.split(".")[1]);
+
+                if (Platform.OS === "web") {
+                  const confirmed = window.confirm(
+                    `Are you sure you want to delete \${group.name}?`,
+                  );
+
+                  if (confirmed) {
+                    deleteMenuCategory(categoryIndex);
+                  }
+
+                  return;
+                }
+
+                Alert.alert(
+                  "Delete Menu Item",
+                  `Are you sure you want to delete \${group.name}?`,
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: () => deleteMenuCategory(categoryIndex),
+                    },
+                  ],
+                );
+              }}
+            >
+              <Text style={styles.adminButtonText}>Delete Category</Text>
+            </Pressable>
+          )}
+
+          {/* Displays the form for adding a new item to a category */}
+          {group.field.startsWith("categories.") && (
+            <View style={styles.card}>
+              <Text style={styles.label}>Add Item to {group.name}</Text>
+
+              <TextInput
+                style={styles.input}
+                value={
+                  newItemCategoryIndex === Number(group.field.split(".")[1])
+                    ? newItemName
+                    : ""
+                }
+                onChangeText={(text) => {
+                  setNewItemCategoryIndex(Number(group.field.split(".")[1]));
+                  setNewItemName(text);
+                }}
+                placeholder="Item name"
+              />
+
+              {newItemCategoryIndex === Number(group.field.split(".")[1]) && (
+                <>
+                  <TextInput
+                    style={styles.input}
+                    value={newItemDescription}
+                    onChangeText={setNewItemDescription}
+                    placeholder="Description"
+                  />
+
+                  {/* Allows selection of single or half/full pricing */}
+                  <Text style={styles.label}>Pricing Type</Text>
+                  <Pressable
+                    style={styles.adminButton}
+                    onPress={() =>
+                      setNewItemPricingType(
+                        newItemPricingType === "single" ? "halfFull" : "single",
+                      )
+                    }
+                  >
+                    <Text style={styles.adminButtonText}>
+                      {newItemPricingType === "single"
+                        ? "Single Price (Tap for Half/Full"
+                        : "Half/Full Pricing (Tap for Single)"}
+                    </Text>
+                  </Pressable>
+
+                  {newItemPricingType === "single" ? (
+                    <TextInput
+                      style={styles.input}
+                      value={newItemPrice}
+                      onChangeText={setNewItemPrice}
+                      placeholder="Price"
+                      keyboardType="decimal-pad"
+                    />
+                  ) : (
+                    <>
+                      <TextInput
+                        style={styles.input}
+                        value={newItemHalfPrice}
+                        onChangeText={setNewItemHalfPrice}
+                        placeholder="Half Price"
+                        keyboardType="decimal-pad"
+                      />
+
+                      <TextInput
+                        style={styles.input}
+                        value={newItemFullPrice}
+                        onChangeText={setNewItemFullPrice}
+                        placeholder="Full Price"
+                        keyboardType="decimal-pad"
+                      />
+                    </>
+                  )}
+
+                  {/* Collects optional add-on information */}
+                  <Text style={styles.label}>Optional Add-on</Text>
+
+                  <TextInput
+                    style={styles.input}
+                    value={newAddOnName}
+                    onChangeText={setNewAddOnName}
+                    placeholder="Add-on name (e.g., Bacon or Sausage)"
+                  />
+
+                  <TextInput
+                    style={styles.input}
+                    value={newAddOnPrice}
+                    onChangeText={setNewAddOnPrice}
+                    placeholder="Add-on price"
+                    keyboardType="decimal-pad"
+                  />
+
+                  {/* Allows multiple add-ons for a menu item */}
+                  <Pressable
+                    style={styles.adminButton}
+                    onPress={() =>
+                      setAdditionalAddOns((previous) => [
+                        ...previous,
+                        { name: "", price: "" },
+                      ])
+                    }
+                  >
+                    <Text style={styles.adminButtonText}>
+                      Add Another Add-on
+                    </Text>
+                  </Pressable>
+
+                  {additionalAddOns.map((addOn, index) => (
+                    <View key={index}>
+                      <TextInput
+                        style={styles.input}
+                        value={addOn.name}
+                        onChangeText={(text) =>
+                          setAdditionalAddOns((previous) =>
+                            previous.map((option, optionIndex) =>
+                              optionIndex === index
+                                ? { ...option, name: text }
+                                : option,
+                            ),
+                          )
+                        }
+                        placeholder={`Additional add-on \${index + 1} name`}
+                      />
+
+                      <TextInput
+                        style={styles.input}
+                        value={addOn.price}
+                        onChangeText={(text) =>
+                          setAdditionalAddOns((previous) =>
+                            previous.map((option, optionIndex) =>
+                              optionIndex === index
+                                ? { ...option, price: text }
+                                : option,
+                            ),
+                          )
+                        }
+                        placeholder="Additional add-on price"
+                        keyboardType="decimal-pad"
+                      />
+                    </View>
+                  ))}
+
+                  {/* Saves the new item to the selected category */}
+                  <Pressable
+                    style={styles.adminButton}
+                    onPress={addNewMenuItem}
+                  >
+                    <Text style={styles.adminButtonText}>Add Item</Text>
+                  </Pressable>
+                </>
+              )}
+            </View>
+          )}
+
+          {/* Displays existing menu items and their details */}
+          {group.items.length === 0 ? (
+            <Text style={styles.cardSubtitle}>
+              No items have been added yet.
+            </Text>
+          ) : (
+            group.items.map((item: any, index: number) => (
+              <View key={index} style={styles.card}>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+
+                {item.description && (
+                  <Text style={styles.cardSubtitle}>{item.description}</Text>
+                )}
+
+                {/* Displays item pricing */}
+                {item.pricingType === "halfFull" ? (
+                  <>
+                    <Text style={styles.cardSubtitle}>
+                      Half: ${Number(item.halfPrice).toFixed(2)}
+                    </Text>
+                    <Text style={styles.cardSubtitle}>
+                      Full: ${Number(item.fullPrice).toFixed(2)}
+                    </Text>
+                  </>
+                ) : (
+                  <Text style={styles.cardSubtitle}>
+                    {item.price === null ||
+                    item.price === undefined ||
+                    item.price === ""
+                      ? "Contact for Pricing"
+                      : `$\${Number(item.price).toFixed(2)}`}
+                  </Text>
+                )}
+
+                {/* Displays the item's add-on and availability */}
+                {item.addOn && (
+                  <Text style={styles.cardSubtitle}>
+                    Add-on: {item.addOn.name} (+$
+                    {Number(item.addOn.price).toFixed(2)})
+                  </Text>
+                )}
+
+                <Text style={styles.cardSubtitle}>Status: {item.status}</Text>
+
+                {/* Loads the selected item into the Edit Item screen */}
+                <Pressable
+                  style={styles.adminButton}
+                  onPress={() => {
+                    setSelectedAdminItem(item);
+                    setSelectedAdminItemGroup(group.field);
+                    setSelectedAdminItemIndex(index);
+
+                    setEditItemName(item.name || "");
+                    setEditItemDescription(item.description || "");
+                    setEditItemPrice(item.price ?? "");
+                    setEditItemPricingType(item.pricingType || "single");
+                    setEditItemHalfPrice(
+                      item.halfPrice != null ? String(item.halfPrice) : "",
+                    );
+                    setEditItemFullPrice(
+                      item.fullPrice != null ? String(item.fullPrice) : "",
+                    );
+                    setEditItemStatus(item.status || "");
+                    setEditItemAddOnName(item.addOn?.name || "");
+                    setEditItemAddOnPrice(
+                      item.addOn?.price != null ? String(item.addOn.price) : "",
+                    );
+
+                    setScreen("editMenuItem");
+                  }}
+                >
+                  <Text style={styles.adminButtonText}>Edit Item</Text>
+                </Pressable>
+
+                {/* Confirms before deleting a menu item */}
+                <Pressable
+                  style={styles.adminButton}
+                  onPress={() => {
+                    if (Platform.OS === "web") {
+                      const confirmed = window.confirm(
+                        `Are you sure you want to delete \${item.name}?`,
+                      );
+
+                      if (confirmed) {
+                        deleteMenuItem(group.field, index);
+                      }
+
+                      return;
+                    }
+
+                    Alert.alert(
+                      "Delete Menu Item",
+                      `Are you sure you want to delete \${item.name}?`,
+                      [
+                        { text: "Cancel", style: "cancel" },
+                        {
+                          text: "Delete",
+                          style: "destructive",
+                          onPress: () => deleteMenuItem(group.field, index),
+                        },
+                      ],
+                    );
+                  }}
+                >
+                  <Text style={styles.adminButtonText}>Delete Item</Text>
+                </Pressable>
+              </View>
+            ))
+          )}
+        </View>
+      ))}
+    </ScrollView>
+
+    {/* Returns to the top of the menu management page */}
+    {showBackToTop && (
+      <Pressable
+        style={styles.backToTopButton}
+        onPress={() =>
+          manageMenuScrollRef.current?.scrollTo({
+            y: 0,
+            animated: true,
+          })
+        }
+      >
+        <Text style={styles.backToTopButtonText}>↑ Back to Top</Text>
+      </Pressable>
+    )}
   </>
 );
