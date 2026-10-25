@@ -300,3 +300,20 @@ export type OnsiteEventScreenProps = {
   expandedOnsiteCategories: number[];
   setExpandedOnsiteCategories: React.Dispatch<React.SetStateAction<number[]>>;
 };
+
+// Defines the properties required by the Catering Availability Calendar screen
+export type AvailabilityCalendarScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  currentMonth: number;
+  currentYear: number;
+  monthNames: string[];
+  goToPreviousMonth: () => void;
+  goToNextMonth: () => void;
+  firstDayOfMonth: number;
+  daysInMonth: number;
+  today: Date;
+  availability: Record<string, boolean>;
+  selectedCateringDate: string;
+  setSelectedCateringDate: React.Dispatch<React.SetStateAction<string>>;
+  setScreen: (screen: Screen) => void;
+};

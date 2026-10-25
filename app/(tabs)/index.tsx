@@ -30,6 +30,7 @@ import { FoodTrailerScreen as SharedFoodTrailerScreen } from "../../screens/Food
 
 // Imports the shared Catering Menu Options screen
 import {
+  AvailabilityCalendarScreen as SharedAvailabilityCalendarScreen,
   CateringConfirmationScreen as SharedCateringConfirmationScreen,
   CateringManagementScreen as SharedCateringManagementScreen,
   CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
@@ -1373,119 +1374,21 @@ export default function App() {
   );
 
   const AvailabilityCalendarScreen = () => (
-    <>
-      <Header title="Catering Availability" />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <View style={styles.calendarHeader}>
-            <Pressable
-              style={styles.calendarNavButton}
-              onPress={goToPreviousMonth}
-            >
-              <Text style={styles.calendarNavText}>‹</Text>
-            </Pressable>
-
-            <Text style={styles.cardTitle}>
-              {monthNames[currentMonth]} {currentYear}
-            </Text>
-
-            <Pressable style={styles.calendarNavButton} onPress={goToNextMonth}>
-              <Text style={styles.calendarNavText}>›</Text>
-            </Pressable>
-          </View>
-
-          <Text style={styles.cardSubtitle}>
-            View available dates for catering requests.
-          </Text>
-        </View>
-
-        <View style={styles.calendar}>
-          <View style={styles.weekRow}>
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <Text key={day} style={styles.weekDay}>
-                {day}
-              </Text>
-            ))}
-          </View>
-
-          <View style={styles.calendarGrid}>
-            {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-              <View key={`blank-${index}`} style={styles.calendarDay} />
-            ))}
-
-            {Array.from({ length: daysInMonth }, (_, index) => {
-              const day = index + 1;
-
-              const dateKey = `${currentYear}-${String(
-                currentMonth + 1,
-              ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-
-              const dateForCell = new Date(currentYear, currentMonth, day);
-
-              const todayAtMidnight = new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                today.getDate(),
-              );
-
-              const isPastDate = dateForCell < todayAtMidnight;
-
-              const isAvailable =
-                !isPastDate && availability[dateKey] !== false;
-
-              const isToday =
-                day === today.getDate() &&
-                currentMonth === today.getMonth() &&
-                currentYear === today.getFullYear();
-
-              return (
-                <Pressable
-                  key={dateKey}
-                  disabled={!isAvailable}
-                  onPress={() => setSelectedCateringDate(dateKey)}
-                  style={[
-                    styles.calendarDay,
-                    isAvailable ? styles.availableDay : styles.unavailableDay,
-                    isToday && styles.todayDay,
-                    selectedCateringDate === dateKey && styles.selectedDay,
-                  ]}
-                >
-                  <Text style={styles.calendarDayNumber}>{day}</Text>
-
-                  <Text style={styles.calendarStatus}>
-                    {isAvailable ? "Available" : "Unavailable"}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Legend</Text>
-
-          <Text style={styles.cardSubtitle}>
-            Available = open for catering requests
-          </Text>
-
-          <Text style={styles.cardSubtitle}>
-            Unavailable = already booked or not accepting requests
-          </Text>
-        </View>
-
-        <Pressable
-          style={[
-            styles.primaryButton,
-            !selectedCateringDate && styles.disabledButton,
-          ]}
-          disabled={!selectedCateringDate}
-          onPress={() => setScreen("cateringRequest")}
-        >
-          <Text style={styles.primaryButtonText}>Continue to Request Form</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedAvailabilityCalendarScreen
+      Header={Header}
+      currentMonth={currentMonth}
+      currentYear={currentYear}
+      monthNames={monthNames}
+      goToPreviousMonth={goToPreviousMonth}
+      goToNextMonth={goToNextMonth}
+      firstDayOfMonth={firstDayOfMonth}
+      daysInMonth={daysInMonth}
+      today={today}
+      availability={availability}
+      selectedCateringDate={selectedCateringDate}
+      setSelectedCateringDate={setSelectedCateringDate}
+      setScreen={setScreen}
+    />
   );
 
   // Displays the Catering Request screen using the shared component

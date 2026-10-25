@@ -7,6 +7,7 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Catering Menu Options screen
 import type {
+  AvailabilityCalendarScreenProps,
   CateringConfirmationScreenProps,
   CateringManagementScreenProps,
   CateringMenuOptionsScreenProps,
@@ -548,6 +549,143 @@ export const OnsiteEventScreen = ({
           </View>
         ) : null,
       )}
+    </ScrollView>
+  </>
+);
+
+// Displays the Catering Availability Calendar and allows customers to select a date
+export const AvailabilityCalendarScreen = ({
+  Header,
+  currentMonth,
+  currentYear,
+  monthNames,
+  goToPreviousMonth,
+  goToNextMonth,
+  firstDayOfMonth,
+  daysInMonth,
+  today,
+  availability,
+  selectedCateringDate,
+  setSelectedCateringDate,
+  setScreen,
+}: AvailabilityCalendarScreenProps) => (
+  <>
+    <Header title="Catering Availability" />
+
+    <ScrollView contentContainerStyle={styles.content}>
+      {/* Displays the current month and calendar navigation buttons */}
+      <View style={styles.card}>
+        <View style={styles.calendarHeader}>
+          <Pressable
+            style={styles.calendarNavButton}
+            onPress={goToPreviousMonth}
+          >
+            <Text style={styles.calendarNavText}>‹</Text>
+          </Pressable>
+
+          <Text style={styles.cardTitle}>
+            {monthNames[currentMonth]} {currentYear}
+          </Text>
+
+          <Pressable style={styles.calendarNavButton} onPress={goToNextMonth}>
+            <Text style={styles.calendarNavText}>›</Text>
+          </Pressable>
+        </View>
+
+        <Text style={styles.cardSubtitle}>
+          View available dates for catering requests.
+        </Text>
+      </View>
+
+      {/* Displays the calendar weekdays and date grid */}
+      <View style={styles.calendar}>
+        <View style={styles.weekRow}>
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <Text key={day} style={styles.weekDay}>
+              {day}
+            </Text>
+          ))}
+        </View>
+
+        <View style={styles.calendarGrid}>
+          {/* Adds blank cells before the first day of the month */}
+          {Array.from({ length: firstDayOfMonth }).map((_, index) => (
+            <View key={`blank-${index}`} style={styles.calendarDay} />
+          ))}
+
+          {/* Displays each date and its availability status */}
+          {Array.from({ length: daysInMonth }, (_, index) => {
+            const day = index + 1;
+
+            const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(
+              2,
+              "0",
+            )}-${String(day).padStart(2, "0")}`;
+
+            const dateForCell = new Date(currentYear, currentMonth, day);
+
+            const todayAtMidnight = new Date(
+              today.getFullYear(),
+              today.getMonth(),
+              today.getDate(),
+            );
+
+            const isPastDate = dateForCell < todayAtMidnight;
+
+            const isAvailable = !isPastDate && availability[dateKey] !== false;
+
+            const isToday =
+              day === today.getDate() &&
+              currentMonth === today.getMonth() &&
+              currentYear === today.getFullYear();
+
+            return (
+              <Pressable
+                key={dateKey}
+                disabled={!isAvailable}
+                onPress={() => setSelectedCateringDate(dateKey)}
+                style={[
+                  styles.calendarDay,
+                  isAvailable ? styles.availableDay : styles.unavailableDay,
+                  isToday && styles.todayDay,
+                  selectedCateringDate === dateKey && styles.selectedDay,
+                ]}
+              >
+                <Text style={styles.calendarDayNumber}>{day}</Text>
+
+                <Text style={styles.calendarStatus}>
+                  {isAvailable ? "Available" : "Unavailable"}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* Explains the available and unavailable date statuses */}
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Legend</Text>
+
+        <Text style={styles.cardSubtitle}>
+          Available = open for catering requests
+        </Text>
+
+        <Text style={styles.cardSubtitle}>
+          Unavailable = already booked or not accepting requests
+        </Text>
+      </View>
+
+      {/* Opens the Catering Request form after a date is selected */}
+      <Pressable
+        style={[
+          styles.primaryButton,
+          !selectedCateringDate && styles.disabledButton,
+        ]}
+        disabled={!selectedCateringDate}
+        onPress={() => setScreen("cateringRequest")}
+      >
+        <Text style={styles.primaryButtonText}>Continue to Request Form</Text>
+      </Pressable>
     </ScrollView>
   </>
 );
