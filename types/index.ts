@@ -334,3 +334,24 @@ export type MenuManagementScreenProps = {
   setIsEditingMenuDescription: (value: boolean) => void;
   deleteMenu: (id: string) => void | Promise<void>;
 };
+
+// Defines the properties required by the Add Menu screen
+export type AddMenuScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  setScreen: (screen: Screen) => void;
+  newMenuName: string;
+  setNewMenuName: React.Dispatch<React.SetStateAction<string>>;
+  newMenuDescription: string;
+  setNewMenuDescription: React.Dispatch<React.SetStateAction<string>>;
+  newMenuType: string;
+  setNewMenuType: React.Dispatch<React.SetStateAction<string>>;
+  menuTypeDropdown: boolean;
+  setMenuTypeDropdown: React.Dispatch<React.SetStateAction<boolean>>;
+  newMenuLocation: string;
+  setNewMenuLocation: React.Dispatch<React.SetStateAction<string>>;
+  newMenuEventName: string;
+  setNewMenuEventName: React.Dispatch<React.SetStateAction<string>>;
+  newMenuActive: boolean;
+  setNewMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
+  addNewMenu: () => void | Promise<void>;
+};

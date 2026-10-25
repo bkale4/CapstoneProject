@@ -51,7 +51,10 @@ import {
 } from "../../screens/CheckoutScreen";
 
 // Imports the shared Menu Management screen
-import { MenuManagementScreen as SharedMenuManagementScreen } from "../../screens/MenuManagementScreens";
+import {
+  AddMenuScreen as SharedAddMenuScreen,
+  MenuManagementScreen as SharedMenuManagementScreen,
+} from "../../screens/MenuManagementScreens";
 
 import {
   createUserWithEmailAndPassword,
@@ -2252,110 +2255,27 @@ export default function App() {
     }
   };
 
+  // Displays the Add Menu screen using the shared component
   const AddMenuScreen = () => (
-    <>
-      <Header title="Add Menu" />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => setScreen("menuManagement")}
-        >
-          <Text style={styles.backButtonText}>🡄 Back</Text>
-        </Pressable>
-
-        <Text style={styles.label}>Menu Name</Text>
-        <TextInput
-          style={styles.input}
-          value={newMenuName}
-          onChangeText={setNewMenuName}
-          placeholder="Enter menu name"
-        />
-
-        <Text style={styles.label}>Menu Description</Text>
-        <TextInput
-          style={styles.input}
-          value={newMenuDescription}
-          onChangeText={setNewMenuDescription}
-          placeholder="Enter menu description"
-          multiline
-        />
-
-        <Text style={styles.label}>Menu Type</Text>
-        <Pressable
-          style={styles.dropdown}
-          onPress={() => setMenuTypeDropdown(!menuTypeDropdown)}
-        >
-          <Text style={styles.dropdownText}>
-            {newMenuType === "foodTrailer"
-              ? "Food Trailer"
-              : newMenuType === "dropOffCatering"
-                ? "Drop-Off Catering"
-                : newMenuType === "onsiteEventCatering"
-                  ? "Onsite Event Catering"
-                  : "Select menu type"}
-          </Text>
-
-          <Text style={styles.dropdownArrow}>
-            {menuTypeDropdown ? "▲" : "▼"}
-          </Text>
-        </Pressable>
-
-        {menuTypeDropdown && (
-          <View style={styles.dropdownOptions}>
-            {["Food Trailer", "Drop-Off Catering", "Onsite Event Catering"].map(
-              (type) => (
-                <Pressable
-                  key={type}
-                  style={styles.dropdownOption}
-                  onPress={() => {
-                    setNewMenuType(
-                      type === "Food Trailer"
-                        ? "foodTrailer"
-                        : type === "Drop-Off Catering"
-                          ? "dropOffCatering"
-                          : "onsiteEventCatering",
-                    );
-                    setMenuTypeDropdown(false);
-                  }}
-                >
-                  <Text style={styles.dropdownOptionText}>{type}</Text>
-                </Pressable>
-              ),
-            )}
-          </View>
-        )}
-
-        <Text style={styles.label}>Location</Text>
-        <TextInput
-          style={styles.input}
-          value={newMenuLocation}
-          onChangeText={setNewMenuLocation}
-          placeholder="Enter location"
-        />
-
-        <Text style={styles.label}>Event Name</Text>
-        <TextInput
-          style={styles.input}
-          value={newMenuEventName}
-          onChangeText={setNewMenuEventName}
-          placeholder="Enter event name"
-        />
-
-        <Pressable
-          style={styles.adminButton}
-          onPress={() => setNewMenuActive(!newMenuActive)}
-        >
-          <Text style={styles.adminButtonText}>
-            Status: {newMenuActive ? "Active" : "Inactive"}
-          </Text>
-        </Pressable>
-
-        <Pressable style={styles.adminButton} onPress={addNewMenu}>
-          <Text style={styles.adminButtonText}>Add Menu</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedAddMenuScreen
+      Header={Header}
+      setScreen={setScreen}
+      newMenuName={newMenuName}
+      setNewMenuName={setNewMenuName}
+      newMenuDescription={newMenuDescription}
+      setNewMenuDescription={setNewMenuDescription}
+      newMenuType={newMenuType}
+      setNewMenuType={setNewMenuType}
+      menuTypeDropdown={menuTypeDropdown}
+      setMenuTypeDropdown={setMenuTypeDropdown}
+      newMenuLocation={newMenuLocation}
+      setNewMenuLocation={setNewMenuLocation}
+      newMenuEventName={newMenuEventName}
+      setNewMenuEventName={setNewMenuEventName}
+      newMenuActive={newMenuActive}
+      setNewMenuActive={setNewMenuActive}
+      addNewMenu={addNewMenu}
+    />
   );
 
   const EditMenuScreen = () => (
@@ -2583,7 +2503,7 @@ export default function App() {
       {screen === "business" && <BusinessScreen />}
       {screen === "ordersManagement" && <OrdersManagementScreen />}
       {screen === "availabilityManagement" && <AvailabilityManagementScreen />}
-      {screen === "menuManagement" && <MenuManagementScreen />}
+      {screen === "menuManagement" && MenuManagementScreen()}
       {screen === "addMenu" && AddMenuScreen()}
       {screen === "editMenu" && EditMenuScreen()}
       {screen === "manageMenuItems" && ManageMenuItemsScreen()}

@@ -6,6 +6,7 @@ import {
     Pressable,
     ScrollView,
     Text,
+    TextInput,
     View,
 } from "react-native";
 
@@ -13,7 +14,7 @@ import {
 import { styles } from "../styles/styles";
 
 // Imports the properties required by the Menu Management screen
-import type { MenuManagementScreenProps } from "../types";
+import type { AddMenuScreenProps, MenuManagementScreenProps } from "../types";
 
 // Displays menus and allows administrators to manage their settings and items
 export const MenuManagementScreen = ({
@@ -135,6 +136,135 @@ export const MenuManagementScreen = ({
           </Pressable>
         </View>
       ))}
+    </ScrollView>
+  </>
+);
+
+// Displays the Add Menu form and allows administrators to create menus
+export const AddMenuScreen = ({
+  Header,
+  setScreen,
+  newMenuName,
+  setNewMenuName,
+  newMenuDescription,
+  setNewMenuDescription,
+  newMenuType,
+  setNewMenuType,
+  menuTypeDropdown,
+  setMenuTypeDropdown,
+  newMenuLocation,
+  setNewMenuLocation,
+  newMenuEventName,
+  setNewMenuEventName,
+  newMenuActive,
+  setNewMenuActive,
+  addNewMenu,
+}: AddMenuScreenProps) => (
+  <>
+    <Header title="Add Menu" />
+
+    <ScrollView contentContainerStyle={styles.content}>
+      {/* Returns to the Menu Management screen */}
+      <Pressable
+        style={styles.backButton}
+        onPress={() => setScreen("menuManagement")}
+      >
+        <Text style={styles.backButtonText}>🡄 Back</Text>
+      </Pressable>
+
+      {/* Collects the menu name and description */}
+      <Text style={styles.label}>Menu Name</Text>
+      <TextInput
+        style={styles.input}
+        value={newMenuName}
+        onChangeText={setNewMenuName}
+        placeholder="Enter menu name"
+      />
+
+      <Text style={styles.label}>Menu Description</Text>
+      <TextInput
+        style={styles.input}
+        value={newMenuDescription}
+        onChangeText={setNewMenuDescription}
+        placeholder="Enter menu description"
+        multiline
+      />
+
+      {/* Allows administrators to select the menu type */}
+      <Text style={styles.label}>Menu Type</Text>
+      <Pressable
+        style={styles.dropdown}
+        onPress={() => setMenuTypeDropdown(!menuTypeDropdown)}
+      >
+        <Text style={styles.dropdownText}>
+          {newMenuType === "foodTrailer"
+            ? "Food Trailer"
+            : newMenuType === "dropOffCatering"
+              ? "Drop-Off Catering"
+              : newMenuType === "onsiteEventCatering"
+                ? "Onsite Event Catering"
+                : "Select menu type"}
+        </Text>
+
+        <Text style={styles.dropdownArrow}>{menuTypeDropdown ? "▲" : "▼"}</Text>
+      </Pressable>
+
+      {menuTypeDropdown && (
+        <View style={styles.dropdownOptions}>
+          {["Food Trailer", "Drop-Off Catering", "Onsite Event Catering"].map(
+            (type) => (
+              <Pressable
+                key={type}
+                style={styles.dropdownOption}
+                onPress={() => {
+                  setNewMenuType(
+                    type === "Food Trailer"
+                      ? "foodTrailer"
+                      : type === "Drop-Off Catering"
+                        ? "dropOffCatering"
+                        : "onsiteEventCatering",
+                  );
+                  setMenuTypeDropdown(false);
+                }}
+              >
+                <Text style={styles.dropdownOptionText}>{type}</Text>
+              </Pressable>
+            ),
+          )}
+        </View>
+      )}
+
+      {/* Collects the menu location and event name */}
+      <Text style={styles.label}>Location</Text>
+      <TextInput
+        style={styles.input}
+        value={newMenuLocation}
+        onChangeText={setNewMenuLocation}
+        placeholder="Enter location"
+      />
+
+      <Text style={styles.label}>Event Name</Text>
+      <TextInput
+        style={styles.input}
+        value={newMenuEventName}
+        onChangeText={setNewMenuEventName}
+        placeholder="Enter event name"
+      />
+
+      {/* Sets the menu's active or inactive status */}
+      <Pressable
+        style={styles.adminButton}
+        onPress={() => setNewMenuActive(!newMenuActive)}
+      >
+        <Text style={styles.adminButtonText}>
+          Status: {newMenuActive ? "Active" : "Inactive"}
+        </Text>
+      </Pressable>
+
+      {/* Saves the new menu using the existing menu creation function */}
+      <Pressable style={styles.adminButton} onPress={addNewMenu}>
+        <Text style={styles.adminButtonText}>Add Menu</Text>
+      </Pressable>
     </ScrollView>
   </>
 );
