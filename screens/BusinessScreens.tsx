@@ -8,6 +8,7 @@ import { styles } from "../styles/styles";
 // Imports the properties required by the Business and Customer Login screens
 import type {
   BusinessLoginScreenProps,
+  CreateAccountScreenProps,
   CustomerLoginScreenProps,
 } from "../types";
 
@@ -105,6 +106,69 @@ export const CustomerLoginScreen = ({
       {customerLoginMessage !== "" && (
         <Text style={styles.sectionText}>{customerLoginMessage}</Text>
       )}
+
+      <Pressable onPress={() => setScreen("checkout")}>
+        <Text style={styles.optionText}>Back to Checkout</Text>
+      </Pressable>
+    </ScrollView>
+  </>
+);
+
+// Displays the Create Account screen and handles customer registration
+export const CreateAccountScreen = ({
+  Header,
+  newCustomerName,
+  setNewCustomerName,
+  newCustomerPhone,
+  setNewCustomerPhone,
+  newCustomerEmail,
+  setNewCustomerEmail,
+  newCustomerPassword,
+  setNewCustomerPassword,
+  handleCreateAccount,
+  setScreen,
+}: CreateAccountScreenProps) => (
+  <>
+    <Header title="Create Account" />
+
+    <ScrollView contentContainerStyle={styles.content}>
+      <Text style={styles.sectionText}>
+        Create an account to make checkout easier.
+      </Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Full Name"
+        placeholderTextColor="#555"
+        value={newCustomerName}
+        onChangeText={setNewCustomerName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Phone Number"
+        placeholderTextColor="#555"
+        value={newCustomerPhone}
+        onChangeText={setNewCustomerPhone}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email Address"
+        placeholderTextColor="#555"
+        value={newCustomerEmail}
+        onChangeText={setNewCustomerEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#555"
+        secureTextEntry
+        value={newCustomerPassword}
+        onChangeText={setNewCustomerPassword}
+      />
+
+      <Pressable style={styles.primaryButton} onPress={handleCreateAccount}>
+        <Text style={styles.primaryButtonText}>Create Account</Text>
+      </Pressable>
 
       <Pressable onPress={() => setScreen("checkout")}>
         <Text style={styles.optionText}>Back to Checkout</Text>

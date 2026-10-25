@@ -243,3 +243,18 @@ export type CustomerLoginScreenProps = {
   customerLoginMessage: string;
   setScreen: (screen: Screen) => void;
 };
+
+// Defines the properties required by the Create Account screen
+export type CreateAccountScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  newCustomerName: string;
+  setNewCustomerName: React.Dispatch<React.SetStateAction<string>>;
+  newCustomerPhone: string;
+  setNewCustomerPhone: React.Dispatch<React.SetStateAction<string>>;
+  newCustomerEmail: string;
+  setNewCustomerEmail: React.Dispatch<React.SetStateAction<string>>;
+  newCustomerPassword: string;
+  setNewCustomerPassword: React.Dispatch<React.SetStateAction<string>>;
+  handleCreateAccount: () => void | Promise<void>;
+  setScreen: (screen: Screen) => void;
+};

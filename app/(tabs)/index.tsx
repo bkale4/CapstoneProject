@@ -6,6 +6,7 @@ import type { CartItem, Screen } from "../../types";
 
 import {
   BusinessLoginScreen as SharedBusinessLoginScreen,
+  CreateAccountScreen as SharedCreateAccountScreen,
   CustomerLoginScreen as SharedCustomerLoginScreen,
 } from "../../screens/BusinessScreens";
 
@@ -1381,54 +1382,21 @@ export default function App() {
     />
   );
 
+  // Displays the Create Account screen using the shared component
   const CreateAccountScreen = () => (
-    <>
-      <Header title="Create Account" />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.sectionText}>
-          Create an account to make checkout easier.
-        </Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          placeholderTextColor="#555"
-          value={newCustomerName}
-          onChangeText={setNewCustomerName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          placeholderTextColor="#555"
-          value={newCustomerPhone}
-          onChangeText={setNewCustomerPhone}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email Address"
-          placeholderTextColor="#555"
-          value={newCustomerEmail}
-          onChangeText={setNewCustomerEmail}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#555"
-          secureTextEntry
-          value={newCustomerPassword}
-          onChangeText={setNewCustomerPassword}
-        />
-
-        <Pressable style={styles.primaryButton} onPress={handleCreateAccount}>
-          <Text style={styles.primaryButtonText}>Create Account</Text>
-        </Pressable>
-
-        <Pressable onPress={() => setScreen("checkout")}>
-          <Text style={styles.optionText}>Back to Checkout</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedCreateAccountScreen
+      Header={Header}
+      newCustomerName={newCustomerName}
+      setNewCustomerName={setNewCustomerName}
+      newCustomerPhone={newCustomerPhone}
+      setNewCustomerPhone={setNewCustomerPhone}
+      newCustomerEmail={newCustomerEmail}
+      setNewCustomerEmail={setNewCustomerEmail}
+      newCustomerPassword={newCustomerPassword}
+      setNewCustomerPassword={setNewCustomerPassword}
+      handleCreateAccount={handleCreateAccount}
+      setScreen={setScreen}
+    />
   );
 
   // Displays the Checkout screen using the shared component
