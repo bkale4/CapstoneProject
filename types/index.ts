@@ -489,3 +489,13 @@ export type EditMenuItemScreenProps = {
 
   saveMenuItemChanges: () => void | Promise<void>;
 };
+
+// Defines the properties required by the Orders Management screen
+export type OrdersManagementScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  BusinessBackButton: React.ComponentType;
+  adminOrders: any[];
+  markOrderAsFilled: (orderId: string) => void | Promise<void>;
+  markOrderAsOpen: (orderId: string) => void | Promise<void>;
+  markOrderAsCancelled: (orderId: string) => void | Promise<void>;
+};
