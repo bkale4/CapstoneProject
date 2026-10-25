@@ -66,7 +66,10 @@ import { OrdersManagementScreen as SharedOrdersManagementScreen } from "../../sc
 import { AvailabilityManagementScreen as SharedAvailabilityManagementScreen } from "../../screens/AvailabilityManagementScreen";
 
 // Imports the service for creating menus in Firestore
-import { createMenu } from "../../services/menuService";
+import {
+  createMenu,
+  toggleMenuActive as toggleMenuActiveService,
+} from "../../services/menuService";
 
 import {
   createUserWithEmailAndPassword,
@@ -644,40 +647,14 @@ export default function App() {
     return menu?.active === true;
   };
 
+  // Passes menu information to the shared menu service
   const toggleMenuActive = async (menuId: string, currentActive: boolean) => {
-    try {
-      const menuRef = doc(db, "menus", menuId);
-
-      const selectedMenu = adminMenus.find((menu: any) => menu.id === menuId);
-
-      if (!selectedMenu) return;
-
-      if (!currentActive && selectedMenu.type === "foodTrailer") {
-        const menuSnapshot = await getDocs(collection(db, "menus"));
-
-        for (const menuDoc of menuSnapshot.docs) {
-          const menu = menuDoc.data();
-
-          if (
-            menuDoc.id !== menuId &&
-            menu.type === "foodTrailer" &&
-            menu.active === true
-          ) {
-            await updateDoc(doc(db, "menus", menuDoc.id), {
-              active: false,
-            });
-          }
-        }
-      }
-
-      await updateDoc(menuRef, {
-        active: !currentActive,
-      });
-
-      await loadAdminMenus();
-    } catch (error) {
-      console.error("Error updating menu status:", error);
-    }
+    await toggleMenuActiveService(
+      menuId,
+      currentActive,
+      adminMenus,
+      loadAdminMenus,
+    );
   };
 
   // Creates a menu and resets the menu creation form
