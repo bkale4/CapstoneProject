@@ -53,6 +53,7 @@ import {
 // Imports the shared Menu Management screen
 import {
   AddMenuScreen as SharedAddMenuScreen,
+  EditMenuItemScreen as SharedEditMenuItemScreen,
   EditMenuScreen as SharedEditMenuScreen,
   ManageMenuItemsScreen as SharedManageMenuItemsScreen,
   MenuManagementScreen as SharedMenuManagementScreen,
@@ -83,7 +84,6 @@ import {
   SafeAreaView,
   ScrollView,
   Text,
-  TextInput,
   View
 } from "react-native";
 
@@ -1679,139 +1679,33 @@ export default function App() {
     }
   };
 
+  // Displays the shared Edit Menu Item screen
   const EditMenuItemScreen = () => (
-    <>
-      <Header title="Edit Menu Item" />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <Pressable
-          style={styles.backButton}
-          onPress={() => setScreen("manageMenuItems")}
-        >
-          <Text style={styles.backButtonText}>🡄 Back</Text>
-        </Pressable>
-
-        <Text style={styles.label}>Item Name</Text>
-        <TextInput
-          style={styles.input}
-          value={editItemName}
-          onChangeText={setEditItemName}
-          placeholder="Enter item name"
-        />
-
-        <Text style={styles.label}>Description</Text>
-        <TextInput
-          style={styles.input}
-          value={editItemDescription}
-          onChangeText={setEditItemDescription}
-          placeholder="Enter description"
-        />
-
-        <Text style={styles.label}>Pricing Type</Text>
-        <Pressable
-          style={styles.adminButton}
-          onPress={() =>
-            setEditItemPricingType(
-              editItemPricingType === "single" ? "halfFull" : "single",
-            )
-          }
-        >
-          <Text style={styles.adminButtonText}>
-            {editItemPricingType === "single"
-              ? "Single Price (Tap for Half/Full)"
-              : "Half/Full Pricing (Tap for Single)"}
-          </Text>
-        </Pressable>
-
-        {editItemPricingType === "single" ? (
-          <>
-            <Text style={styles.label}>Price</Text>
-            <TextInput
-              style={styles.input}
-              value={editItemPrice}
-              onChangeText={setEditItemPrice}
-              placeholder="Enter price"
-              keyboardType="decimal-pad"
-            />
-          </>
-        ) : (
-          <>
-            <Text style={styles.label}>Half Price</Text>
-            <TextInput
-              style={styles.input}
-              value={editItemHalfPrice}
-              onChangeText={setEditItemHalfPrice}
-              placeholder="Enter half price"
-              keyboardType="decimal-pad"
-            />
-
-            <Text style={styles.label}>Full Price</Text>
-            <TextInput
-              style={styles.input}
-              value={editItemFullPrice}
-              onChangeText={setEditItemFullPrice}
-              placeholder="Enter full price"
-              keyboardType="decimal-pad"
-            />
-          </>
-        )}
-
-        <Text style={styles.label}>Optional Add-on</Text>
-        <TextInput
-          style={styles.input}
-          value={editItemAddOnName}
-          onChangeText={setEditItemAddOnName}
-          placeholder="Add-on name"
-        />
-
-        <TextInput
-          style={styles.input}
-          value={editItemAddOnPrice}
-          onChangeText={setEditItemAddOnPrice}
-          placeholder="Add-on price"
-          keyboardType="decimal-pad"
-        />
-
-        <Text style={styles.label}>Availability Status</Text>
-        <Pressable
-          style={styles.dropdown}
-          onPress={() => setItemStatusDropdown(!itemStatusDropdown)}
-        >
-          <Text style={styles.dropdownText}>
-            {editItemStatus || "Select availability status"}
-          </Text>
-
-          <Text style={styles.dropdownArrow}>
-            {itemStatusDropdown ? "▲" : "▼"}
-          </Text>
-        </Pressable>
-
-        {itemStatusDropdown && (
-          <View style={styles.dropdownOptions}>
-            {[
-              { label: "Available", value: "Available" },
-              { label: "Limited", value: "Limited" },
-              { label: "Sold Out", value: "Sold Out" },
-            ].map((option) => (
-              <Pressable
-                key={option.value}
-                style={styles.dropdownOption}
-                onPress={() => {
-                  setEditItemStatus(option.value);
-                  setItemStatusDropdown(false);
-                }}
-              >
-                <Text style={styles.dropdownOptionText}>{option.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-        )}
-
-        <Pressable style={styles.adminButton} onPress={saveMenuItemChanges}>
-          <Text style={styles.adminButtonText}>Save Changes</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedEditMenuItemScreen
+      Header={Header}
+      setScreen={setScreen}
+      editItemName={editItemName}
+      setEditItemName={setEditItemName}
+      editItemDescription={editItemDescription}
+      setEditItemDescription={setEditItemDescription}
+      editItemPricingType={editItemPricingType}
+      setEditItemPricingType={setEditItemPricingType}
+      editItemPrice={editItemPrice}
+      setEditItemPrice={setEditItemPrice}
+      editItemHalfPrice={editItemHalfPrice}
+      setEditItemHalfPrice={setEditItemHalfPrice}
+      editItemFullPrice={editItemFullPrice}
+      setEditItemFullPrice={setEditItemFullPrice}
+      editItemAddOnName={editItemAddOnName}
+      setEditItemAddOnName={setEditItemAddOnName}
+      editItemAddOnPrice={editItemAddOnPrice}
+      setEditItemAddOnPrice={setEditItemAddOnPrice}
+      editItemStatus={editItemStatus}
+      setEditItemStatus={setEditItemStatus}
+      itemStatusDropdown={itemStatusDropdown}
+      setItemStatusDropdown={setItemStatusDropdown}
+      saveMenuItemChanges={saveMenuItemChanges}
+    />
   );
 
   const getAdminMenuItemGroups = (menu: any) => {

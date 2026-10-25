@@ -16,6 +16,7 @@ import { styles } from "../styles/styles";
 // Imports the properties required by the Menu Management screen
 import type {
   AddMenuScreenProps,
+  EditMenuItemScreenProps,
   EditMenuScreenProps,
   ManageMenuItemsScreenProps,
   MenuManagementScreenProps,
@@ -844,7 +845,7 @@ export const ManageMenuItemsScreen = ({
                     item.price === undefined ||
                     item.price === ""
                       ? "Contact for Pricing"
-                      : `$\${Number(item.price).toFixed(2)}`}
+                      : `$${Number(item.price).toFixed(2)}`}
                   </Text>
                 )}
 
@@ -941,5 +942,174 @@ export const ManageMenuItemsScreen = ({
         <Text style={styles.backToTopButtonText}>↑ Back to Top</Text>
       </Pressable>
     )}
+  </>
+);
+
+// Displays the form for editing an existing menu item
+export const EditMenuItemScreen = ({
+  Header,
+  setScreen,
+  editItemName,
+  setEditItemName,
+  editItemDescription,
+  setEditItemDescription,
+  editItemPricingType,
+  setEditItemPricingType,
+  editItemPrice,
+  setEditItemPrice,
+  editItemHalfPrice,
+  setEditItemHalfPrice,
+  editItemFullPrice,
+  setEditItemFullPrice,
+  editItemAddOnName,
+  setEditItemAddOnName,
+  editItemAddOnPrice,
+  setEditItemAddOnPrice,
+  editItemStatus,
+  setEditItemStatus,
+  itemStatusDropdown,
+  setItemStatusDropdown,
+  saveMenuItemChanges,
+}: EditMenuItemScreenProps) => (
+  <>
+    <Header title="Edit Menu Item" />
+
+    <ScrollView contentContainerStyle={styles.content}>
+      {/* Returns to the Manage Menu Items screen */}
+      <Pressable
+        style={styles.backButton}
+        onPress={() => setScreen("manageMenuItems")}
+      >
+        <Text style={styles.backButtonText}>🡄 Back</Text>
+      </Pressable>
+
+      {/* Allows the client to edit the item's name */}
+      <Text style={styles.label}>Item Name</Text>
+      <TextInput
+        style={styles.input}
+        value={editItemName}
+        onChangeText={setEditItemName}
+        placeholder="Enter item name"
+      />
+
+      {/* Allows the client to edit the item's description */}
+      <Text style={styles.label}>Description</Text>
+      <TextInput
+        style={styles.input}
+        value={editItemDescription}
+        onChangeText={setEditItemDescription}
+        placeholder="Enter description"
+      />
+
+      {/* Allows switching between single and half/full pricing */}
+      <Text style={styles.label}>Pricing Type</Text>
+      <Pressable
+        style={styles.adminButton}
+        onPress={() =>
+          setEditItemPricingType(
+            editItemPricingType === "single" ? "halfFull" : "single",
+          )
+        }
+      >
+        <Text style={styles.adminButtonText}>
+          {editItemPricingType === "single"
+            ? "Single Price (Tap for Half/Full)"
+            : "Half/Full Pricing (Tap for Single)"}
+        </Text>
+      </Pressable>
+
+      {/* Displays price fields based on the selected pricing type */}
+      {editItemPricingType === "single" ? (
+        <>
+          <Text style={styles.label}>Price</Text>
+          <TextInput
+            style={styles.input}
+            value={editItemPrice}
+            onChangeText={setEditItemPrice}
+            placeholder="Enter price"
+            keyboardType="decimal-pad"
+          />
+        </>
+      ) : (
+        <>
+          <Text style={styles.label}>Half Price</Text>
+          <TextInput
+            style={styles.input}
+            value={editItemHalfPrice}
+            onChangeText={setEditItemHalfPrice}
+            placeholder="Enter half price"
+            keyboardType="decimal-pad"
+          />
+
+          <Text style={styles.label}>Full Price</Text>
+          <TextInput
+            style={styles.input}
+            value={editItemFullPrice}
+            onChangeText={setEditItemFullPrice}
+            placeholder="Enter full price"
+            keyboardType="decimal-pad"
+          />
+        </>
+      )}
+
+      {/* Allows editing of an optional add-on and its price */}
+      <Text style={styles.label}>Optional Add-on</Text>
+      <TextInput
+        style={styles.input}
+        value={editItemAddOnName}
+        onChangeText={setEditItemAddOnName}
+        placeholder="Add-on name"
+      />
+
+      <TextInput
+        style={styles.input}
+        value={editItemAddOnPrice}
+        onChangeText={setEditItemAddOnPrice}
+        placeholder="Add-on price"
+        keyboardType="decimal-pad"
+      />
+
+      {/* Displays the dropdown for selecting item availability */}
+      <Text style={styles.label}>Availability Status</Text>
+      <Pressable
+        style={styles.dropdown}
+        onPress={() => setItemStatusDropdown(!itemStatusDropdown)}
+      >
+        <Text style={styles.dropdownText}>
+          {editItemStatus || "Select availability status"}
+        </Text>
+
+        <Text style={styles.dropdownArrow}>
+          {itemStatusDropdown ? "▲" : "▼"}
+        </Text>
+      </Pressable>
+
+      {/* Displays the available item status options */}
+      {itemStatusDropdown && (
+        <View style={styles.dropdownOptions}>
+          {[
+            { label: "Available", value: "Available" },
+            { label: "Limited", value: "Limited" },
+            { label: "Sold Out", value: "Sold Out" },
+          ].map((option) => (
+            <Pressable
+              key={option.value}
+              style={styles.dropdownOption}
+              onPress={() => {
+                setEditItemStatus(option.value);
+                setItemStatusDropdown(false);
+              }}
+            >
+              <Text style={styles.dropdownOptionText}>{option.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
+
+      {/* Saves the updated menu item */}
+      <Pressable style={styles.adminButton} onPress={saveMenuItemChanges}>
+        <Text style={styles.adminButtonText}>Save Changes</Text>
+      </Pressable>
+    </ScrollView>
   </>
 );

@@ -449,3 +449,43 @@ export type ManageMenuItemsScreenProps = {
   setEditItemAddOnPrice: (value: string) => void;
   deleteMenuItem: (field: string, index: number) => void | Promise<void>;
 };
+
+// Defines the properties required by the Edit Menu Item screen
+export type EditMenuItemScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  setScreen: (screen: Screen) => void;
+
+  editItemName: string;
+  setEditItemName: React.Dispatch<React.SetStateAction<string>>;
+
+  editItemDescription: string;
+  setEditItemDescription: React.Dispatch<React.SetStateAction<string>>;
+
+  editItemPricingType: "single" | "halfFull";
+  setEditItemPricingType: React.Dispatch<
+    React.SetStateAction<"single" | "halfFull">
+  >;
+
+  editItemPrice: string;
+  setEditItemPrice: React.Dispatch<React.SetStateAction<string>>;
+
+  editItemHalfPrice: string;
+  setEditItemHalfPrice: React.Dispatch<React.SetStateAction<string>>;
+
+  editItemFullPrice: string;
+  setEditItemFullPrice: React.Dispatch<React.SetStateAction<string>>;
+
+  editItemAddOnName: string;
+  setEditItemAddOnName: React.Dispatch<React.SetStateAction<string>>;
+
+  editItemAddOnPrice: string;
+  setEditItemAddOnPrice: React.Dispatch<React.SetStateAction<string>>;
+
+  editItemStatus: string;
+  setEditItemStatus: React.Dispatch<React.SetStateAction<string>>;
+
+  itemStatusDropdown: boolean;
+  setItemStatusDropdown: React.Dispatch<React.SetStateAction<boolean>>;
+
+  saveMenuItemChanges: () => void | Promise<void>;
+};
