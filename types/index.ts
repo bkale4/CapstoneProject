@@ -188,3 +188,15 @@ export type CateringManagementScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   BusinessBackButton: React.ComponentType;
 };
+
+// Defines the properties required by the Cart screen
+export type CartScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  cartItems: CartItem[];
+  cartTotal: number;
+  decreaseQuantity: (id: string) => void;
+  increaseQuantity: (id: string) => void;
+  removeItem: (id: string) => void;
+  clearCart: () => void;
+  setScreen: (screen: Screen) => void;
+};
