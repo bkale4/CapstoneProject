@@ -965,6 +965,7 @@ export default function App() {
     loadAvailability();
   }, []);
 
+  // Deletes a menu from Firestore and refreshes the menu list
   const deleteMenu = async (menuId: string) => {
     try {
       await deleteDoc(doc(db, "menus", menuId));

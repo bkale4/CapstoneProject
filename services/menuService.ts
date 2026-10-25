@@ -1,5 +1,5 @@
 // Imports Firestore functions for creating and managing menu documents
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 
 // Imports the Firebase database connection
 import { db } from "../firebaseConfig";
@@ -23,4 +23,9 @@ export const createMenu = async (
     items: [],
     categories: [],
   });
+};
+
+// Deletes a menu document from Firestore
+export const deleteMenu = async (menuId: string) => {
+  await deleteDoc(doc(db, "menus", menuId));
 };
