@@ -65,6 +65,9 @@ import { OrdersManagementScreen as SharedOrdersManagementScreen } from "../../sc
 // Imports the shared Availability Management screen
 import { AvailabilityManagementScreen as SharedAvailabilityManagementScreen } from "../../screens/AvailabilityManagementScreen";
 
+// Imports the service for creating menus in Firestore
+import { createMenu } from "../../services/menuService";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -677,19 +680,19 @@ export default function App() {
     }
   };
 
+  // Creates a menu and resets the menu creation form
   const addNewMenu = async () => {
     try {
-      await addDoc(collection(db, "menus"), {
-        name: newMenuName,
-        description: newMenuDescription,
-        type: newMenuType,
-        location: newMenuLocation,
-        eventName: newMenuEventName,
-        active: newMenuType === "foodTrailer" ? false : newMenuActive,
-        items: [],
-        categories: [],
-      });
+      await createMenu(
+        newMenuName,
+        newMenuDescription,
+        newMenuType,
+        newMenuLocation,
+        newMenuEventName,
+        newMenuActive,
+      );
 
+      // Clears the menu creation fields
       setNewMenuName("");
       setNewMenuDescription("");
       setNewMenuType("");
@@ -697,6 +700,7 @@ export default function App() {
       setNewMenuEventName("");
       setNewMenuActive(true);
 
+      // Refreshes the menu list and returns to menu management
       await loadAdminMenus();
       setScreen("menuManagement");
     } catch (error) {
