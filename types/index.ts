@@ -258,3 +258,12 @@ export type CreateAccountScreenProps = {
   handleCreateAccount: () => void | Promise<void>;
   setScreen: (screen: Screen) => void;
 };
+
+// Defines the properties required by the Onsite Event Menu Options screen
+export type OnsiteEventMenuOptionsScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  onsiteCateringMenus: { id: string; name: string }[];
+  setSelectedCateringMenuId: (id: string) => void;
+  setExpandedOnsiteCategories: React.Dispatch<React.SetStateAction<number[]>>;
+  setScreen: (screen: Screen) => void;
+};

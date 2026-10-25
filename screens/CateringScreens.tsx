@@ -13,6 +13,7 @@ import type {
   CateringMenuScreenProps,
   CateringRequestScreenProps,
   CateringScreenProps,
+  OnsiteEventMenuOptionsScreenProps,
 } from "../types";
 
 // Displays the available Drop-Off Catering menus for customers to select
@@ -320,6 +321,35 @@ export const CateringManagementScreen = ({
         </Text>
         <Text style={styles.cardSubtitle}>Status: Follow Up Needed</Text>
       </View>
+    </ScrollView>
+  </>
+);
+
+// Displays the available Onsite Event Catering menus for customers to select
+export const OnsiteEventMenuOptionsScreen = ({
+  Header,
+  onsiteCateringMenus,
+  setSelectedCateringMenuId,
+  setExpandedOnsiteCategories,
+  setScreen,
+}: OnsiteEventMenuOptionsScreenProps) => (
+  <>
+    <Header title="Onsite Event Catering Menus" />
+
+    <ScrollView contentContainerStyle={styles.content}>
+      {onsiteCateringMenus.map((menu) => (
+        <Pressable
+          key={menu.id}
+          style={styles.menuDropdownButton}
+          onPress={() => {
+            setSelectedCateringMenuId(menu.id);
+            setExpandedOnsiteCategories([]);
+            setScreen("onsiteEventCatering");
+          }}
+        >
+          <Text style={styles.menuDropdownText}>{menu.name}</Text>
+        </Pressable>
+      ))}
     </ScrollView>
   </>
 );
