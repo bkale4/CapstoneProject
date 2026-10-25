@@ -317,3 +317,20 @@ export type AvailabilityCalendarScreenProps = {
   setSelectedCateringDate: React.Dispatch<React.SetStateAction<string>>;
   setScreen: (screen: Screen) => void;
 };
+
+// Defines the properties required by the Menu Management screen
+export type MenuManagementScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  BusinessBackButton: React.ComponentType;
+  adminMenus: any[];
+  setScreen: (screen: Screen) => void;
+  toggleMenuActive: (id: string, active: boolean) => void | Promise<void>;
+  setSelectedAdminMenu: (menu: any) => void;
+  setEditMenuName: (value: string) => void;
+  setEditMenuDescription: (value: string) => void;
+  setEditMenuType: (value: any) => void;
+  setEditMenuLocation: (value: string) => void;
+  setEditMenuEventName: (value: string) => void;
+  setIsEditingMenuDescription: (value: boolean) => void;
+  deleteMenu: (id: string) => void | Promise<void>;
+};
