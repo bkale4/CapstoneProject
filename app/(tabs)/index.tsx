@@ -4,7 +4,10 @@ import { styles } from "../../styles/styles";
 
 import type { CartItem, Screen } from "../../types";
 
-import { BusinessLoginScreen } from "../../screens/BusinessScreens";
+import {
+  BusinessLoginScreen as SharedBusinessLoginScreen,
+  CustomerLoginScreen as SharedCustomerLoginScreen,
+} from "../../screens/BusinessScreens";
 
 import { Header as SharedHeader } from "../../components/Header";
 
@@ -1366,42 +1369,16 @@ export default function App() {
   );
 
   const CustomerLoginScreen = () => (
-    <>
-      <Header title="Customer Sign In" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.sectionText}>
-          Sign in to your customer account.
-        </Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Email Address"
-          placeholderTextColor="#555"
-          value={customerEmail}
-          onChangeText={setCustomerEmail}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#555"
-          secureTextEntry
-          value={customerPassword}
-          onChangeText={setCustomerPassword}
-        />
-
-        <Pressable style={styles.primaryButton} onPress={handleCustomerLogin}>
-          <Text style={styles.primaryButtonText}>Sign In</Text>
-        </Pressable>
-
-        {customerLoginMessage !== "" && (
-          <Text style={styles.sectionText}>{customerLoginMessage}</Text>
-        )}
-
-        <Pressable onPress={() => setScreen("checkout")}>
-          <Text style={styles.optionText}>Back to Checkout</Text>
-        </Pressable>
-      </ScrollView>
-    </>
+    <SharedCustomerLoginScreen
+      Header={Header}
+      customerEmail={customerEmail}
+      setCustomerEmail={setCustomerEmail}
+      customerPassword={customerPassword}
+      setCustomerPassword={setCustomerPassword}
+      handleCustomerLogin={handleCustomerLogin}
+      customerLoginMessage={customerLoginMessage}
+      setScreen={setScreen}
+    />
   );
 
   const CreateAccountScreen = () => (
@@ -2866,7 +2843,7 @@ export default function App() {
       {screen === "cateringRequest" && CateringRequestScreen()}
       {screen === "cateringConfirmation" && <CateringConfirmationScreen />}
       {screen === "businessLogin" && (
-        <BusinessLoginScreen
+        <SharedBusinessLoginScreen
           Header={Header}
           styles={styles}
           adminUsername={adminUsername}

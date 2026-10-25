@@ -231,3 +231,15 @@ export type OrderConfirmationScreenProps = {
   cartTotal: number;
   setScreen: (screen: Screen) => void;
 };
+
+// Defines the properties required by the Customer Login screen
+export type CustomerLoginScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  customerEmail: string;
+  setCustomerEmail: React.Dispatch<React.SetStateAction<string>>;
+  customerPassword: string;
+  setCustomerPassword: React.Dispatch<React.SetStateAction<string>>;
+  handleCustomerLogin: () => void | Promise<void>;
+  customerLoginMessage: string;
+  setScreen: (screen: Screen) => void;
+};

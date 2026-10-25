@@ -1,6 +1,15 @@
+// Imports React and the components used to display the login screens
 import React from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import type { BusinessLoginScreenProps } from "../types";
+
+// Imports shared application styles
+import { styles } from "../styles/styles";
+
+// Imports the properties required by the Business and Customer Login screens
+import type {
+  BusinessLoginScreenProps,
+  CustomerLoginScreenProps,
+} from "../types";
 
 // Displays the admin login form
 export function BusinessLoginScreen({
@@ -56,3 +65,50 @@ export function BusinessLoginScreen({
     </>
   );
 }
+
+// Displays the Customer Login screen and handles customer sign-in
+export const CustomerLoginScreen = ({
+  Header,
+  customerEmail,
+  setCustomerEmail,
+  customerPassword,
+  setCustomerPassword,
+  handleCustomerLogin,
+  customerLoginMessage,
+  setScreen,
+}: CustomerLoginScreenProps) => (
+  <>
+    <Header title="Customer Sign In" />
+    <ScrollView contentContainerStyle={styles.content}>
+      <Text style={styles.sectionText}>Sign in to your customer account.</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Email Address"
+        placeholderTextColor="#555"
+        value={customerEmail}
+        onChangeText={setCustomerEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        placeholderTextColor="#555"
+        secureTextEntry
+        value={customerPassword}
+        onChangeText={setCustomerPassword}
+      />
+
+      <Pressable style={styles.primaryButton} onPress={handleCustomerLogin}>
+        <Text style={styles.primaryButtonText}>Sign In</Text>
+      </Pressable>
+
+      {customerLoginMessage !== "" && (
+        <Text style={styles.sectionText}>{customerLoginMessage}</Text>
+      )}
+
+      <Pressable onPress={() => setScreen("checkout")}>
+        <Text style={styles.optionText}>Back to Checkout</Text>
+      </Pressable>
+    </ScrollView>
+  </>
+);
