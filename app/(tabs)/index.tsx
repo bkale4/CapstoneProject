@@ -75,6 +75,7 @@ import {
   loadAdminMenusService,
   saveCategoryChanges as saveCategoryChangesService,
   saveMenuChanges as saveMenuChangesService,
+  saveMenuDescription as saveMenuDescriptionService,
   toggleMenuActive as toggleMenuActiveService,
 } from "../../services/menuService";
 
@@ -682,26 +683,15 @@ export default function App() {
     );
   };
 
+  // Passes the edited menu description to the menu service
   const saveMenuDescription = async () => {
-    if (!selectedAdminMenu) {
-      return;
-    }
-
-    try {
-      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-        description: editMenuDescription.trim(),
-      });
-
-      setSelectedAdminMenu({
-        ...selectedAdminMenu,
-        description: editMenuDescription.trim(),
-      });
-
-      await loadAdminMenus();
-      setIsEditingMenuDescription(false);
-    } catch (error) {
-      console.error("Error saving menu description:", error);
-    }
+    await saveMenuDescriptionService(
+      selectedAdminMenu,
+      editMenuDescription,
+      setSelectedAdminMenu,
+      loadAdminMenus,
+      setIsEditingMenuDescription,
+    );
   };
 
   // Passes the selected menu and category information to the menu service

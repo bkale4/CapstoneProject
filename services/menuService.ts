@@ -216,3 +216,32 @@ export const loadAdminMenusService = async (
     console.error("Error loading admin menus:", error);
   }
 };
+
+// Saves the menu description in Firestore
+export const saveMenuDescription = async (
+  selectedAdminMenu: any,
+  editMenuDescription: string,
+  setSelectedAdminMenu: React.Dispatch<React.SetStateAction<any>>,
+  loadAdminMenus: () => Promise<void>,
+  setIsEditingMenuDescription: React.Dispatch<React.SetStateAction<boolean>>,
+) => {
+  if (!selectedAdminMenu) {
+    return;
+  }
+
+  try {
+    await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+      description: editMenuDescription.trim(),
+    });
+
+    setSelectedAdminMenu({
+      ...selectedAdminMenu,
+      description: editMenuDescription.trim(),
+    });
+
+    await loadAdminMenus();
+    setIsEditingMenuDescription(false);
+  } catch (error) {
+    console.error("Error saving menu description:", error);
+  }
+};
