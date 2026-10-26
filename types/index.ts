@@ -87,12 +87,6 @@ export type FoodTrailerScreenProps = {
   foodTrailerLocation: string;
   foodTrailerEventName: string;
 
-  // Controls which menu categories are expanded
-  expandedCategories: number[];
-  setExpandedCategories: React.Dispatch<React.SetStateAction<number[]>>;
-  expandedParentCategories: string[];
-  setExpandedParentCategories: React.Dispatch<React.SetStateAction<string[]>>;
-
   // Tracks the customer's selected menu item add-ons
   selectedAddOns: string[];
   setSelectedAddOns: React.Dispatch<React.SetStateAction<string[]>>;

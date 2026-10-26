@@ -131,11 +131,6 @@ export default function App() {
     (menu) => menu.type === "dropOffCatering",
   );
 
-  const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
-  const [expandedParentCategories, setExpandedParentCategories] = useState<
-    string[]
-  >([]);
-
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [selectedAddOnOptions, setSelectedAddOnOptions] = useState<{
     [itemId: string]: number;
@@ -1166,10 +1161,6 @@ export default function App() {
       activeFoodTrailerMenu={activeFoodTrailerMenu}
       foodTrailerLocation={foodTrailerLocation}
       foodTrailerEventName={foodTrailerEventName}
-      expandedCategories={expandedCategories}
-      setExpandedCategories={setExpandedCategories}
-      expandedParentCategories={expandedParentCategories}
-      setExpandedParentCategories={setExpandedParentCategories}
       selectedAddOns={selectedAddOns}
       setSelectedAddOns={setSelectedAddOns}
       selectedAddOnOptions={selectedAddOnOptions}

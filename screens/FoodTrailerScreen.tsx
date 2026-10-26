@@ -2,6 +2,9 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+// Imports the shared category expansion functionality
+import { useMenuCategories } from "../hooks/useMenuCategories";
+
 // Imports the application's shared styling
 import { styles } from "../styles/styles";
 
@@ -14,10 +17,6 @@ export const FoodTrailerScreen = ({
   activeFoodTrailerMenu,
   foodTrailerLocation,
   foodTrailerEventName,
-  expandedCategories,
-  setExpandedCategories,
-  expandedParentCategories,
-  setExpandedParentCategories,
   selectedAddOns,
   setSelectedAddOns,
   selectedAddOnOptions,
@@ -26,6 +25,13 @@ export const FoodTrailerScreen = ({
   setScreen,
   cartTotal,
 }: FoodTrailerScreenProps) => {
+  // Manages expanded parent categories and subcategories
+  const {
+    expandedCategories,
+    expandedParentCategories,
+    toggleCategory,
+    toggleParentCategory,
+  } = useMenuCategories();
   // Gets the parent categories used to organize the Food Trailer menu
   const parentCategories: string[] = [
     ...new Set<string>(
@@ -49,13 +55,7 @@ export const FoodTrailerScreen = ({
           <View key={parentCategory}>
             <Pressable
               style={styles.menuDropdownButton}
-              onPress={() =>
-                setExpandedParentCategories((previous) =>
-                  previous.includes(parentCategory)
-                    ? previous.filter((name) => name !== parentCategory)
-                    : [...previous, parentCategory],
-                )
-              }
+              onPress={() => toggleParentCategory(parentCategory)}
             >
               <Text style={styles.menuDropdownText}>
                 {parentCategory}{" "}
@@ -72,15 +72,7 @@ export const FoodTrailerScreen = ({
                     <View key={categoryIndex}>
                       <Pressable
                         style={styles.subCategoryDropdownButton}
-                        onPress={() =>
-                          setExpandedCategories((previous) =>
-                            previous.includes(categoryIndex)
-                              ? previous.filter(
-                                  (index) => index != categoryIndex,
-                                )
-                              : [...previous, categoryIndex],
-                          )
-                        }
+                        onPress={() => toggleCategory(categoryIndex)}
                       >
                         <Text
                           style={[
@@ -280,13 +272,7 @@ export const FoodTrailerScreen = ({
               <View key={categoryIndex}>
                 <Pressable
                   style={styles.menuDropdownButton}
-                  onPress={() =>
-                    setExpandedCategories((previous) =>
-                      previous.includes(categoryIndex)
-                        ? previous.filter((index) => index !== categoryIndex)
-                        : [...previous, categoryIndex],
-                    )
-                  }
+                  onPress={() => toggleCategory(categoryIndex)}
                 >
                   <Text style={styles.menuDropdownText}>
                     {category.name}{" "}
