@@ -70,6 +70,7 @@ import { AvailabilityManagementScreen as SharedAvailabilityManagementScreen } fr
 
 // Imports the service for creating menus in Firestore
 import {
+  addNewCategory as addNewCategoryService,
   createMenu,
   saveMenuChanges as saveMenuChangesService,
   toggleMenuActive as toggleMenuActiveService,
@@ -746,38 +747,19 @@ export default function App() {
     }
   };
 
+  // Passes the selected menu and category information to the menu service
   const addNewCategory = async () => {
-    if (!selectedAdminMenu || !newCategoryName.trim()) {
-      return;
-    }
-
-    try {
-      const updatedCategories = [
-        ...(selectedAdminMenu.categories || []),
-        {
-          name: newCategoryName.trim(),
-          description: newCategoryDescription.trim(),
-          parentCategory: newCategoryParent.trim(),
-          items: [],
-        },
-      ];
-
-      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-        categories: updatedCategories,
-      });
-
-      setSelectedAdminMenu({
-        ...selectedAdminMenu,
-        categories: updatedCategories,
-      });
-
-      setNewCategoryName("");
-      setNewCategoryDescription("");
-      setNewCategoryParent("");
-      await loadAdminMenus();
-    } catch (error) {
-      console.error("Error adding category:", error);
-    }
+    await addNewCategoryService(
+      selectedAdminMenu,
+      newCategoryName,
+      newCategoryDescription,
+      newCategoryParent,
+      setSelectedAdminMenu,
+      setNewCategoryName,
+      setNewCategoryDescription,
+      setNewCategoryParent,
+      loadAdminMenus,
+    );
   };
 
   const addNewMenuItemAddOn = () => {
