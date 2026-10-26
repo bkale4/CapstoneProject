@@ -91,7 +91,10 @@ import {
 
 // Imports the catering request submission service
 // Imports the catering request submission service
-import { submitCateringRequest as submitCateringRequestService } from "../../services/cateringService";
+import {
+  submitCateringRequest as submitCateringRequestService,
+  toggleAvailability as toggleAvailabilityService,
+} from "../../services/cateringService";
 
 import {
   createUserWithEmailAndPassword,
@@ -106,7 +109,7 @@ import {
   getDocs,
   onSnapshot,
   setDoc,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 
 import { auth, db } from "../../firebaseConfig";
@@ -866,24 +869,9 @@ export default function App() {
     }
   };
 
+  // Passes catering availability changes to the catering service
   const toggleAvailability = async (dateKey: string) => {
-    const newAvailability = availability[dateKey] === false;
-
-    setAvailability((prev) => ({
-      ...prev,
-      [dateKey]: newAvailability,
-    }));
-
-    try {
-      await setDoc(doc(db, "availability", dateKey), {
-        date: dateKey,
-        available: newAvailability,
-      });
-
-      console.log("Availability saved:", dateKey, newAvailability);
-    } catch (error) {
-      console.error("Error saving availability:", error);
-    }
+    await toggleAvailabilityService(dateKey, availability, setAvailability);
   };
 
   // Passes the customer order information to the order service
@@ -1599,7 +1587,7 @@ export default function App() {
       {screen === "catering" && <CateringScreen />}
       {screen === "cateringMenuOptions" && CateringMenuOptionsScreen()}
       {screen === "cateringMenu" && DropOffCateringMenuScreen()}
-      {screen === "availabilityCalendar" && <AvailabilityCalendarScreen />}
+      {screen === "availabilityCalendar" && AvailabilityCalendarScreen()}
       {screen === "cateringRequest" && CateringRequestScreen()}
       {screen === "cateringConfirmation" && <CateringConfirmationScreen />}
       {screen === "businessLogin" && (

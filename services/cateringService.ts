@@ -1,4 +1,4 @@
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import type { Screen } from "../types";
 
@@ -35,5 +35,32 @@ export const submitCateringRequest = async (
     setScreen("cateringConfirmation");
   } catch (error) {
     console.error("Error saving catering request:", error);
+  }
+};
+
+// Updates catering availability in Firestore
+export const toggleAvailability = async (
+  dateKey: string,
+  availability: Record<string, boolean>,
+  setAvailability: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >,
+) => {
+  const newAvailability = availability[dateKey] === false;
+
+  setAvailability((prev) => ({
+    ...prev,
+    [dateKey]: newAvailability,
+  }));
+
+  try {
+    await setDoc(doc(db, "availability", dateKey), {
+      date: dateKey,
+      available: newAvailability,
+    });
+
+    console.log("Availability saved:", dateKey, newAvailability);
+  } catch (error) {
+    console.error("Error saving availability:", error);
   }
 };
