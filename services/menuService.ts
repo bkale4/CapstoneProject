@@ -78,3 +78,33 @@ export const toggleMenuActive = async (
     console.error("Error updating menu status:", error);
   }
 };
+
+// Saves changes to an existing menu in Firestore
+export const saveMenuChanges = async (
+  selectedAdminMenu: any,
+  editMenuName: string,
+  editMenuDescription: string,
+  editMenuType: string,
+  editMenuLocation: string,
+  editMenuEventName: string,
+  loadAdminMenus: () => Promise<void>,
+  setScreen: (screen: "menuManagement") => void,
+) => {
+  if (!selectedAdminMenu) return;
+
+  try {
+    await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+      name: editMenuName,
+      description: editMenuDescription,
+      type: editMenuType,
+      ...(editMenuType !== selectedAdminMenu.type ? { active: false } : {}),
+      location: editMenuLocation,
+      eventName: editMenuEventName,
+    });
+
+    await loadAdminMenus();
+    setScreen("menuManagement");
+  } catch (error) {
+    console.error("Error saving menu changes:", error);
+  }
+};

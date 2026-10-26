@@ -71,6 +71,7 @@ import { AvailabilityManagementScreen as SharedAvailabilityManagementScreen } fr
 // Imports the service for creating menus in Firestore
 import {
   createMenu,
+  saveMenuChanges as saveMenuChangesService,
   toggleMenuActive as toggleMenuActiveService,
 } from "../../services/menuService";
 
@@ -1648,24 +1649,18 @@ export default function App() {
     ];
   };
 
+  // Passes the current menu information to the menu service
   const saveMenuChanges = async () => {
-    if (!selectedAdminMenu) return;
-
-    try {
-      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-        name: editMenuName,
-        description: editMenuDescription,
-        type: editMenuType,
-        ...(editMenuType !== selectedAdminMenu.type ? { active: false } : {}),
-        location: editMenuLocation,
-        eventName: editMenuEventName,
-      });
-
-      await loadAdminMenus();
-      setScreen("menuManagement");
-    } catch (error) {
-      console.error("Error saving menu changes:", error);
-    }
+    await saveMenuChangesService(
+      selectedAdminMenu,
+      editMenuName,
+      editMenuDescription,
+      editMenuType,
+      editMenuLocation,
+      editMenuEventName,
+      loadAdminMenus,
+      setScreen,
+    );
   };
 
   // Displays the Add Menu screen using the shared component
