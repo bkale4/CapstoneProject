@@ -81,7 +81,12 @@ import {
 } from "../../services/menuService";
 
 // Imports the function for loading customer orders
-import { loadAdminOrders as loadAdminOrdersService } from "../../services/orderService";
+import {
+  loadAdminOrders as loadAdminOrdersService,
+  markOrderAsCancelled as markOrderAsCancelledService,
+  markOrderAsFilled as markOrderAsFilledService,
+  markOrderAsOpen as markOrderAsOpenService,
+} from "../../services/orderService";
 
 import {
   createUserWithEmailAndPassword,
@@ -583,40 +588,19 @@ export default function App() {
     await loadAdminOrdersService(setAdminOrders);
   };
 
+  // Marks an order as filled through the order service
   const markOrderAsFilled = async (orderId: string) => {
-    try {
-      await updateDoc(doc(db, "orders", orderId), {
-        status: "Filled",
-      });
-
-      await loadAdminOrders();
-    } catch (error) {
-      console.error("Error marking order as filled:", error);
-    }
+    await markOrderAsFilledService(orderId, loadAdminOrders);
   };
 
+  // Marks an order as open through the order service
   const markOrderAsOpen = async (orderId: string) => {
-    try {
-      await updateDoc(doc(db, "orders", orderId), {
-        status: "Open",
-      });
-
-      await loadAdminOrders();
-    } catch (error) {
-      console.error("Error marking order as open:", error);
-    }
+    await markOrderAsOpenService(orderId, loadAdminOrders);
   };
 
+  // Marks an order as cancelled through the order service
   const markOrderAsCancelled = async (orderId: string) => {
-    try {
-      await updateDoc(doc(db, "orders", orderId), {
-        status: "Cancelled",
-      });
-
-      await loadAdminOrders();
-    } catch (error) {
-      console.error("Error marking order as cancelled:", error);
-    }
+    await markOrderAsCancelledService(orderId, loadAdminOrders);
   };
 
   const isMenuActive = (menuName: string) => {
