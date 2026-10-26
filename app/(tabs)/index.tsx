@@ -80,6 +80,9 @@ import {
   toggleMenuActive as toggleMenuActiveService,
 } from "../../services/menuService";
 
+// Imports the function for loading customer orders
+import { loadAdminOrders as loadAdminOrdersService } from "../../services/orderService";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -575,19 +578,9 @@ export default function App() {
     await loadAdminMenusService(setAdminMenus);
   };
 
+  // Loads admin orders through the order service
   const loadAdminOrders = async () => {
-    try {
-      const snapshot = await getDocs(collection(db, "orders"));
-
-      const orders = snapshot.docs.map((orderDoc) => ({
-        id: orderDoc.id,
-        ...orderDoc.data(),
-      }));
-
-      setAdminOrders(orders);
-    } catch (error) {
-      console.error("Error loading customer orders:", error);
-    }
+    await loadAdminOrdersService(setAdminOrders);
   };
 
   const markOrderAsFilled = async (orderId: string) => {
