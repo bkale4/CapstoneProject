@@ -100,9 +100,7 @@ import {
 // Imports the customer account creation service
 import { handleCreateAccount as handleCreateAccountService } from "../../services/authService";
 
-import {
-  signInWithEmailAndPassword
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 import {
   collection,
@@ -111,7 +109,7 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 
 import { auth, db } from "../../firebaseConfig";
