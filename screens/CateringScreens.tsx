@@ -17,8 +17,8 @@ import type {
   CateringRequestScreenProps,
   CateringScreenProps,
   DropOffCateringMenuScreenProps,
+  OnsiteCateringMenuScreenProps,
   OnsiteEventMenuOptionsScreenProps,
-  OnsiteEventScreenProps,
 } from "../types";
 
 // Displays the available Drop-Off Catering menus for customers to select
@@ -473,214 +473,211 @@ export const OnsiteEventMenuOptionsScreen = ({
   </>
 );
 
-// Displays the selected Onsite Event Catering menu with expandable categories
-export const OnsiteEventScreen = ({
+// Displays the selected Onsite Event Catering menu, including items, prices, and availability
+export const OnsiteCateringMenuScreen = ({
   Header,
   selectedOnsiteCateringMenu,
-  onsiteParentCategories,
-  expandedOnsiteParentCategories,
-  setExpandedOnsiteParentCategories,
-  expandedOnsiteCategories,
-  setExpandedOnsiteCategories,
-}: OnsiteEventScreenProps) => (
-  <>
-    <Header title={selectedOnsiteCateringMenu?.name || "Onsite Event Menu"} />
+}: OnsiteCateringMenuScreenProps) => {
+  // Manages expanded parent categories and subcategories
+  const {
+    expandedCategories,
+    expandedParentCategories,
+    toggleCategory,
+    toggleParentCategory,
+  } = useMenuCategories();
+  // Gets the parent categories used to organize the Onsit Event Catering menu
+  const parentCategories: string[] = [
+    ...new Set<string>(
+      (selectedOnsiteCateringMenu?.categories || [])
+        .map((category: any) => category.parentCategory?.trim() || "")
+        .filter((parent: string) => parent !== ""),
+    ),
+  ];
 
-    <ScrollView contentContainerStyle={styles.content}>
-      {selectedOnsiteCateringMenu?.description?.trim() && (
-        <Text style={styles.menuDescription}>
-          {selectedOnsiteCateringMenu.description}
+  return (
+    <View style={{ flex: 1 }}>
+      <Header title="Drop-Off Catering Menu" />
+
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+        {/* Displays the selected Drop-Off Catering menu name */}
+        <Text style={styles.cateringMenuTitle}>
+          {selectedOnsiteCateringMenu?.name}
         </Text>
-      )}
-      {/* Displays the event name and location when available */}
-      {selectedOnsiteCateringMenu?.eventName && (
-        <Text style={styles.sectionText}>
-          Current Event: {selectedOnsiteCateringMenu.eventName}
-        </Text>
-      )}
 
-      {selectedOnsiteCateringMenu?.location && (
-        <Text style={styles.sectionText}>
-          Location: {selectedOnsiteCateringMenu.location}
-        </Text>
-      )}
+        {/* Displays the selected Drop-Off Catering menu description */}
+        {selectedOnsiteCateringMenu?.description?.trim() && (
+          <Text style={styles.menuDescription}>
+            {selectedOnsiteCateringMenu.description}
+          </Text>
+        )}
 
-      {/* Displays expandable parent categories */}
-      {onsiteParentCategories.map((parentCategory) => (
-        <View key={parentCategory}>
-          <Pressable
-            style={styles.menuDropdownButton}
-            onPress={() =>
-              setExpandedOnsiteParentCategories((previous) =>
-                previous.includes(parentCategory)
-                  ? previous.filter((name) => name !== parentCategory)
-                  : [...previous, parentCategory],
-              )
-            }
-          >
-            <Text style={styles.menuDropdownText}>
-              {parentCategory}{" "}
-              {expandedOnsiteParentCategories.includes(parentCategory)
-                ? "▲"
-                : "▼"}
-            </Text>
-          </Pressable>
-
-          {/* Displays subcategories within an expanded parent category */}
-          {expandedOnsiteParentCategories.includes(parentCategory) &&
-            selectedOnsiteCateringMenu?.categories?.map(
-              (category, categoryIndex) =>
-                category.parentCategory?.trim() === parentCategory ? (
-                  <View key={categoryIndex}>
-                    <Pressable
-                      style={styles.subCategoryDropdownButton}
-                      onPress={() =>
-                        setExpandedOnsiteCategories((previous) =>
-                          previous.includes(categoryIndex)
-                            ? previous.filter(
-                                (index) => index !== categoryIndex,
-                              )
-                            : [...previous, categoryIndex],
-                        )
-                      }
-                    >
-                      <Text
-                        style={[styles.menuDropdownText, { color: "#35543D" }]}
-                      >
-                        {category.name}{" "}
-                        {expandedOnsiteCategories.includes(categoryIndex)
-                          ? "▲"
-                          : "▼"}
-                      </Text>
-                    </Pressable>
-
-                    {expandedOnsiteCategories.includes(categoryIndex) &&
-                      category.description?.trim() && (
-                        <Text style={styles.menuDescription}>
-                          {category.description}
-                        </Text>
-                      )}
-
-                    {/* Displays menu items within an expanded subcategory */}
-                    {expandedOnsiteCategories.includes(categoryIndex) &&
-                      category.items?.map((item, itemIndex) => (
-                        <View key={itemIndex} style={styles.card}>
-                          <Text style={styles.cardTitle}>{item.name}</Text>
-                          <Text style={styles.menuDescription}>
-                            {item.description}
-                          </Text>
-
-                          {/* Displays half/full tray or individual item pricing */}
-                          {item.pricingType === "halfFull" ? (
-                            <>
-                              <Text style={styles.cateringPrice}>
-                                Half: ${Number(item.halfPrice).toFixed(2)}
-                              </Text>
-                              <Text style={styles.cateringPrice}>
-                                Full: ${Number(item.fullPrice).toFixed(2)}
-                              </Text>
-                            </>
-                          ) : (
-                            <Text style={styles.cateringPrice}>
-                              {item.price === null ||
-                              item.price === undefined ||
-                              item.price === ""
-                                ? "Contact for Pricing"
-                                : `${Number(item.price).toFixed(2)}`}
-                            </Text>
-                          )}
-
-                          {/* Displays Limited or Sold Out status */}
-                          {(item.status === "Limited" ||
-                            item.status === "Sold Out") && (
-                            <Text
-                              style={[
-                                styles.statusText,
-                                item.status === "Sold Out"
-                                  ? styles.soldOutText
-                                  : styles.limitedText,
-                              ]}
-                            >
-                              {item.status}
-                            </Text>
-                          )}
-                        </View>
-                      ))}
-                  </View>
-                ) : null,
-            )}
-        </View>
-      ))}
-
-      {/* Displays categories without a parent category */}
-      {selectedOnsiteCateringMenu?.categories?.map((category, categoryIndex) =>
-        !category.parentCategory?.trim() ? (
-          <View key={categoryIndex}>
+        {/* Displays expandable parent categories in the Drop-Off Catering menu */}
+        {parentCategories.map((parentCategory) => (
+          <View key={parentCategory}>
             <Pressable
               style={styles.menuDropdownButton}
-              onPress={() =>
-                setExpandedOnsiteCategories((previous) =>
-                  previous.includes(categoryIndex)
-                    ? previous.filter((index) => index !== categoryIndex)
-                    : [...previous, categoryIndex],
-                )
-              }
+              onPress={() => toggleParentCategory(parentCategory)}
             >
               <Text style={styles.menuDropdownText}>
-                {category.name}{" "}
-                {expandedOnsiteCategories.includes(categoryIndex) ? "▲" : "▼"}
+                {parentCategory}{" "}
+                {expandedParentCategories.includes(parentCategory) ? "▲" : "▼"}
               </Text>
             </Pressable>
 
-            {/* Displays menu items within an expanded standalone category */}
-            {expandedOnsiteCategories.includes(categoryIndex) &&
-              category.items?.map((item, itemIndex) => (
-                <View key={itemIndex} style={styles.card}>
-                  <Text style={styles.cardTitle}>{item.name}</Text>
-                  <Text style={styles.menuDescription}>{item.description}</Text>
+            {/* Displays subcategories when a parent category is expanded */}
+            {expandedParentCategories.includes(parentCategory) &&
+              selectedOnsiteCateringMenu?.categories?.map(
+                (category: any, categoryIndex: number) =>
+                  (category.parentCategory?.trim() || "Other") ===
+                  parentCategory ? (
+                    <View key={categoryIndex}>
+                      <Pressable
+                        style={styles.subCategoryDropdownButton}
+                        onPress={() => toggleCategory(categoryIndex)}
+                      >
+                        <Text
+                          style={[
+                            styles.menuDropdownText,
+                            { color: "#35543D" },
+                          ]}
+                        >
+                          {category.name}{" "}
+                          {expandedCategories.includes(categoryIndex)
+                            ? "▲"
+                            : "▼"}
+                        </Text>
+                      </Pressable>
 
-                  {/* Displays half/full tray or individual item pricing */}
-                  {item.pricingType === "halfFull" ? (
-                    <>
-                      <Text style={styles.cateringPrice}>
-                        Half: ${Number(item.halfPrice).toFixed(2)}
-                      </Text>
-                      <Text style={styles.cateringPrice}>
-                        Full: ${Number(item.fullPrice).toFixed(2)}
-                      </Text>
-                    </>
-                  ) : (
-                    <Text style={styles.cateringPrice}>
-                      {item.price === null ||
-                      item.price === undefined ||
-                      item.price === ""
-                        ? "Contact for Pricing"
-                        : `${Number(item.price).toFixed(2)}`}
-                    </Text>
-                  )}
+                      {expandedCategories.includes(categoryIndex) &&
+                        category.description?.trim() && (
+                          <Text style={styles.menuDescription}>
+                            {category.description}
+                          </Text>
+                        )}
+                      {/* Displays menu items when a subcategory is expanded */}
+                      {expandedCategories.includes(categoryIndex) &&
+                        category.items?.map((item: any, itemIndex: number) => (
+                          <View key={itemIndex} style={styles.card}>
+                            <Text style={styles.cardTitle}>{item.name}</Text>
+                            <Text style={styles.menuDescription}>
+                              {item.description}
+                            </Text>
+                            {/* Displays half/full tray or individual item pricing */}
+                            {item.pricingType === "halfFull" ? (
+                              <>
+                                <Text style={styles.cateringPrice}>
+                                  Half: ${Number(item.halfPrice).toFixed(2)}
+                                </Text>
+                                <Text style={styles.cateringPrice}>
+                                  Full: ${Number(item.fullPrice).toFixed(2)}
+                                </Text>
+                              </>
+                            ) : (
+                              <Text style={styles.cateringPrice}>
+                                {item.price === null ||
+                                item.price === undefined ||
+                                item.price === ""
+                                  ? "Contact for Pricing"
+                                  : `$${Number(item.price).toFixed(2)}`}
+                              </Text>
+                            )}
 
-                  {/* Displays Limited or Sold Out status */}
-                  {(item.status === "Limited" ||
-                    item.status === "Sold Out") && (
-                    <Text
-                      style={[
-                        styles.statusText,
-                        item.status === "Sold Out"
-                          ? styles.soldOutText
-                          : styles.limitedText,
-                      ]}
-                    >
-                      {item.status}
-                    </Text>
-                  )}
-                </View>
-              ))}
+                            {/* Displays Limited or Sold Out status for menu items */}
+                            {(item.status === "Limited" ||
+                              item.status === "Sold Out") && (
+                              <Text
+                                style={[
+                                  styles.statusText,
+                                  item.status === "Sold Out"
+                                    ? styles.soldOutText
+                                    : styles.limitedText,
+                                ]}
+                              >
+                                {item.status}
+                              </Text>
+                            )}
+                          </View>
+                        ))}
+                    </View>
+                  ) : null,
+              )}
           </View>
-        ) : null,
-      )}
-    </ScrollView>
-  </>
-);
+        ))}
+        {/* Displays menu categories that do not have a parent category */}
+        {selectedOnsiteCateringMenu?.categories?.map(
+          (category: any, categoryIndex: number) =>
+            !category.parentCategory?.trim() ? (
+              <View key={categoryIndex}>
+                <Pressable
+                  style={styles.menuDropdownButton}
+                  onPress={() => toggleCategory(categoryIndex)}
+                >
+                  <Text style={styles.menuDropdownText}>
+                    {category.name}{" "}
+                    {expandedCategories.includes(categoryIndex) ? "▲" : "▼"}
+                  </Text>
+                </Pressable>
+                {expandedCategories.includes(categoryIndex) &&
+                  category.description?.trim() && (
+                    <Text style={styles.menuDescription}>
+                      {category.description}
+                    </Text>
+                  )}
+
+                {expandedCategories.includes(categoryIndex) &&
+                  category.items?.map((item: any, itemIndex: number) => (
+                    <View key={itemIndex} style={styles.card}>
+                      <Text style={styles.cardTitle}>{item.name}</Text>
+                      <Text style={styles.menuDescription}>
+                        {item.description}
+                      </Text>
+                      {/* Displays half/full tray or individual item pricing */}
+                      {item.pricingType === "halfFull" ? (
+                        <>
+                          <Text style={styles.cateringPrice}>
+                            Half: ${Number(item.halfPrice).toFixed(2)}
+                          </Text>
+                          <Text style={styles.cateringPrice}>
+                            Full: ${Number(item.fullPrice).toFixed(2)}
+                          </Text>
+                        </>
+                      ) : (
+                        <Text style={styles.cateringPrice}>
+                          {item.price === null ||
+                          item.price === undefined ||
+                          item.price === ""
+                            ? "Contact for Pricing"
+                            : `$${Number(item.price).toFixed(2)}`}
+                        </Text>
+                      )}
+
+                      {/* Displays Limited or Sold Out status for menu items */}
+                      {(item.status === "Limited" ||
+                        item.status === "Sold Out") && (
+                        <Text
+                          style={[
+                            styles.statusText,
+                            item.status === "Sold Out"
+                              ? styles.soldOutText
+                              : styles.limitedText,
+                          ]}
+                        >
+                          {item.status}
+                        </Text>
+                      )}
+                    </View>
+                  ))}
+              </View>
+            ) : null,
+        )}
+        {/* Displays the catering information note */}
+        <Text style={styles.cateringNote}>
+          Contact us with special requests and dietary restriction requests.
+        </Text>
+      </ScrollView>
+    </View>
+  );
+};
 
 // Displays the Catering Availability Calendar and allows customers to select a date
 export const AvailabilityCalendarScreen = ({

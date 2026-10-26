@@ -269,7 +269,7 @@ export type OnsiteEventMenuOptionsScreenProps = {
 };
 
 // Defines the properties required by the Onsite Event screen
-export type OnsiteEventScreenProps = {
+export type OnsiteCateringMenuScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   selectedOnsiteCateringMenu:
     | {
@@ -294,13 +294,6 @@ export type OnsiteEventScreenProps = {
       }
     | null
     | undefined;
-  onsiteParentCategories: string[];
-  expandedOnsiteParentCategories: string[];
-  setExpandedOnsiteParentCategories: React.Dispatch<
-    React.SetStateAction<string[]>
-  >;
-  expandedOnsiteCategories: number[];
-  setExpandedOnsiteCategories: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 // Defines the properties required by the Catering Availability Calendar screen

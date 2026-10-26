@@ -40,8 +40,8 @@ import {
   CateringRequestScreen as SharedCateringRequestScreen,
   CateringScreen as SharedCateringScreen,
   DropOffCateringMenuScreen as SharedDropOffCateringMenuScreen,
+  OnsiteCateringMenuScreen as SharedOnsiteCateringMenuScreen,
   OnsiteEventMenuOptionsScreen as SharedOnsiteEventMenuOptionsScreen,
-  OnsiteEventScreen as SharedOnsiteEventScreen,
 } from "../../screens/CateringScreens";
 
 // Imports the shared Cart screen
@@ -1199,15 +1199,10 @@ export default function App() {
   ];
 
   // Displays the Onsite Event Catering screen using the shared component
-  const OnsiteEventScreen = () => (
-    <SharedOnsiteEventScreen
+  const OnsiteCateringMenuScreen = () => (
+    <SharedOnsiteCateringMenuScreen
       Header={Header}
       selectedOnsiteCateringMenu={selectedOnsiteCateringMenu}
-      onsiteParentCategories={onsiteParentCategories}
-      expandedOnsiteParentCategories={expandedOnsiteParentCategories}
-      setExpandedOnsiteParentCategories={setExpandedOnsiteParentCategories}
-      expandedOnsiteCategories={expandedOnsiteCategories}
-      setExpandedOnsiteCategories={setExpandedOnsiteCategories}
     />
   );
 
@@ -1691,7 +1686,7 @@ export default function App() {
       {screen === "about" && <AboutScreen />}
       {screen === "order" && <OrderScreen />}
       {screen === "foodTrailer" && FoodTrailerScreen()}
-      {screen === "onsiteEventCatering" && OnsiteEventScreen()}
+      {screen === "onsiteEventCatering" && OnsiteCateringMenuScreen()}
       {screen === "onsiteEventMenuOptions" && OnsiteEventMenuOptionsScreen()}
       {screen === "cart" && <CartScreen />}
       {screen === "checkout" && CheckoutScreen()}
