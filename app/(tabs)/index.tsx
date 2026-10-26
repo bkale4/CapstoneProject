@@ -97,9 +97,11 @@ import {
   toggleAvailability as toggleAvailabilityService,
 } from "../../services/cateringService";
 
+// Imports the customer account creation service
+import { handleCreateAccount as handleCreateAccountService } from "../../services/authService";
+
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from "firebase/auth";
 
 import {
@@ -109,8 +111,7 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
-  setDoc,
-  updateDoc,
+  updateDoc
 } from "firebase/firestore";
 
 import { auth, db } from "../../firebaseConfig";
@@ -250,32 +251,20 @@ export default function App() {
   const [editItemAddOnPrice, setEditItemAddOnPrice] = useState("");
   const [itemStatusDropdown, setItemStatusDropdown] = useState(false);
 
+  // Passes customer registration information to the authentication service
   const handleCreateAccount = async () => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        newCustomerEmail,
-        newCustomerPassword,
-      );
-
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        name: newCustomerName,
-        phone: newCustomerPhone,
-        email: newCustomerEmail,
-        role: "customer",
-      });
-      setLoggedInCustomerName(newCustomerName);
-      setLoggedInCustomerPhone(newCustomerPhone);
-      setLoggedInCustomerEmail(newCustomerEmail);
-
-      setCreateAccountMessage("");
-      setIsCustomerLoggedIn(true);
-      setScreen("checkout");
-    } catch (error) {
-      setCreateAccountMessage(
-        "Unable to create account. Please check your information.",
-      );
-    }
+    await handleCreateAccountService(
+      newCustomerName,
+      newCustomerPhone,
+      newCustomerEmail,
+      newCustomerPassword,
+      setLoggedInCustomerName,
+      setLoggedInCustomerPhone,
+      setLoggedInCustomerEmail,
+      setCreateAccountMessage,
+      setIsCustomerLoggedIn,
+      setScreen,
+    );
   };
 
   const handleCustomerLogin = async () => {
