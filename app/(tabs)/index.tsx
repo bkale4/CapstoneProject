@@ -86,6 +86,7 @@ import {
   markOrderAsCancelled as markOrderAsCancelledService,
   markOrderAsFilled as markOrderAsFilledService,
   markOrderAsOpen as markOrderAsOpenService,
+  submitOrder as submitOrderService,
 } from "../../services/orderService";
 
 import {
@@ -101,9 +102,8 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
-  serverTimestamp,
   setDoc,
-  updateDoc,
+  updateDoc
 } from "firebase/firestore";
 
 import { auth, db } from "../../firebaseConfig";
@@ -883,6 +883,7 @@ export default function App() {
     }
   };
 
+  // Passes the customer order information to the order service
   const submitOrder = async () => {
     const customerName = isCustomerLoggedIn ? loggedInCustomerName : guestName;
 
@@ -894,26 +895,18 @@ export default function App() {
       ? loggedInCustomerEmail
       : guestEmail;
 
-    try {
-      await addDoc(collection(db, "orders"), {
-        customerName: customerName,
-        phone: customerPhone,
-        email: customerEmail,
-        menuType: selectedMenuType,
-        location: selectedLocation,
-        eventName: selectedEvent,
-        items: cartItems,
-        total: cartTotal,
-        paymentMethod: paymentMethod,
-        paymentStatus: "Not Paid",
-        status: "Open",
-        createdAt: serverTimestamp(),
-      });
-      console.log("Order saved to Firebase");
-      setScreen("orderConfirmation");
-    } catch (error) {
-      console.error("Error saving order:", error);
-    }
+    await submitOrderService(
+      customerName,
+      customerPhone,
+      customerEmail,
+      selectedMenuType,
+      selectedLocation,
+      selectedEvent,
+      cartItems,
+      cartTotal,
+      paymentMethod,
+      setScreen,
+    );
   };
 
   const submitCateringRequest = async () => {

@@ -1,6 +1,15 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    serverTimestamp,
+    updateDoc,
+} from "firebase/firestore";
 import type React from "react";
 import { db } from "../firebaseConfig";
+
+import type { CartItem, Screen } from "../types";
 
 // Loads customer orders from Firestore for the Admin dashboard
 export const loadAdminOrders = async (
@@ -65,5 +74,41 @@ export const markOrderAsCancelled = async (
     await loadAdminOrders();
   } catch (error) {
     console.error("Error marking order as cancelled:", error);
+  }
+};
+
+// Saves a customer order to Firestore
+export const submitOrder = async (
+  customerName: string,
+  customerPhone: string,
+  customerEmail: string,
+  selectedMenuType: string,
+  selectedLocation: string,
+  selectedEvent: string,
+  cartItems: CartItem[],
+  cartTotal: number,
+  paymentMethod: string,
+  setScreen: (screen: Screen) => void,
+) => {
+  try {
+    await addDoc(collection(db, "orders"), {
+      customerName: customerName,
+      phone: customerPhone,
+      email: customerEmail,
+      menuType: selectedMenuType,
+      location: selectedLocation,
+      eventName: selectedEvent,
+      items: cartItems,
+      total: cartTotal,
+      paymentMethod: paymentMethod,
+      paymentStatus: "Not Paid",
+      status: "Open",
+      createdAt: serverTimestamp(),
+    });
+
+    console.log("Order saved to Firebase");
+    setScreen("orderConfirmation");
+  } catch (error) {
+    console.error("Error saving order:", error);
   }
 };
