@@ -72,6 +72,7 @@ import { AvailabilityManagementScreen as SharedAvailabilityManagementScreen } fr
 import {
   addNewCategory as addNewCategoryService,
   createMenu,
+  saveCategoryChanges as saveCategoryChangesService,
   saveMenuChanges as saveMenuChangesService,
   toggleMenuActive as toggleMenuActiveService,
 } from "../../services/menuService";
@@ -690,39 +691,18 @@ export default function App() {
     }
   };
 
+  // Passes the edited category information to the menu service
   const saveCategoryChanges = async () => {
-    if (
-      !selectedAdminMenu ||
-      editingCategoryIndex === null ||
-      !editCategoryName.trim()
-    ) {
-      return;
-    }
-
-    try {
-      const updatedCategories = [...(selectedAdminMenu.categories || [])];
-
-      updatedCategories[editingCategoryIndex] = {
-        ...updatedCategories[editingCategoryIndex],
-        name: editCategoryName.trim(),
-        description: editCategoryDescription.trim(),
-        parentCategory: editCategoryParent.trim(),
-      };
-
-      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-        categories: updatedCategories,
-      });
-
-      setSelectedAdminMenu({
-        ...selectedAdminMenu,
-        categories: updatedCategories,
-      });
-
-      setEditingCategoryIndex(null);
-      await loadAdminMenus();
-    } catch (error) {
-      console.error("Error saving category changes:", error);
-    }
+    await saveCategoryChangesService(
+      selectedAdminMenu,
+      editingCategoryIndex,
+      editCategoryName,
+      editCategoryDescription,
+      editCategoryParent,
+      setSelectedAdminMenu,
+      setEditingCategoryIndex,
+      loadAdminMenus,
+    );
   };
 
   const saveMenuDescription = async () => {

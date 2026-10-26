@@ -153,3 +153,48 @@ export const addNewCategory = async (
     console.error("Error adding category:", error);
   }
 };
+
+// Saves changes to an existing menu category in Firestore
+export const saveCategoryChanges = async (
+  selectedAdminMenu: any,
+  editingCategoryIndex: number | null,
+  editCategoryName: string,
+  editCategoryDescription: string,
+  editCategoryParent: string,
+  setSelectedAdminMenu: (menu: any) => void,
+  setEditingCategoryIndex: (index: number | null) => void,
+  loadAdminMenus: () => Promise<void>,
+) => {
+  if (
+    !selectedAdminMenu ||
+    editingCategoryIndex === null ||
+    !editCategoryName.trim()
+  ) {
+    return;
+  }
+
+  try {
+    const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+    updatedCategories[editingCategoryIndex] = {
+      ...updatedCategories[editingCategoryIndex],
+      name: editCategoryName.trim(),
+      description: editCategoryDescription.trim(),
+      parentCategory: editCategoryParent.trim(),
+    };
+
+    await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+      categories: updatedCategories,
+    });
+
+    setSelectedAdminMenu({
+      ...selectedAdminMenu,
+      categories: updatedCategories,
+    });
+
+    setEditingCategoryIndex(null);
+    await loadAdminMenus();
+  } catch (error) {
+    console.error("Error saving category changes:", error);
+  }
+};
