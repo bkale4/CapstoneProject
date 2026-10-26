@@ -72,6 +72,7 @@ import { AvailabilityManagementScreen as SharedAvailabilityManagementScreen } fr
 import {
   addNewCategory as addNewCategoryService,
   createMenu,
+  loadAdminMenusService,
   saveCategoryChanges as saveCategoryChangesService,
   saveMenuChanges as saveMenuChangesService,
   toggleMenuActive as toggleMenuActiveService,
@@ -567,19 +568,9 @@ export default function App() {
     }
   };
 
+  // Loads admin menus through the menu service
   const loadAdminMenus = async () => {
-    try {
-      const menuSnapshot = await getDocs(collection(db, "menus"));
-
-      const menus = menuSnapshot.docs.map((menuDoc) => ({
-        id: menuDoc.id,
-        ...menuDoc.data(),
-      }));
-
-      setAdminMenus(menus);
-    } catch (error) {
-      console.error("Error loading admin menus:", error);
-    }
+    await loadAdminMenusService(setAdminMenus);
   };
 
   const loadAdminOrders = async () => {
@@ -1170,15 +1161,6 @@ export default function App() {
       cartTotal={cartTotal}
     />
   );
-
-  // Gets the parent categories used to organize the Onsite Event Catering menu
-  const onsiteParentCategories: string[] = [
-    ...new Set<string>(
-      (selectedOnsiteCateringMenu?.categories || [])
-        .map((category: any) => category.parentCategory?.trim() || "")
-        .filter((parent: string) => parent !== ""),
-    ),
-  ];
 
   // Displays the Onsite Event Catering screen using the shared component
   const OnsiteCateringMenuScreen = () => (

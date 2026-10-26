@@ -1,11 +1,11 @@
 // Imports Firestore functions for creating and managing menu documents
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    updateDoc,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
 } from "firebase/firestore";
 
 // Imports the Firebase database connection
@@ -196,5 +196,23 @@ export const saveCategoryChanges = async (
     await loadAdminMenus();
   } catch (error) {
     console.error("Error saving category changes:", error);
+  }
+};
+
+// Loads all menus from Firestore
+export const loadAdminMenusService = async (
+  setAdminMenus: React.Dispatch<React.SetStateAction<any>>,
+) => {
+  try {
+    const menuSnapshot = await getDocs(collection(db, "menus"));
+
+    const menus = menuSnapshot.docs.map((menuDoc) => ({
+      id: menuDoc.id,
+      ...menuDoc.data(),
+    }));
+
+    setAdminMenus(menus);
+  } catch (error) {
+    console.error("Error loading admin menus:", error);
   }
 };
