@@ -90,7 +90,6 @@ import {
 } from "../../services/orderService";
 
 // Imports the catering request submission service
-// Imports the catering request submission service
 import {
   loadAvailability as loadAvailabilityService,
   submitCateringRequest as submitCateringRequestService,
@@ -98,7 +97,10 @@ import {
 } from "../../services/cateringService";
 
 // Imports the customer account creation service
-import { handleCreateAccount as handleCreateAccountService } from "../../services/authService";
+import {
+  handleCreateAccount as handleCreateAccountService,
+  handleCustomerLogin as handleCustomerLoginService,
+} from "../../services/authService";
 
 import { signInWithEmailAndPassword } from "firebase/auth";
 
@@ -265,34 +267,18 @@ export default function App() {
     );
   };
 
+  // Passes customer login information to the authentication service
   const handleCustomerLogin = async () => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        customerEmail,
-        customerPassword,
-      );
-
-      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-
-      if (userDoc.exists() && userDoc.data().role === "customer") {
-        const customerData = userDoc.data();
-
-        setLoggedInCustomerName(customerData.name || "");
-        setLoggedInCustomerPhone(customerData.phone || "");
-        setLoggedInCustomerEmail(customerData.email || "");
-
-        setCustomerLoginMessage("");
-        setIsCustomerLoggedIn(true);
-        setScreen("checkout");
-      } else {
-        setCustomerLoginMessage(
-          "Access Denied. This account is not a customer account.",
-        );
-      }
-    } catch (error) {
-      setCustomerLoginMessage("Invalid email or password.");
-    }
+    await handleCustomerLoginService(
+      customerEmail,
+      customerPassword,
+      setLoggedInCustomerName,
+      setLoggedInCustomerPhone,
+      setLoggedInCustomerEmail,
+      setCustomerLoginMessage,
+      setIsCustomerLoggedIn,
+      setScreen,
+    );
   };
 
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
