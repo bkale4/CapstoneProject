@@ -37,9 +37,9 @@ import {
   CateringConfirmationScreen as SharedCateringConfirmationScreen,
   CateringManagementScreen as SharedCateringManagementScreen,
   CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
-  CateringMenuScreen as SharedCateringMenuScreen,
   CateringRequestScreen as SharedCateringRequestScreen,
   CateringScreen as SharedCateringScreen,
+  DropOffCateringMenuScreen as SharedDropOffCateringMenuScreen,
   OnsiteEventMenuOptionsScreen as SharedOnsiteEventMenuOptionsScreen,
   OnsiteEventScreen as SharedOnsiteEventScreen,
 } from "../../screens/CateringScreens";
@@ -1234,12 +1234,10 @@ export default function App() {
   );
 
   // Displays the Catering Menu screen using the shared component
-  const CateringMenuScreen = () => (
-    <SharedCateringMenuScreen
+  const DropOffCateringMenuScreen = () => (
+    <SharedDropOffCateringMenuScreen
       Header={Header}
-      selectedCateringMenu={selectedCateringMenu}
-      expandedDropOffCategories={expandedDropOffCategories}
-      setExpandedDropOffCategories={setExpandedDropOffCategories}
+      selectedDropOffCateringMenu={selectedCateringMenu}
     />
   );
 
@@ -1702,7 +1700,7 @@ export default function App() {
       {screen === "orderConfirmation" && <OrderConfirmationScreen />}
       {screen === "catering" && <CateringScreen />}
       {screen === "cateringMenuOptions" && CateringMenuOptionsScreen()}
-      {screen === "cateringMenu" && CateringMenuScreen()}
+      {screen === "cateringMenu" && DropOffCateringMenuScreen()}
       {screen === "availabilityCalendar" && <AvailabilityCalendarScreen />}
       {screen === "cateringRequest" && CateringRequestScreen()}
       {screen === "cateringConfirmation" && <CateringConfirmationScreen />}

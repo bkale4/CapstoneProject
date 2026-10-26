@@ -120,16 +120,18 @@ export type CateringMenuOptionsScreenProps = {
   setScreen: (screen: Screen) => void;
 };
 
-// Defines the properties required by the Catering Menu screen
-export type CateringMenuScreenProps = {
+// Defines the properties required by the Drop-Off Catering Menu screen
+export type DropOffCateringMenuScreenProps = {
   Header: React.ComponentType<{ title: string }>;
-  selectedCateringMenu:
+  selectedDropOffCateringMenu:
     | {
         name: string;
         type: string;
         description?: string;
         categories?: {
           name: string;
+          description?: string;
+          parentCategory?: string;
           items?: {
             name: string;
             description?: string;
@@ -143,8 +145,6 @@ export type CateringMenuScreenProps = {
       }
     | null
     | undefined;
-  expandedDropOffCategories: number[];
-  setExpandedDropOffCategories: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 // Defines the properties required by the Catering Services screen
@@ -274,10 +274,12 @@ export type OnsiteEventScreenProps = {
   selectedOnsiteCateringMenu:
     | {
         name: string;
+        description?: string;
         eventName?: string;
         location?: string;
         categories?: {
           name: string;
+          description?: string;
           parentCategory?: string;
           items?: {
             name: string;
