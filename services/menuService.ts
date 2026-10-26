@@ -245,3 +245,34 @@ export const saveMenuDescription = async (
     console.error("Error saving menu description:", error);
   }
 };
+
+// Deletes a category from the selected menu
+export const deleteMenuCategory = async (
+  categoryIndex: number,
+  selectedAdminMenu: any,
+  setSelectedAdminMenu: React.Dispatch<React.SetStateAction<any>>,
+  loadAdminMenus: () => Promise<void>,
+) => {
+  if (!selectedAdminMenu) {
+    return;
+  }
+
+  const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+  updatedCategories.splice(categoryIndex, 1);
+
+  try {
+    await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+      categories: updatedCategories,
+    });
+
+    setSelectedAdminMenu({
+      ...selectedAdminMenu,
+      categories: updatedCategories,
+    });
+
+    await loadAdminMenus();
+  } catch (error) {
+    console.error("Error deleting menu category:", error);
+  }
+};

@@ -72,6 +72,7 @@ import { AvailabilityManagementScreen as SharedAvailabilityManagementScreen } fr
 import {
   addNewCategory as addNewCategoryService,
   createMenu,
+  deleteMenuCategory as deleteMenuCategoryService,
   loadAdminMenusService,
   saveCategoryChanges as saveCategoryChangesService,
   saveMenuChanges as saveMenuChangesService,
@@ -1480,29 +1481,14 @@ export default function App() {
     />
   );
 
+  // Passes the category information to the menu service for deletion
   const deleteMenuCategory = async (categoryIndex: number) => {
-    if (!selectedAdminMenu) {
-      return;
-    }
-
-    const updatedCategories = [...(selectedAdminMenu.categories || [])];
-
-    updatedCategories.splice(categoryIndex, 1);
-
-    try {
-      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-        categories: updatedCategories,
-      });
-
-      setSelectedAdminMenu({
-        ...selectedAdminMenu,
-        categories: updatedCategories,
-      });
-
-      await loadAdminMenus();
-    } catch (error) {
-      console.error("Error deleting menu category:", error);
-    }
+    await deleteMenuCategoryService(
+      categoryIndex,
+      selectedAdminMenu,
+      setSelectedAdminMenu,
+      loadAdminMenus,
+    );
   };
 
   // Displays the shared Edit Menu Item screen

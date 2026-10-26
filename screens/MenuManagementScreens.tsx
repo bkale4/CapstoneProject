@@ -113,7 +113,7 @@ export const MenuManagementScreen = ({
 
               Alert.alert(
                 "Delete Menu",
-                `Are you sure you want to delete "${menu.name}"? This will also delete all its categories and items.`,
+                `Are you sure you want to delete ${menu.name}? This will also delete all its categories and items.`,
                 [
                   { text: "Cancel", style: "cancel" },
                   {
@@ -634,7 +634,7 @@ export const ManageMenuItemsScreen = ({
 
                 if (Platform.OS === "web") {
                   const confirmed = window.confirm(
-                    `Are you sure you want to delete \${group.name}?`,
+                    `Are you sure you want to delete ${group.name}?`,
                   );
 
                   if (confirmed) {
@@ -646,7 +646,7 @@ export const ManageMenuItemsScreen = ({
 
                 Alert.alert(
                   "Delete Menu Item",
-                  `Are you sure you want to delete \${group.name}?`,
+                  `Are you sure you want to delete ${group.name}?`,
                   [
                     { text: "Cancel", style: "cancel" },
                     {
@@ -895,7 +895,7 @@ export const ManageMenuItemsScreen = ({
                   onPress={() => {
                     if (Platform.OS === "web") {
                       const confirmed = window.confirm(
-                        `Are you sure you want to delete \${item.name}?`,
+                        `Are you sure you want to delete ${item.name}?`,
                       );
 
                       if (confirmed) {
@@ -907,7 +907,7 @@ export const ManageMenuItemsScreen = ({
 
                     Alert.alert(
                       "Delete Menu Item",
-                      `Are you sure you want to delete \${item.name}?`,
+                      `Are you sure you want to delete ${item.name}?`,
                       [
                         { text: "Cancel", style: "cancel" },
                         {
