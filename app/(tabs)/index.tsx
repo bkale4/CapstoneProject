@@ -98,23 +98,22 @@ import {
 
 // Imports the customer account creation service
 import {
+  handleBusinessLogin as handleBusinessLoginService,
   handleCreateAccount as handleCreateAccountService,
   handleCustomerLogin as handleCustomerLoginService,
 } from "../../services/authService";
 
-import { signInWithEmailAndPassword } from "firebase/auth";
 
 import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
   onSnapshot,
-  updateDoc,
+  updateDoc
 } from "firebase/firestore";
 
-import { auth, db } from "../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 
 import { Pressable, ScrollView, Text } from "react-native";
 
@@ -972,26 +971,15 @@ export default function App() {
 
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
+  // Passes administrator login information to the authentication service
   const handleBusinessLogin = async () => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        adminUsername,
-        adminPassword,
-      );
-
-      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
-
-      if (userDoc.exists() && userDoc.data().role === "admin") {
-        setLoginMessage("");
-        setIsAdminLoggedIn(true);
-        setScreen("business");
-      } else {
-        setLoginMessage("Access Denied. This area is for admin use only.");
-      }
-    } catch (error) {
-      setLoginMessage("Access Denied. Please check your email and passowrd.");
-    }
+    await handleBusinessLoginService(
+      adminUsername,
+      adminPassword,
+      setLoginMessage,
+      setIsAdminLoggedIn,
+      setScreen,
+    );
   };
 
   const BusinessBackButton = () => (

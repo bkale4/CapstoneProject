@@ -87,3 +87,32 @@ export const handleCustomerLogin = async (
     setCustomerLoginMessage("Invalid email or password.");
   }
 };
+
+// Authenticates an administrator and opens the Business Dashboard
+export const handleBusinessLogin = async (
+  adminUsername: string,
+  adminPassword: string,
+  setLoginMessage: React.Dispatch<React.SetStateAction<string>>,
+  setIsAdminLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+  setScreen: (screen: Screen) => void,
+) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      adminUsername,
+      adminPassword,
+    );
+
+    const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+
+    if (userDoc.exists() && userDoc.data().role === "admin") {
+      setLoginMessage("");
+      setIsAdminLoggedIn(true);
+      setScreen("business");
+    } else {
+      setLoginMessage("Access Denied. This area is for admin use only.");
+    }
+  } catch (error) {
+    setLoginMessage("Access Denied. Please check your email and passowrd.");
+  }
+};
