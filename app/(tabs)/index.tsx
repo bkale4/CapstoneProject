@@ -89,13 +89,16 @@ import {
   submitOrder as submitOrderService,
 } from "../../services/orderService";
 
+// Imports the catering request submission service
+// Imports the catering request submission service
+import { submitCateringRequest as submitCateringRequestService } from "../../services/cateringService";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -909,28 +912,20 @@ export default function App() {
     );
   };
 
+  // Passes the catering request information to the catering service
   const submitCateringRequest = async () => {
-    try {
-      await addDoc(collection(db, "cateringRequests"), {
-        customerName: cateringCustomerName,
-        contactInformation: cateringContact,
-        date: selectedCateringDate,
-        time: cateringTime,
-        guestCount: Number(cateringGuestCount),
-        menuPreferences: cateringMenuPreferences,
-        venueName: cateringVenueName,
-        venueAddress: cateringVenueAddress,
-        specialNotes: cateringNotes,
-        status: "pending",
-        createdAt: new Date(),
-      });
-
-      console.log("Catering request saved to Firebase");
-
-      setScreen("cateringConfirmation");
-    } catch (error) {
-      console.error("Error saving catering request:", error);
-    }
+    await submitCateringRequestService(
+      cateringCustomerName,
+      cateringContact,
+      selectedCateringDate,
+      cateringTime,
+      cateringGuestCount,
+      cateringMenuPreferences,
+      cateringVenueName,
+      cateringVenueAddress,
+      cateringNotes,
+      setScreen,
+    );
   };
 
   const today = new Date();
