@@ -92,6 +92,7 @@ import {
 // Imports the catering request submission service
 // Imports the catering request submission service
 import {
+  loadAvailability as loadAvailabilityService,
   submitCateringRequest as submitCateringRequestService,
   toggleAvailability as toggleAvailabilityService,
 } from "../../services/cateringService";
@@ -837,26 +838,9 @@ export default function App() {
     }
   };
 
+  // Loads catering availability when the app starts
   useEffect(() => {
-    const loadAvailability = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "availability"));
-
-        const savedAvailability: Record<string, boolean> = {};
-
-        querySnapshot.forEach((document) => {
-          const data = document.data();
-
-          savedAvailability[document.id] = data.available;
-        });
-        setAvailability(savedAvailability);
-        console.log("Availability loaded from Firebase");
-      } catch (error) {
-        console.error("Error loading availability:", error);
-      }
-    };
-
-    loadAvailability();
+    loadAvailabilityService(setAvailability);
   }, []);
 
   // Deletes a menu from Firestore and refreshes the menu list

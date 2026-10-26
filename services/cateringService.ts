@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import type { Screen } from "../types";
 
@@ -62,5 +62,29 @@ export const toggleAvailability = async (
     console.log("Availability saved:", dateKey, newAvailability);
   } catch (error) {
     console.error("Error saving availability:", error);
+  }
+};
+
+// Loads catering availability from Firestore
+export const loadAvailability = async (
+  setAvailability: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >,
+) => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "availability"));
+
+    const savedAvailability: Record<string, boolean> = {};
+
+    querySnapshot.forEach((document) => {
+      const data = document.data();
+
+      savedAvailability[document.id] = data.available;
+    });
+
+    setAvailability(savedAvailability);
+    console.log("Availability loaded from Firebase");
+  } catch (error) {
+    console.error("Error loading availability:", error);
   }
 };
