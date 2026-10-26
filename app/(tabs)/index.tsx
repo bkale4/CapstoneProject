@@ -36,12 +36,12 @@ import {
   AvailabilityCalendarScreen as SharedAvailabilityCalendarScreen,
   CateringConfirmationScreen as SharedCateringConfirmationScreen,
   CateringManagementScreen as SharedCateringManagementScreen,
-  CateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
+  DropOffCateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
   CateringRequestScreen as SharedCateringRequestScreen,
   CateringScreen as SharedCateringScreen,
   DropOffCateringMenuScreen as SharedDropOffCateringMenuScreen,
+  OnsiteCateringMenuOptionsScreen as SharedOnsiteCateringMenuOptionsScreen,
   OnsiteCateringMenuScreen as SharedOnsiteCateringMenuScreen,
-  OnsiteEventMenuOptionsScreen as SharedOnsiteEventMenuOptionsScreen,
 } from "../../screens/CateringScreens";
 
 // Imports the shared Cart screen
@@ -134,15 +134,6 @@ export default function App() {
   const [expandedCategories, setExpandedCategories] = useState<number[]>([]);
   const [expandedParentCategories, setExpandedParentCategories] = useState<
     string[]
-  >([]);
-  const [expandedOnsiteCategories, setExpandedOnsiteCategories] = useState<
-    number[]
-  >([]);
-  // Tracks which Onsite Event Catering Parent categories are expanded
-  const [expandedOnsiteParentCategories, setExpandedOnsiteParentCategories] =
-    useState<string[]>([]);
-  const [expandedDropOffCategories, setExpandedDropOffCategories] = useState<
-    number[]
   >([]);
 
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
@@ -1207,12 +1198,11 @@ export default function App() {
   );
 
   // Displays the Onsite Event Menu Options screen using the shared component
-  const OnsiteEventMenuOptionsScreen = () => (
-    <SharedOnsiteEventMenuOptionsScreen
+  const OnsiteCateringMenuOptionsScreen = () => (
+    <SharedOnsiteCateringMenuOptionsScreen
       Header={Header}
       onsiteCateringMenus={onsiteCateringMenus}
       setSelectedCateringMenuId={setSelectedCateringMenuId}
-      setExpandedOnsiteCategories={setExpandedOnsiteCategories}
       setScreen={setScreen}
     />
   );
@@ -1223,7 +1213,6 @@ export default function App() {
       Header={Header}
       dropOffCateringMenus={dropOffCateringMenus}
       setSelectedCateringMenuId={setSelectedCateringMenuId}
-      setExpandedDropOffCategories={setExpandedDropOffCategories}
       setScreen={setScreen}
     />
   );
@@ -1687,7 +1676,7 @@ export default function App() {
       {screen === "order" && <OrderScreen />}
       {screen === "foodTrailer" && FoodTrailerScreen()}
       {screen === "onsiteEventCatering" && OnsiteCateringMenuScreen()}
-      {screen === "onsiteEventMenuOptions" && OnsiteEventMenuOptionsScreen()}
+      {screen === "onsiteEventMenuOptions" && OnsiteCateringMenuOptionsScreen()}
       {screen === "cart" && <CartScreen />}
       {screen === "checkout" && CheckoutScreen()}
       {screen === "customerLogin" && CustomerLoginScreen()}

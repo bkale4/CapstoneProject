@@ -112,11 +112,10 @@ export type FoodTrailerScreenProps = {
 };
 
 // Defines the properties required by the Catering Menu Options screen
-export type CateringMenuOptionsScreenProps = {
+export type DropOffCateringMenuOptionsScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   dropOffCateringMenus: { id: string; name: string }[];
   setSelectedCateringMenuId: (id: string) => void;
-  setExpandedDropOffCategories: React.Dispatch<React.SetStateAction<number[]>>;
   setScreen: (screen: Screen) => void;
 };
 
@@ -260,11 +259,10 @@ export type CreateAccountScreenProps = {
 };
 
 // Defines the properties required by the Onsite Event Menu Options screen
-export type OnsiteEventMenuOptionsScreenProps = {
+export type OnsiteCateringMenuOptionsScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   onsiteCateringMenus: { id: string; name: string }[];
   setSelectedCateringMenuId: (id: string) => void;
-  setExpandedOnsiteCategories: React.Dispatch<React.SetStateAction<number[]>>;
   setScreen: (screen: Screen) => void;
 };
 

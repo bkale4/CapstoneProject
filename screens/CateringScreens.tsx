@@ -13,22 +13,21 @@ import type {
   AvailabilityCalendarScreenProps,
   CateringConfirmationScreenProps,
   CateringManagementScreenProps,
-  CateringMenuOptionsScreenProps,
   CateringRequestScreenProps,
   CateringScreenProps,
+  DropOffCateringMenuOptionsScreenProps,
   DropOffCateringMenuScreenProps,
+  OnsiteCateringMenuOptionsScreenProps,
   OnsiteCateringMenuScreenProps,
-  OnsiteEventMenuOptionsScreenProps,
 } from "../types";
 
 // Displays the available Drop-Off Catering menus for customers to select
-export const CateringMenuOptionsScreen = ({
+export const DropOffCateringMenuOptionsScreen = ({
   Header,
   dropOffCateringMenus,
   setSelectedCateringMenuId,
-  setExpandedDropOffCategories,
   setScreen,
-}: CateringMenuOptionsScreenProps) => (
+}: DropOffCateringMenuOptionsScreenProps) => (
   <>
     <Header title="Drop-Off Catering Menus" />
 
@@ -39,7 +38,6 @@ export const CateringMenuOptionsScreen = ({
           style={styles.menuDropdownButton}
           onPress={() => {
             setSelectedCateringMenuId(menu.id);
-            setExpandedDropOffCategories([]);
             setScreen("cateringMenu");
           }}
         >
@@ -445,13 +443,12 @@ export const CateringManagementScreen = ({
 );
 
 // Displays the available Onsite Event Catering menus for customers to select
-export const OnsiteEventMenuOptionsScreen = ({
+export const OnsiteCateringMenuOptionsScreen = ({
   Header,
   onsiteCateringMenus,
   setSelectedCateringMenuId,
-  setExpandedOnsiteCategories,
   setScreen,
-}: OnsiteEventMenuOptionsScreenProps) => (
+}: OnsiteCateringMenuOptionsScreenProps) => (
   <>
     <Header title="Onsite Event Catering Menus" />
 
@@ -462,7 +459,6 @@ export const OnsiteEventMenuOptionsScreen = ({
           style={styles.menuDropdownButton}
           onPress={() => {
             setSelectedCateringMenuId(menu.id);
-            setExpandedOnsiteCategories([]);
             setScreen("onsiteEventCatering");
           }}
         >
