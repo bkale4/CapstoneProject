@@ -489,3 +489,158 @@ export const deleteMenuItem = async (
     console.error("Error deleting menu item:", error);
   }
 };
+
+// Adds a new menu item to the selected category in Firestore
+export const addNewMenuItem = async (
+  selectedAdminMenu: any,
+  newItemCategoryIndex: number | null,
+  newItemName: string,
+  newItemDescription: string,
+  newItemPricingType: "single" | "halfFull",
+  newItemPrice: string,
+  newItemHalfPrice: string,
+  newItemFullPrice: string,
+  newAddOnName: string,
+  newAddOnPrice: string,
+  additionalAddOns: { name: string; price: string }[],
+  setSelectedAdminMenu: React.Dispatch<React.SetStateAction<any>>,
+  setNewItemName: React.Dispatch<React.SetStateAction<string>>,
+  setNewItemDescription: React.Dispatch<React.SetStateAction<string>>,
+  setNewItemPrice: React.Dispatch<React.SetStateAction<string>>,
+  setNewItemPricingType: React.Dispatch<
+    React.SetStateAction<"single" | "halfFull">
+  >,
+  setNewItemHalfPrice: React.Dispatch<React.SetStateAction<string>>,
+  setNewItemFullPrice: React.Dispatch<React.SetStateAction<string>>,
+  setNewAddOnName: React.Dispatch<React.SetStateAction<string>>,
+  setNewAddOnPrice: React.Dispatch<React.SetStateAction<string>>,
+  setAdditionalAddOns: React.Dispatch<
+    React.SetStateAction<{ name: string; price: string }[]>
+  >,
+  setNewItemCategoryIndex: React.Dispatch<React.SetStateAction<number | null>>,
+  loadAdminMenus: () => Promise<void>,
+) => {
+  if (
+    !selectedAdminMenu ||
+    newItemCategoryIndex === null ||
+    !newItemName.trim() ||
+    (newItemPricingType === "halfFull" &&
+      (!newItemHalfPrice.trim() || !newItemFullPrice.trim()))
+  ) {
+    return;
+  }
+
+  const price = Number(newItemPrice);
+
+  const hasAddOn = newAddOnName.trim() !== "";
+
+  const addOnPrice = hasAddOn ? Number(newAddOnPrice) : 0;
+
+  const allAddOns = [
+    ...(hasAddOn ? [{ name: newAddOnName.trim(), price: addOnPrice }] : []),
+    ...additionalAddOns.map((addOn) => ({
+      name: addOn.name.trim(),
+      price: Number(addOn.price),
+    })),
+  ];
+
+  if (
+    hasAddOn &&
+    (!newAddOnPrice.trim() || !Number.isFinite(addOnPrice) || addOnPrice < 0)
+  ) {
+    return;
+  }
+
+  if (!hasAddOn && newAddOnPrice.trim()) {
+    return;
+  }
+
+  if (newItemPricingType === "single") {
+    if (newItemPrice.trim() !== "" && (!Number.isFinite(price) || price < 0)) {
+      return;
+    }
+  } else {
+    const halfPrice = Number(newItemHalfPrice);
+    const fullPrice = Number(newItemFullPrice);
+
+    if (
+      !Number.isFinite(halfPrice) ||
+      halfPrice < 0 ||
+      !Number.isFinite(fullPrice) ||
+      fullPrice < 0
+    ) {
+      return;
+    }
+  }
+
+  if (
+    additionalAddOns.some(
+      (addOn) =>
+        !addOn.name.trim() ||
+        !addOn.price.trim() ||
+        !Number.isFinite(Number(addOn.price)) ||
+        Number(addOn.price) < 0,
+    )
+  ) {
+    return;
+  }
+
+  try {
+    const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+    const category = updatedCategories[newItemCategoryIndex];
+
+    if (!category) {
+      return;
+    }
+
+    updatedCategories[newItemCategoryIndex] = {
+      ...category,
+      items: [
+        ...(category.items || []),
+        {
+          name: newItemName.trim(),
+          description: newItemDescription.trim(),
+          pricingType: newItemPricingType,
+          ...(newItemPricingType === "single"
+            ? {
+                price: newItemPrice.trim() === "" ? null : price,
+              }
+            : {
+                halfPrice: Number(newItemHalfPrice),
+                fullPrice: Number(newItemFullPrice),
+              }),
+          status: "Available",
+          ...(allAddOns.length > 0 && {
+            addOns: allAddOns,
+            addOn: allAddOns[0],
+          }),
+        },
+      ],
+    };
+
+    await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+      categories: updatedCategories,
+    });
+
+    setSelectedAdminMenu({
+      ...selectedAdminMenu,
+      categories: updatedCategories,
+    });
+
+    setNewItemName("");
+    setNewItemDescription("");
+    setNewItemPrice("");
+    setNewItemPricingType("single");
+    setNewItemHalfPrice("");
+    setNewItemFullPrice("");
+    setNewAddOnName("");
+    setNewAddOnPrice("");
+    setAdditionalAddOns([]);
+    setNewItemCategoryIndex(null);
+
+    await loadAdminMenus();
+  } catch (error) {
+    console.error("Error adding menu item:", error);
+  }
+};

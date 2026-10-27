@@ -71,6 +71,7 @@ import { AvailabilityManagementScreen as SharedAvailabilityManagementScreen } fr
 // Imports the service for creating menus in Firestore
 import {
   addNewCategory as addNewCategoryService,
+  addNewMenuItem as addNewMenuItemService,
   createMenu,
   deleteMenuCategory as deleteMenuCategoryService,
   deleteMenuItem as deleteMenuItemService,
@@ -110,8 +111,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
-  onSnapshot,
-  updateDoc,
+  onSnapshot
 } from "firebase/firestore";
 
 import { db } from "../../firebaseConfig";
@@ -530,133 +530,33 @@ export default function App() {
     setNewAddOnPrice("");
   };
 
+  // Passes new menu item information to the menu service
   const addNewMenuItem = async () => {
-    if (
-      !selectedAdminMenu ||
-      newItemCategoryIndex === null ||
-      !newItemName.trim() ||
-      (newItemPricingType === "halfFull" &&
-        (!newItemHalfPrice.trim() || !newItemFullPrice.trim()))
-    ) {
-      return;
-    }
-
-    const price = Number(newItemPrice);
-
-    const hasAddOn = newAddOnName.trim() !== "";
-
-    const addOnPrice = hasAddOn ? Number(newAddOnPrice) : 0;
-
-    const allAddOns = [
-      ...(hasAddOn ? [{ name: newAddOnName.trim(), price: addOnPrice }] : []),
-      ...additionalAddOns.map((addOn) => ({
-        name: addOn.name.trim(),
-        price: Number(addOn.price),
-      })),
-    ];
-
-    if (
-      hasAddOn &&
-      (!newAddOnPrice.trim() || !Number.isFinite(addOnPrice) || addOnPrice < 0)
-    ) {
-      return;
-    }
-
-    if (!hasAddOn && newAddOnPrice.trim()) {
-      return;
-    }
-
-    if (newItemPricingType === "single") {
-      if (
-        newItemPrice.trim() !== "" &&
-        (!Number.isFinite(price) || price < 0)
-      ) {
-        return;
-      }
-    } else {
-      const halfPrice = Number(newItemHalfPrice);
-      const fullPrice = Number(newItemFullPrice);
-
-      if (
-        !Number.isFinite(halfPrice) ||
-        halfPrice < 0 ||
-        !Number.isFinite(fullPrice) ||
-        fullPrice < 0
-      ) {
-        return;
-      }
-    }
-
-    if (
-      additionalAddOns.some(
-        (addOn) =>
-          !addOn.name.trim() ||
-          !addOn.price.trim() ||
-          !Number.isFinite(Number(addOn.price)) ||
-          Number(addOn.price) < 0,
-      )
-    ) {
-      return;
-    }
-
-    try {
-      const updatedCategories = [...(selectedAdminMenu.categories || [])];
-
-      const category = updatedCategories[newItemCategoryIndex];
-
-      if (!category) {
-        return;
-      }
-
-      updatedCategories[newItemCategoryIndex] = {
-        ...category,
-        items: [
-          ...(category.items || []),
-          {
-            name: newItemName.trim(),
-            description: newItemDescription.trim(),
-            pricingType: newItemPricingType,
-            ...(newItemPricingType === "single"
-              ? {
-                  price: newItemPrice.trim() === "" ? null : price,
-                }
-              : {
-                  halfPrice: Number(newItemHalfPrice),
-                  fullPrice: Number(newItemFullPrice),
-                }),
-            status: "Available",
-            ...(allAddOns.length > 0 && {
-              addOns: allAddOns,
-              addOn: allAddOns[0],
-            }),
-          },
-        ],
-      };
-
-      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-        categories: updatedCategories,
-      });
-
-      setSelectedAdminMenu({
-        ...selectedAdminMenu,
-        categories: updatedCategories,
-      });
-
-      setNewItemName("");
-      setNewItemDescription("");
-      setNewItemPrice("");
-      setNewItemPricingType("single");
-      setNewItemHalfPrice("");
-      setNewItemFullPrice("");
-      setNewAddOnName("");
-      setNewAddOnPrice("");
-      setAdditionalAddOns([]);
-      setNewItemCategoryIndex(null);
-
-      await loadAdminMenus();
-    } catch (error) {
-      console.error("Error adding menu item:", error);
-    }
+    await addNewMenuItemService(
+      selectedAdminMenu,
+      newItemCategoryIndex,
+      newItemName,
+      newItemDescription,
+      newItemPricingType,
+      newItemPrice,
+      newItemHalfPrice,
+      newItemFullPrice,
+      newAddOnName,
+      newAddOnPrice,
+      additionalAddOns,
+      setSelectedAdminMenu,
+      setNewItemName,
+      setNewItemDescription,
+      setNewItemPrice,
+      setNewItemPricingType,
+      setNewItemHalfPrice,
+      setNewItemFullPrice,
+      setNewAddOnName,
+      setNewAddOnPrice,
+      setAdditionalAddOns,
+      setNewItemCategoryIndex,
+      loadAdminMenus,
+    );
   };
 
   // Loads catering availability when the app starts
