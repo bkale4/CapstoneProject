@@ -492,7 +492,7 @@ export const OnsiteCateringMenuScreen = ({
 
   return (
     <View style={{ flex: 1 }}>
-      <Header title="Drop-Off Catering Menu" />
+      <Header title="Onsite Catering Menu" />
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
         {/* Displays the selected Drop-Off Catering menu name */}
