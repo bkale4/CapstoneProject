@@ -180,6 +180,7 @@ export type CateringConfirmationScreenProps = {
 export type CateringManagementScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   BusinessBackButton: React.ComponentType;
+  cateringRequests: any[];
 };
 
 // Defines the properties required by the Cart screen

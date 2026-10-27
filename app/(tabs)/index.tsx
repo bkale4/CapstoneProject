@@ -91,6 +91,7 @@ import {
 // Imports the catering request submission service
 import {
   loadAvailability as loadAvailabilityService,
+  loadCateringRequests as loadCateringRequestsService,
   submitCateringRequest as submitCateringRequestService,
   toggleAvailability as toggleAvailabilityService,
 } from "../../services/cateringService";
@@ -102,12 +103,7 @@ import {
   handleCustomerLogin as handleCustomerLoginService,
 } from "../../services/authService";
 
-import {
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot
-} from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 
 import { db } from "../../firebaseConfig";
 
@@ -176,6 +172,10 @@ export default function App() {
 
   const [adminMenus, setAdminMenus] = useState<any>([]);
   const [adminOrders, setAdminOrders] = useState<any[]>([]);
+
+  // Stores customer catering requests retrieved from Firestore
+  const [cateringRequests, setCateringRequests] = useState<any[]>([]);
+
   const manageMenuScrollRef = useRef<ScrollView>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -379,6 +379,11 @@ export default function App() {
   // Loads admin orders through the order service
   const loadAdminOrders = async () => {
     await loadAdminOrdersService(setAdminOrders);
+  };
+
+  // Loads customer catering requests through the catering service
+  const loadCateringRequests = async () => {
+    await loadCateringRequestsService(setCateringRequests);
   };
 
   // Marks an order as filled through the order service
@@ -930,9 +935,13 @@ export default function App() {
           </Text>
         </Pressable>
 
+        {/* Loads customer catering requests before opening Catering Management */}
         <Pressable
           style={styles.card}
-          onPress={() => setScreen("cateringManagement")}
+          onPress={async () => {
+            await loadCateringRequests();
+            setScreen("cateringManagement");
+          }}
         >
           <Text style={styles.cardTitle}>Catering Requests</Text>
           <Text style={styles.cardSubtitle}>
@@ -981,6 +990,7 @@ export default function App() {
     <SharedCateringManagementScreen
       Header={Header}
       BusinessBackButton={BusinessBackButton}
+      cateringRequests={cateringRequests}
     />
   );
 

@@ -424,20 +424,52 @@ export const CateringConfirmationScreen = ({
 export const CateringManagementScreen = ({
   Header,
   BusinessBackButton,
+  cateringRequests,
 }: CateringManagementScreenProps) => (
   <>
     <Header title="Catering Requests" />
     <ScrollView contentContainerStyle={styles.content}>
       <BusinessBackButton />
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Request #C201</Text>
-        <Text style={styles.cardSubtitle}>Date: May 21, 2026</Text>
-        <Text style={styles.cardSubtitle}>Guests: 45</Text>
-        <Text style={styles.cardSubtitle}>
-          Menu Preference: Sandwich Platters
-        </Text>
-        <Text style={styles.cardSubtitle}>Status: Follow Up Needed</Text>
-      </View>
+      {/* Displays actual customer catering requests from Firestore */}
+      {cateringRequests.length === 0 ? (
+        <View style={styles.card}>
+          <Text style={styles.cardSubtitle}>
+            No catering requests have been submitted.
+          </Text>
+        </View>
+      ) : (
+        cateringRequests.map((request) => (
+          <View key={request.id} style={styles.card}>
+            <Text style={styles.cardTitle}>{request.customerName}</Text>
+
+            <Text style={styles.cardTitle}>
+              Contact: {request.contactInformation}
+            </Text>
+
+            <Text style={styles.cardTitle}>Date: {request.date}</Text>
+
+            <Text style={styles.cardTitle}>Time: {request.time}</Text>
+
+            <Text style={styles.cardTitle}>Guests: {request.guestCount}</Text>
+
+            <Text style={styles.cardTitle}>
+              Menu Preference: {request.menuPreferences}
+            </Text>
+
+            <Text style={styles.cardTitle}>Venue: {request.venueName}</Text>
+
+            <Text style={styles.cardTitle}>
+              Venue Address: {request.venueAddress}
+            </Text>
+
+            <Text style={styles.cardTitle}>
+              Special Notes: {request.specialNotes}
+            </Text>
+
+            <Text style={styles.cardTitle}>Status: {request.status}</Text>
+          </View>
+        ))
+      )}
     </ScrollView>
   </>
 );

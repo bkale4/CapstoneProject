@@ -1,4 +1,12 @@
-import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import type { Screen } from "../types";
 
@@ -86,5 +94,27 @@ export const loadAvailability = async (
     console.log("Availability loaded from Firebase");
   } catch (error) {
     console.error("Error loading availability:", error);
+  }
+};
+
+// Loads customer catering requests from Firestore for admin
+export const loadCateringRequests = async (
+  setCateringRequests: React.Dispatch<React.SetStateAction<any[]>>,
+) => {
+  try {
+    const requestsQuery = query(
+      collection(db, "cateringRequests"),
+      orderBy("createdAt", "desc"),
+    );
+
+    const querySnapshot = await getDocs(requestsQuery);
+
+    const requests = querySnapshot.docs.map((document) => ({
+      id: document.id,
+      ...document.data(),
+    }));
+    setCateringRequests(requests);
+  } catch (error) {
+    console.error("Error loading catering requests:", error);
   }
 };
