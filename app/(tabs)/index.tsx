@@ -73,6 +73,7 @@ import {
   addNewCategory as addNewCategoryService,
   createMenu,
   deleteMenuCategory as deleteMenuCategoryService,
+  deleteMenuItem as deleteMenuItemService,
   loadAdminMenusService,
   saveCategoryChanges as saveCategoryChangesService,
   saveMenuChanges as saveMenuChangesService,
@@ -393,60 +394,16 @@ export default function App() {
     );
   };
 
+  // Passes the selected item information to the menu service for deletion
   const deleteMenuItem = async (groupField: string, itemIndex: number) => {
-    const isCustomCategory = groupField.startsWith("categories.");
-
-    const categoryIndex = isCustomCategory
-      ? Number(groupField.split(".")[1])
-      : -1;
-
-    const updatedItems = isCustomCategory
-      ? [...(selectedAdminMenu.categories?.[categoryIndex]?.items || [])]
-      : [...(selectedAdminMenu[groupField] || [])];
-
-    updatedItems.splice(itemIndex, 1);
-
-    try {
-      if (isCustomCategory) {
-        const updatedCategories = [...(selectedAdminMenu.categories || [])];
-
-        updatedCategories[categoryIndex] = {
-          ...updatedCategories[categoryIndex],
-          items: updatedItems,
-        };
-
-        await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-          categories: updatedCategories,
-        });
-      } else {
-        await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-          [groupField]: updatedItems,
-        });
-      }
-
-      if (isCustomCategory) {
-        const updatedCategories = [...(selectedAdminMenu.categories || [])];
-
-        updatedCategories[categoryIndex] = {
-          ...updatedCategories[categoryIndex],
-          items: updatedItems,
-        };
-
-        setSelectedAdminMenu({
-          ...selectedAdminItem,
-          categories: updatedCategories,
-        });
-      } else {
-        setSelectedAdminMenu({
-          ...selectedAdminMenu,
-          [groupField]: updatedItems,
-        });
-      }
-
-      await loadAdminMenus();
-    } catch (error) {
-      console.error("Error deleting menu item:", error);
-    }
+    await deleteMenuItemService(
+      groupField,
+      itemIndex,
+      selectedAdminMenu,
+      selectedAdminItem,
+      setSelectedAdminMenu,
+      loadAdminMenus,
+    );
   };
 
   // Loads admin menus through the menu service

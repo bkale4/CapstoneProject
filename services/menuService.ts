@@ -425,3 +425,67 @@ export const saveMenuItemChanges = async (
     console.error("Error saving menu item:", error);
   }
 };
+
+// Deletes an item from the selected menu
+export const deleteMenuItem = async (
+  groupField: string,
+  itemIndex: number,
+  selectedAdminMenu: any,
+  selectedAdminItem: any,
+  setSelectedAdminMenu: React.Dispatch<React.SetStateAction<any>>,
+  loadAdminMenus: () => Promise<void>,
+) => {
+  const isCustomCategory = groupField.startsWith("categories.");
+
+  const categoryIndex = isCustomCategory
+    ? Number(groupField.split(".")[1])
+    : -1;
+
+  const updatedItems = isCustomCategory
+    ? [...(selectedAdminMenu.categories?.[categoryIndex]?.items || [])]
+    : [...(selectedAdminMenu[groupField] || [])];
+
+  updatedItems.splice(itemIndex, 1);
+
+  try {
+    if (isCustomCategory) {
+      const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+      updatedCategories[categoryIndex] = {
+        ...updatedCategories[categoryIndex],
+        items: updatedItems,
+      };
+
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        categories: updatedCategories,
+      });
+    } else {
+      await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
+        [groupField]: updatedItems,
+      });
+    }
+
+    if (isCustomCategory) {
+      const updatedCategories = [...(selectedAdminMenu.categories || [])];
+
+      updatedCategories[categoryIndex] = {
+        ...updatedCategories[categoryIndex],
+        items: updatedItems,
+      };
+
+      setSelectedAdminMenu({
+        ...selectedAdminItem,
+        categories: updatedCategories,
+      });
+    } else {
+      setSelectedAdminMenu({
+        ...selectedAdminMenu,
+        [groupField]: updatedItems,
+      });
+    }
+
+    await loadAdminMenus();
+  } catch (error) {
+    console.error("Error deleting menu item:", error);
+  }
+};
