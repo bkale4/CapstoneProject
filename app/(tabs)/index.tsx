@@ -17,10 +17,6 @@ import { Header as SharedHeader } from "../../components/Header";
 
 import { NavBar as SharedNavBar } from "../../components/NavBar";
 
-import { ServiceCard as SharedServiceCard } from "../../components/ServiceCard";
-
-import { MenuItem as SharedMenuItem } from "../../components/MenuItem";
-
 import { HomeScreen as SharedHomeScreen } from "../../screens/HomeScreen";
 
 import { AboutScreen as SharedAboutScreen } from "../../screens/AboutScreen";
@@ -110,7 +106,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
   onSnapshot
 } from "firebase/firestore";
 
@@ -154,11 +149,6 @@ export default function App() {
   const [selectedAddOnOptions, setSelectedAddOnOptions] = useState<{
     [itemId: string]: number;
   }>({});
-
-  const [onsiteEventItems, setOnsiteEventItems] = useState<any[]>([]);
-  const [onsiteEventLocation, setOnsiteEventLocation] = useState("");
-  const [onsiteEventName, setOnsiteEventName] = useState("");
-  const [onsiteEventHours, setOnsiteEventHours] = useState("");
 
   const [selectedMenuType, setSelectedMenuType] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -348,31 +338,6 @@ export default function App() {
     };
   }, []);
 
-  useEffect(() => {
-    const loadOnsiteEventMenu = async () => {
-      try {
-        const menuSnapshot = await getDocs(collection(db, "menus"));
-
-        menuSnapshot.forEach((menuDoc) => {
-          const menuData = menuDoc.data();
-
-          if (
-            menuData.type === "onsiteEventCatering" &&
-            menuData.active === true
-          ) {
-            setOnsiteEventItems(menuData.items || []);
-            setOnsiteEventLocation(menuData.location || "");
-            setOnsiteEventName(menuData.eventName || "");
-            setOnsiteEventHours(menuData.hours || "");
-          }
-        });
-      } catch (error) {
-        console.error("Error loading onsite event menu:", error);
-      }
-    };
-    loadOnsiteEventMenu();
-  }, []);
-
   // Passes edited menu item information to the menu service
   const saveMenuItemChanges = async () => {
     await saveMenuItemChangesService(
@@ -513,21 +478,6 @@ export default function App() {
       setNewCategoryParent,
       loadAdminMenus,
     );
-  };
-
-  const addNewMenuItemAddOn = () => {
-    if (!newAddOnName.trim() || !newAddOnPrice.trim()) {
-      return;
-    }
-
-    const price = Number(newAddOnPrice);
-
-    if (!Number.isFinite(price) || price < 0) {
-      return;
-    }
-
-    setNewAddOnName("");
-    setNewAddOnPrice("");
   };
 
   // Passes new menu item information to the menu service
@@ -747,12 +697,6 @@ export default function App() {
   const NavBar = () => (
     <SharedNavBar setScreen={setScreen} isAdminLoggedIn={isAdminLoggedIn} />
   );
-
-  const ServiceCard = SharedServiceCard;
-
-  const MenuItem = (
-    props: Omit<React.ComponentProps<typeof SharedMenuItem>, "addToCart">,
-  ) => <SharedMenuItem {...props} addToCart={addToCart} />;
 
   const HomeScreen = () => (
     <SharedHomeScreen
