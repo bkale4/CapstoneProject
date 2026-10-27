@@ -77,6 +77,7 @@ import {
   saveCategoryChanges as saveCategoryChangesService,
   saveMenuChanges as saveMenuChangesService,
   saveMenuDescription as saveMenuDescriptionService,
+  saveMenuItemChanges as saveMenuItemChangesService,
   toggleMenuActive as toggleMenuActiveService,
 } from "../../services/menuService";
 
@@ -103,14 +104,13 @@ import {
   handleCustomerLogin as handleCustomerLoginService,
 } from "../../services/authService";
 
-
 import {
   collection,
   deleteDoc,
   doc,
   getDocs,
   onSnapshot,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 
 import { db } from "../../firebaseConfig";
@@ -372,133 +372,25 @@ export default function App() {
     loadOnsiteEventMenu();
   }, []);
 
+  // Passes edited menu item information to the menu service
   const saveMenuItemChanges = async () => {
-    if (!selectedAdminMenu || selectedAdminItemIndex === null) {
-      return;
-    }
-
-    if (editItemPricingType == "single") {
-      if (
-        (String(editItemPrice ?? "").trim() === "" && editItemPrice !== null) ||
-        !Number.isFinite(Number(editItemPrice)) ||
-        Number(editItemPrice) < 0
-      ) {
-        return;
-      }
-    } else {
-      if (
-        !editItemHalfPrice.trim() ||
-        !editItemFullPrice.trim() ||
-        !Number.isFinite(Number(editItemHalfPrice)) ||
-        Number(editItemHalfPrice) < 0 ||
-        !Number.isFinite(Number(editItemFullPrice)) ||
-        Number(editItemFullPrice) < 0
-      ) {
-        return;
-      }
-    }
-
-    const hasAddOn = editItemAddOnName.trim() !== "";
-    const addOnPrice = hasAddOn ? Number(editItemAddOnPrice) : 0;
-
-    if (
-      (hasAddOn &&
-        (!editItemAddOnPrice.trim() ||
-          !Number.isFinite(addOnPrice) ||
-          addOnPrice < 0)) ||
-      (!hasAddOn && editItemAddOnPrice.trim())
-    ) {
-      return;
-    }
-
-    try {
-      const isCustomCategory = selectedAdminItemGroup.startsWith("categories.");
-
-      const categoryIndex = isCustomCategory
-        ? Number(selectedAdminItemGroup.split(".")[1])
-        : -1;
-      const updatedItems = isCustomCategory
-        ? [...(selectedAdminMenu.categories?.[categoryIndex]?.items || [])]
-        : [...(selectedAdminMenu[selectedAdminItemGroup] || [])];
-
-      updatedItems[selectedAdminItemIndex] = {
-        ...updatedItems[selectedAdminItemIndex],
-        name: editItemName,
-        description: editItemDescription,
-        pricingType: editItemPricingType,
-        ...(editItemPricingType === "single"
-          ? {
-              price:
-                editItemPrice === null || String(editItemPrice).trim() === ""
-                  ? null
-                  : Number(editItemPrice),
-            }
-          : {
-              halfPrice: Number(editItemHalfPrice),
-              fullPrice: Number(editItemFullPrice),
-            }),
-        status: editItemStatus,
-        ...(hasAddOn && {
-          addOn: {
-            name: editItemAddOnName.trim(),
-            price: addOnPrice,
-          },
-        }),
-      };
-
-      if (!hasAddOn) {
-        delete updatedItems[selectedAdminItemIndex].addOn;
-      }
-
-      if (editItemPricingType === "single") {
-        delete updatedItems[selectedAdminItemIndex].halfPrice;
-        delete updatedItems[selectedAdminItemIndex].fullPrice;
-      } else {
-        delete updatedItems[selectedAdminItemIndex].price;
-      }
-
-      if (isCustomCategory) {
-        const updatedCategories = [...(selectedAdminMenu.categories || [])];
-
-        updatedCategories[categoryIndex] = {
-          ...updatedCategories[categoryIndex],
-          items: updatedItems,
-        };
-
-        await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-          categories: updatedCategories,
-        });
-      } else {
-        await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
-          [selectedAdminItemGroup]: updatedItems,
-        });
-      }
-
-      if (isCustomCategory) {
-        const updatedCategories = [...(selectedAdminMenu.categories || [])];
-
-        updatedCategories[categoryIndex] = {
-          ...updatedCategories[categoryIndex],
-          items: updatedItems,
-        };
-
-        setSelectedAdminMenu({
-          ...selectedAdminMenu,
-          categories: updatedCategories,
-        });
-      } else {
-        setSelectedAdminMenu({
-          ...selectedAdminMenu,
-          [selectedAdminItemGroup]: updatedItems,
-        });
-      }
-
-      await loadAdminMenus();
-
-      setScreen("manageMenuItems");
-    } catch (error) {
-      console.error("Error saving menu item:", error);
-    }
+    await saveMenuItemChangesService(
+      selectedAdminMenu,
+      selectedAdminItemIndex,
+      selectedAdminItemGroup,
+      editItemName,
+      editItemDescription,
+      editItemPricingType,
+      editItemPrice,
+      editItemHalfPrice,
+      editItemFullPrice,
+      editItemStatus,
+      editItemAddOnName,
+      editItemAddOnPrice,
+      setSelectedAdminMenu,
+      loadAdminMenus,
+      setScreen,
+    );
   };
 
   const deleteMenuItem = async (groupField: string, itemIndex: number) => {
