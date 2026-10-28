@@ -5,6 +5,8 @@ import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 // Imports the shared category expansion functionality
 import { useMenuCategories } from "../hooks/useMenuCategories";
 
+import { useStatusGroups } from "../hooks/useStatusGroups";
+
 // Imports shared application styles
 import { styles } from "../styles/styles";
 
@@ -426,76 +428,143 @@ export const CateringManagementScreen = ({
   BusinessBackButton,
   cateringRequests,
   updateCateringRequestStatus,
-}: CateringManagementScreenProps) => (
-  <>
-    <Header title="Catering Requests" />
-    <ScrollView contentContainerStyle={styles.content}>
-      <BusinessBackButton />
-      {/* Displays actual customer catering requests from Firestore */}
-      {cateringRequests.length === 0 ? (
-        <View style={styles.card}>
-          <Text style={styles.cardSubtitle}>
-            No catering requests have been submitted.
-          </Text>
-        </View>
-      ) : (
-        cateringRequests.map((request) => (
-          <View key={request.id} style={styles.card}>
-            <Text style={styles.cardTitle}>{request.customerName}</Text>
+}: CateringManagementScreenProps) => {
+  // Manages expandable catering request status groups
+  const { expandedGroups, toggleGroup } = useStatusGroups(["pending"]);
 
-            <Text style={styles.cardTitle}>
-              Contact: {request.contactInformation}
+  // Defines the catering request groups and their display order
+  const requestGroups = [
+    { status: "pending", title: "Pending Requests" },
+    { status: "accepted", title: "Accepted Requests" },
+    { status: "rejected", title: "Rejected Requests" },
+  ];
+
+  return (
+    <>
+      <Header title="Catering Requests" />
+      <ScrollView contentContainerStyle={styles.content}>
+        <BusinessBackButton />
+        {/* Displays actual customer catering requests from Firestore */}
+        {cateringRequests.length === 0 ? (
+          <View style={styles.card}>
+            <Text style={styles.cardSubtitle}>
+              No catering requests have been submitted.
             </Text>
-
-            <Text style={styles.cardTitle}>Date: {request.date}</Text>
-
-            <Text style={styles.cardTitle}>Time: {request.time}</Text>
-
-            <Text style={styles.cardTitle}>Guests: {request.guestCount}</Text>
-
-            <Text style={styles.cardTitle}>
-              Menu Preference: {request.menuPreferences}
-            </Text>
-
-            <Text style={styles.cardTitle}>Venue: {request.venueName}</Text>
-
-            <Text style={styles.cardTitle}>
-              Venue Address: {request.venueAddress}
-            </Text>
-
-            <Text style={styles.cardTitle}>
-              Special Notes: {request.specialNotes}
-            </Text>
-
-            <Text style={styles.cardTitle}>Status: {request.status}</Text>
-            {/* Allows admin to accept or reject pending requests */}
-            {request.status === "pending" && (
-              <View style={{ flexDirection: "row", gap: 10, marginTop: 15 }}>
-                <Pressable
-                  style={[styles.primaryButton, { flex: 1 }]}
-                  onPress={() =>
-                    updateCateringRequestStatus(request.id, "accepted")
-                  }
-                >
-                  <Text style={styles.primaryButtonText}>Accept</Text>
-                </Pressable>
-
-                <Pressable
-                  style={[styles.secondaryButton, { flex: 1 }]}
-                  onPress={() =>
-                    updateCateringRequestStatus(request.id, "rejected")
-                  }
-                >
-                  <Text style={styles.primaryButtonText}>Reject</Text>
-                </Pressable>
-              </View>
-            )}
           </View>
-        ))
-      )}
-    </ScrollView>
-  </>
-);
+        ) : (
+          requestGroups.map((group) => {
+            // Finds requests belonging to the current status group
+            const groupRequests = cateringRequests.filter(
+              (request) => request.status === group.status,
+            );
+
+            const isExpanded = expandedGroups.includes(group.status);
+
+            return (
+              <View key={group.status}>
+                {/* Displays the expandable status group heading */}
+                <Pressable
+                  style={styles.card}
+                  onPress={() => toggleGroup(group.status)}
+                >
+                  <Text style={styles.cardTitle}>
+                    {group.title} ({groupRequests.length}){" "}
+                    {isExpanded ? "▲" : "▼"}
+                  </Text>
+                </Pressable>
+
+                {/* Displays requests only when the group is expanded */}
+                {isExpanded &&
+                  groupRequests.map((request) => (
+                    <View key={request.id} style={styles.card}>
+                      <Text style={styles.cardTitle}>
+                        {request.customerName}
+                      </Text>
+
+                      <Text style={styles.cardTitle}>
+                        Contact: {request.contactInformation}
+                      </Text>
+
+                      <Text style={styles.cardTitle}>Date: {request.date}</Text>
+
+                      <Text style={styles.cardTitle}>Time: {request.time}</Text>
+
+                      <Text style={styles.cardTitle}>
+                        Guests: {request.guestCount}
+                      </Text>
+
+                      <Text style={styles.cardTitle}>
+                        Menu Preference: {request.menuPreferences}
+                      </Text>
+
+                      <Text style={styles.cardTitle}>
+                        Venue: {request.venueName}
+                      </Text>
+
+                      <Text style={styles.cardTitle}>
+                        Venue Address: {request.venueAddress}
+                      </Text>
+
+                      <Text style={styles.cardTitle}>
+                        Special Notes: {request.specialNotes}
+                      </Text>
+
+                      <Text style={styles.cardTitle}>
+                        Status: {request.status}
+                      </Text>
+                      {/* Allows admin to accept or reject pending requests */}
+                      {request.status === "pending" && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            gap: 10,
+                            marginTop: 15,
+                          }}
+                        >
+                          <Pressable
+                            style={[styles.primaryButton, { flex: 1 }]}
+                            onPress={() =>
+                              updateCateringRequestStatus(
+                                request.id,
+                                "accepted",
+                              )
+                            }
+                          >
+                            <Text style={styles.primaryButtonText}>Accept</Text>
+                          </Pressable>
+
+                          <Pressable
+                            style={[styles.secondaryButton, { flex: 1 }]}
+                            onPress={() =>
+                              updateCateringRequestStatus(
+                                request.id,
+                                "rejected",
+                              )
+                            }
+                          >
+                            <Text style={styles.primaryButtonText}>Reject</Text>
+                          </Pressable>
+                        </View>
+                      )}
+                    </View>
+                  ))}
+
+                {/* Displays a message when an expanded group is empty */}
+                {isExpanded && groupRequests.length === 0 && (
+                  <View style={styles.card}>
+                    <Text style={styles.cardSubtitle}>
+                      No {group.status} catering requests.
+                    </Text>
+                  </View>
+                )}
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
+    </>
+  );
+};
 
 // Displays the available Onsite Event Catering menus for customers to select
 export const OnsiteCateringMenuOptionsScreen = ({
