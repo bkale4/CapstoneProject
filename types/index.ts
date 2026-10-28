@@ -181,6 +181,12 @@ export type CateringManagementScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   BusinessBackButton: React.ComponentType;
   cateringRequests: any[];
+
+  // Allows admin to accept or reject catering requests
+  updateCateringRequestStatus: (
+    requestId: string,
+    status: "accepted" | "rejected",
+  ) => Promise<void>;
 };
 
 // Defines the properties required by the Cart screen

@@ -94,6 +94,7 @@ import {
   loadCateringRequests as loadCateringRequestsService,
   submitCateringRequest as submitCateringRequestService,
   toggleAvailability as toggleAvailabilityService,
+  updateCateringRequestStatus as updateCateringRequestStatusService,
 } from "../../services/cateringService";
 
 // Imports the customer account creation service
@@ -384,6 +385,19 @@ export default function App() {
   // Loads customer catering requests through the catering service
   const loadCateringRequests = async () => {
     await loadCateringRequestsService(setCateringRequests);
+  };
+
+  // Updates a catering request's status and refreshes the admin request list
+  const udpateCateringRequestStatus = async (
+    requestId: string,
+    status: "accepted" | "rejected",
+  ) => {
+    try {
+      await updateCateringRequestStatusService(requestId, status);
+      await loadCateringRequests();
+    } catch (error) {
+      console.error("Unable to update catering request:", error);
+    }
   };
 
   // Marks an order as filled through the order service
@@ -991,6 +1005,7 @@ export default function App() {
       Header={Header}
       BusinessBackButton={BusinessBackButton}
       cateringRequests={cateringRequests}
+      updateCateringRequestStatus={udpateCateringRequestStatus}
     />
   );
 

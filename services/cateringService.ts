@@ -6,6 +6,7 @@ import {
   orderBy,
   query,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import type { Screen } from "../types";
@@ -116,5 +117,22 @@ export const loadCateringRequests = async (
     setCateringRequests(requests);
   } catch (error) {
     console.error("Error loading catering requests:", error);
+  }
+};
+
+// Updates a catering request's accpetance status in Firestore
+export const updateCateringRequestStatus = async (
+  requestId: string,
+  status: "accepted" | "rejected",
+) => {
+  try {
+    await updateDoc(doc(db, "cateringRequests", requestId), {
+      status: status,
+    });
+
+    console.log("Catering request status updated:", requestId, status);
+  } catch (error) {
+    console.error("Error updating a catering request status:", error);
+    throw error;
   }
 };

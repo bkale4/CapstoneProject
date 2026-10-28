@@ -425,6 +425,7 @@ export const CateringManagementScreen = ({
   Header,
   BusinessBackButton,
   cateringRequests,
+  updateCateringRequestStatus,
 }: CateringManagementScreenProps) => (
   <>
     <Header title="Catering Requests" />
@@ -467,6 +468,28 @@ export const CateringManagementScreen = ({
             </Text>
 
             <Text style={styles.cardTitle}>Status: {request.status}</Text>
+            {/* Allows admin to accept or reject pending requests */}
+            {request.status === "pending" && (
+              <View style={{ flexDirection: "row", gap: 10, marginTop: 15 }}>
+                <Pressable
+                  style={[styles.primaryButton, { flex: 1 }]}
+                  onPress={() =>
+                    updateCateringRequestStatus(request.id, "accepted")
+                  }
+                >
+                  <Text style={styles.primaryButtonText}>Accept</Text>
+                </Pressable>
+
+                <Pressable
+                  style={[styles.secondaryButton, { flex: 1 }]}
+                  onPress={() =>
+                    updateCateringRequestStatus(request.id, "rejected")
+                  }
+                >
+                  <Text style={styles.primaryButtonText}>Reject</Text>
+                </Pressable>
+              </View>
+            )}
           </View>
         ))
       )}
