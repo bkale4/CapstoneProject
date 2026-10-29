@@ -21,6 +21,7 @@ export type Screen =
   | "business"
   | "ordersManagement"
   | "cateringManagement"
+  | "cateringEvents"
   | "menuManagement"
   | "addMenu"
   | "editMenu"
@@ -194,6 +195,13 @@ export type CateringManagementScreenProps = {
     followUpNeeded: boolean,
     followUpNotes: string,
   ) => Promise<void>;
+};
+
+// Defines the properties required by the Catering Events screen
+export type CateringEventsScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  BusinessBackButton: React.ComponentType;
+  cateringEvents: any[];
 };
 
 // Defines the properties required by the Cart screen

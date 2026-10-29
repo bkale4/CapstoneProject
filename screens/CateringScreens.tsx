@@ -14,6 +14,7 @@ import { styles } from "../styles/styles";
 import type {
   AvailabilityCalendarScreenProps,
   CateringConfirmationScreenProps,
+  CateringEventsScreenProps,
   CateringManagementScreenProps,
   CateringRequestScreenProps,
   CateringScreenProps,
@@ -1054,6 +1055,66 @@ export const AvailabilityCalendarScreen = ({
       >
         <Text style={styles.primaryButtonText}>Continue to Request Form</Text>
       </Pressable>
+    </ScrollView>
+  </>
+);
+
+// Displays accepted catering events for admin
+export const CateringEventsScreen = ({
+  Header,
+  BusinessBackButton,
+  cateringEvents,
+}: CateringEventsScreenProps) => (
+  <>
+    <Header title="Catering Events" />
+
+    <ScrollView contentContainerStyle={styles.content}>
+      <BusinessBackButton />
+
+      {/* Displays accepted catering events from Firestore */}
+      {cateringEvents.length === 0 ? (
+        <View style={styles.card}>
+          <Text style={styles.cardSubtitle}>
+            No accepted catering events found.
+          </Text>
+        </View>
+      ) : (
+        [...cateringEvents]
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .map((event) => (
+            <View key={event.id} style={styles.card}>
+              <Text style={styles.cardTitle}>{event.customerName}</Text>
+
+              <Text style={styles.cardSubtitle}>Date: {event.date}</Text>
+
+              <Text style={styles.cardSubtitle}>Time: {event.time}</Text>
+
+              <Text style={styles.cardSubtitle}>
+                Guests: {event.guestCount}
+              </Text>
+
+              <Text style={styles.cardSubtitle}>
+                Contact: {event.contactInformation}
+              </Text>
+
+              <Text style={styles.cardSubtitle}>Venue: {event.venueName}</Text>
+
+              <Text style={styles.cardSubtitle}>
+                Venue Address: {event.venueAddress}
+              </Text>
+
+              <Text style={styles.cardSubtitle}>
+                Menu Preferences: {event.menuPreferences}
+              </Text>
+
+              <Text style={styles.cardSubtitle}>
+                Special Notes: {event.specialNotes}
+              </Text>
+
+              <Text style={styles.cardSubtitle}>Status: {event.status}</Text>
+            </View>
+          ))
+      )}
     </ScrollView>
   </>
 );

@@ -31,6 +31,7 @@ import { FoodTrailerScreen as SharedFoodTrailerScreen } from "../../screens/Food
 import {
   AvailabilityCalendarScreen as SharedAvailabilityCalendarScreen,
   CateringConfirmationScreen as SharedCateringConfirmationScreen,
+  CateringEventsScreen as SharedCateringEventsScreen,
   CateringManagementScreen as SharedCateringManagementScreen,
   DropOffCateringMenuOptionsScreen as SharedCateringMenuOptionsScreen,
   CateringRequestScreen as SharedCateringRequestScreen,
@@ -984,6 +985,20 @@ export default function App() {
           </Text>
         </Pressable>
 
+        {/* Opens the admin Catering Events screen */}
+        <Pressable
+          style={styles.card}
+          onPress={async () => {
+            await loadCateringRequests();
+            setScreen("cateringEvents");
+          }}
+        >
+          <Text style={styles.cardTitle}>Catering Events</Text>
+          <Text style={styles.cardSubtitle}>
+            View accepted catering events and their details
+          </Text>
+        </Pressable>
+
         <Pressable
           style={styles.card}
           onPress={async () => {
@@ -1028,6 +1043,17 @@ export default function App() {
       cateringRequests={cateringRequests}
       updateCateringRequestStatus={updateCateringRequestStatus}
       updateCateringFollowUp={updateCateringFollowUp}
+    />
+  );
+
+  // Displays the Catering Events screen using the shared component
+  const CateringEventsScreen = () => (
+    <SharedCateringEventsScreen
+      Header={Header}
+      BusinessBackButton={BusinessBackButton}
+      cateringEvents={cateringRequests.filter(
+        (request) => request.status === "accepted",
+      )}
     />
   );
 
@@ -1296,6 +1322,7 @@ export default function App() {
       {screen === "manageMenuItems" && ManageMenuItemsScreen()}
       {screen === "editMenuItem" && EditMenuItemScreen()}
       {screen === "cateringManagement" && <CateringManagementScreen />}
+      {screen === "cateringEvents" && <CateringEventsScreen />}
       <NavBar />
     </SafeAreaView>
   );
