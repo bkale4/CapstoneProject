@@ -1,5 +1,5 @@
 // Imports React and the components used for administrative menu management
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -13,6 +13,7 @@ import {
 
 import {
   compressMenuItemPhoto,
+  loadMenuItemPhoto,
   selectMenuItemPhoto,
 } from "../services/imageService";
 
@@ -400,6 +401,51 @@ export const EditMenuScreen = ({
     </ScrollView>
   </>
 );
+
+// Loads and displays a menu item's saved photo from Firestore
+const SavedMenuItemPhoto = ({ photoId }: { photoId?: string }) => {
+  // Stores the image URI retrieved from Firestore
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Prevents an old photo from appearing when the item changes
+    let active = true;
+    setPhotoUri(null);
+
+    // Skips loading when the item does not have a photo ID
+    if (!photoId) {
+      return () => {
+        active = false;
+      };
+    }
+
+    // Retrieves the photo associated with this menu item
+    loadMenuItemPhoto(photoId)
+      .then((uri) => {
+        if (active) {
+          setPhotoUri(uri);
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading menu item photo:", error);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [photoId]);
+
+  // Hides the image component when no photo exists
+  if (!photoUri) {
+    return null;
+  }
+
+  return (
+    <View style={styles.menuItemImageContainer}>
+      <Image source={{ uri: photoUri }} style={styles.menuItemImage} />
+    </View>
+  );
+};
 
 // Displays and manages menu categories, items, pricing, and add-ons
 export const ManageMenuItemsScreen = ({
@@ -882,6 +928,9 @@ export const ManageMenuItemsScreen = ({
                   <Text style={styles.cardSubtitle}>{item.description}</Text>
                 )}
 
+                {/* Displays the item's saved photo from Firestore */}
+                <SavedMenuItemPhoto photoId={item.id} />
+
                 {/* Displays item pricing */}
                 {item.pricingType === "halfFull" ? (
                   <>
@@ -915,10 +964,20 @@ export const ManageMenuItemsScreen = ({
                 {/* Loads the selected item into the Edit Item screen */}
                 <Pressable
                   style={styles.adminButton}
-                  onPress={() => {
+                  onPress={async () => {
                     setSelectedAdminItem(item);
                     setSelectedAdminItemGroup(group.field);
                     setSelectedAdminItemIndex(index);
+
+                    // Clears the previous photo while loading the selected item's saved photo
+                    setEditItemPhoto(null);
+
+                    // Loads the existing photo so the admin can preview or replace it
+                    if (item.id) {
+                      // Waits for the saved photo before opening the Edit Item screen
+                      const photoUri = await loadMenuItemPhoto(item.id);
+                      setEditItemPhoto(photoUri);
+                    }
 
                     setEditItemName(item.name || "");
                     setEditItemDescription(item.description || "");
@@ -1078,11 +1137,7 @@ export const EditMenuItemScreen = ({
       {/* Displays a preview of the selected photo */}
       {editItemPhoto && (
         <View style={{ marginTop: 10 }}>
-          <Image
-            source={{ uri: editItemPhoto }}
-            style={styles.menuItemImage}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: editItemPhoto }} style={styles.menuItemImage} />
 
           {/* Removes the selected photo before saving */}
           <Pressable

@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 
 // Imports the Firebase database connection
 import { db } from "../firebaseConfig";
@@ -90,4 +90,10 @@ export const loadMenuItemPhoto = async (
   return typeof imageData === "string" && imageData
     ? `data:image/jpeg;base64,${imageData}`
     : null;
+};
+
+// Deletes a menu item's saved photo from Firestore
+export const deleteMenuItemPhoto = async (photoId: string): Promise<void> => {
+  // Removes the photo document associateed with the menu item
+  await deleteDoc(doc(db, "menuItemImages", photoId));
 };

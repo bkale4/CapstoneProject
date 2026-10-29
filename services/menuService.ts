@@ -12,7 +12,11 @@ import {
 import { db } from "../firebaseConfig";
 
 // Compresses selected photos and saves them to Firestore
-import { compressMenuItemPhoto, saveMenuItemPhoto } from "./imageService";
+import {
+  compressMenuItemPhoto,
+  deleteMenuItemPhoto,
+  saveMenuItemPhoto,
+} from "./imageService";
 
 import type { Screen } from "../types";
 
@@ -289,6 +293,7 @@ export const saveMenuItemChanges = async (
   selectedAdminItemGroup: string,
   editItemName: string,
   editItemDescription: string,
+  editItemPhoto: string | null,
   editItemPricingType: "single" | "halfFull",
   editItemPrice: string,
   editItemHalfPrice: string,
@@ -338,6 +343,10 @@ export const saveMenuItemChanges = async (
     return;
   }
 
+  // Identifies a newly selected photo that needs to be saved to Firestore
+  const hasNewPhoto =
+    !!editItemPhoto && !editItemPhoto.startsWith("data:image/");
+
   try {
     const isCustomCategory = selectedAdminItemGroup.startsWith("categories.");
 
@@ -345,12 +354,23 @@ export const saveMenuItemChanges = async (
       ? Number(selectedAdminItemGroup.split(".")[1])
       : -1;
 
+    // Creates an ID for older menu items that do not already have one
+    const existingItem = isCustomCategory
+      ? selectedAdminMenu.categories?.[categoryIndex]?.items?.[
+          selectedAdminItemIndex
+        ]
+      : selectedAdminMenu[selectedAdminItemGroup]?.[selectedAdminItemIndex];
+
+    const itemPhotoId =
+      existingItem?.id || doc(collection(db, "menuItemImages")).id;
+
     const updatedItems = isCustomCategory
       ? [...(selectedAdminMenu.categories?.[categoryIndex]?.items || [])]
       : [...(selectedAdminMenu[selectedAdminItemGroup] || [])];
 
     updatedItems[selectedAdminItemIndex] = {
       ...updatedItems[selectedAdminItemIndex],
+      id: itemPhotoId,
       name: editItemName,
       description: editItemDescription,
       pricingType: editItemPricingType,
@@ -383,6 +403,17 @@ export const saveMenuItemChanges = async (
       delete updatedItems[selectedAdminItemIndex].fullPrice;
     } else {
       delete updatedItems[selectedAdminItemIndex].price;
+    }
+
+    // Saves a replacement photo only when the admin selects a new image
+    if (hasNewPhoto && editItemPhoto) {
+      const compressPhoto = await compressMenuItemPhoto(editItemPhoto);
+      await saveMenuItemPhoto(itemPhotoId, compressPhoto);
+    }
+
+    // Deletes the saved photo when the admin removes it
+    if (editItemPhoto === null && existingItem?.id) {
+      await deleteMenuItemPhoto(existingItem.id);
     }
 
     if (isCustomCategory) {
@@ -593,6 +624,8 @@ export const addNewMenuItem = async (
   try {
     // Generates the new item's ID before saving its photo
     const newItemId = doc(collection(db, "menuItemImages")).id;
+
+    console.log("New menu item photo ID:", newItemId);
 
     const updatedCategories = [...(selectedAdminMenu.categories || [])];
 

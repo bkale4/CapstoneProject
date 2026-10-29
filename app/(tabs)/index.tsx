@@ -351,6 +351,7 @@ export default function App() {
       selectedAdminItemGroup,
       editItemName,
       editItemDescription,
+      editItemPhoto,
       editItemPricingType,
       editItemPrice,
       editItemHalfPrice,
@@ -1120,8 +1121,8 @@ export default function App() {
       setNewItemDescription={setNewItemDescription}
       newItemPhoto={newItemPhoto}
       setNewItemPhoto={setNewItemPhoto}
-      editItemPhoto={newItemPhoto}
-      setEditItemPhoto={setNewItemPhoto}
+      editItemPhoto={editItemPhoto}
+      setEditItemPhoto={setEditItemPhoto}
       newItemPricingType={newItemPricingType}
       setNewItemPricingType={setNewItemPricingType}
       newItemPrice={newItemPrice}
