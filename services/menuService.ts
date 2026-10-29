@@ -310,11 +310,7 @@ export const saveMenuItemChanges = async (
   }
 
   if (editItemPricingType == "single") {
-    if (
-      (String(editItemPrice ?? "").trim() === "" && editItemPrice !== null) ||
-      !Number.isFinite(Number(editItemPrice)) ||
-      Number(editItemPrice) < 0
-    ) {
+    if (!Number.isFinite(Number(editItemPrice)) || Number(editItemPrice) < 0) {
       return;
     }
   } else {
@@ -479,6 +475,9 @@ export const deleteMenuItem = async (
     ? [...(selectedAdminMenu.categories?.[categoryIndex]?.items || [])]
     : [...(selectedAdminMenu[groupField] || [])];
 
+  // Saves the item's photo ID before removing it from the menu
+  const deletedItemPhotoId = updatedItems[itemIndex]?.id;
+
   updatedItems.splice(itemIndex, 1);
 
   try {
@@ -516,6 +515,11 @@ export const deleteMenuItem = async (
         ...selectedAdminMenu,
         [groupField]: updatedItems,
       });
+    }
+
+    // Deletes the associated photo after the menu item is successfully removed
+    if (deletedItemPhotoId) {
+      await deleteMenuItemPhoto(deletedItemPhotoId);
     }
 
     await loadAdminMenus();

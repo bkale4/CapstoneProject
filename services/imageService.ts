@@ -43,10 +43,6 @@ export const compressMenuItemPhoto = async (
     base64: true,
   });
 
-  // Checks whether the compressed image was successfully converted to Base64
-  console.log("Compressed image created:", !!result.base64);
-  console.log("Base64 length:", result.base64?.length ?? 0);
-
   // Returns the compressed image data, or an empty string if conversion fails
   return result.base64 ?? "";
 };
