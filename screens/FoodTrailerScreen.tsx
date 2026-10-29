@@ -5,6 +5,9 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 // Imports the shared category expansion functionality
 import { useMenuCategories } from "../hooks/useMenuCategories";
 
+// Displays menu item photos saved in Firestore
+import { SavedMenuItemPhoto } from "./MenuManagementScreens";
+
 // Imports the application's shared styling
 import { styles } from "../styles/styles";
 
@@ -101,6 +104,8 @@ export const FoodTrailerScreen = ({
                             <Text style={styles.menuDescription}>
                               {item.description}
                             </Text>
+                            {/* Displays the saved photo for an expanded subcategory menu item */}
+                            <SavedMenuItemPhoto photoId={item.id} />
                             <Text style={styles.sectionText}>
                               ${Number(item.price).toFixed(2)}
                             </Text>
@@ -293,6 +298,8 @@ export const FoodTrailerScreen = ({
                       <Text style={styles.menuDescription}>
                         {item.description}
                       </Text>
+                      {/* Displays the saved photo for an expanded menu category item */}
+                      <SavedMenuItemPhoto photoId={item.id} />
                       <Text style={styles.sectionText}>
                         ${Number(item.price).toFixed(2)}
                       </Text>

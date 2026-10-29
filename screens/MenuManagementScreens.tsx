@@ -403,7 +403,7 @@ export const EditMenuScreen = ({
 );
 
 // Loads and displays a menu item's saved photo from Firestore
-const SavedMenuItemPhoto = ({ photoId }: { photoId?: string }) => {
+export const SavedMenuItemPhoto = ({ photoId }: { photoId?: string }) => {
   // Stores the image URI retrieved from Firestore
   const [photoUri, setPhotoUri] = useState<string | null>(null);
 
