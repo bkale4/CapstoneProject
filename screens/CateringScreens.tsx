@@ -7,6 +7,9 @@ import { useMenuCategories } from "../hooks/useMenuCategories";
 
 import { useStatusGroups } from "../hooks/useStatusGroups";
 
+// Displays menu item photos saved in Firestore
+import { SavedMenuItemPhoto } from "./MenuManagementScreens";
+
 // Imports shared application styles
 import { styles } from "../styles/styles";
 
@@ -140,6 +143,8 @@ export const DropOffCateringMenuScreen = ({
                             <Text style={styles.menuDescription}>
                               {item.description}
                             </Text>
+                            {/* Displays the saved photo for a Drop-Off Catering subcategory */}
+                            <SavedMenuItemPhoto photoId={item.id} />
                             {/* Displays half/full tray or individual item pricing */}
                             {item.pricingType === "halfFull" ? (
                               <>
@@ -209,6 +214,8 @@ export const DropOffCateringMenuScreen = ({
                       <Text style={styles.menuDescription}>
                         {item.description}
                       </Text>
+                      {/* Displays the saved photo for a Drop-Off Catering menu item */}
+                      <SavedMenuItemPhoto photoId={item.id} />
                       {/* Displays half/full tray or individual item pricing */}
                       {item.pricingType === "halfFull" ? (
                         <>
@@ -805,6 +812,8 @@ export const OnsiteCateringMenuScreen = ({
                             <Text style={styles.menuDescription}>
                               {item.description}
                             </Text>
+                            {/* Displays the saved photo for an Onsite Event Catering subcategory item */}
+                            <SavedMenuItemPhoto photoId={item.id} />
                             {/* Displays half/full tray or individual item pricing */}
                             {item.pricingType === "halfFull" ? (
                               <>
@@ -874,6 +883,8 @@ export const OnsiteCateringMenuScreen = ({
                       <Text style={styles.menuDescription}>
                         {item.description}
                       </Text>
+                      {/* Displays the saved photo for an Onsite Event Catering menu item */}
+                      <SavedMenuItemPhoto photoId={item.id} />
                       {/* Displays half/full tray or individual item pricing */}
                       {item.pricingType === "halfFull" ? (
                         <>
