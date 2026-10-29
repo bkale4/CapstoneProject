@@ -94,6 +94,7 @@ import {
   loadCateringRequests as loadCateringRequestsService,
   submitCateringRequest as submitCateringRequestService,
   toggleAvailability as toggleAvailabilityService,
+  updateCateringFollowUp as updateCateringFollowUpService,
   updateCateringRequestStatus as updateCateringRequestStatusService,
 } from "../../services/cateringService";
 
@@ -388,7 +389,7 @@ export default function App() {
   };
 
   // Updates a catering request's status and refreshes the admin request list
-  const udpateCateringRequestStatus = async (
+  const updateCateringRequestStatus = async (
     requestId: string,
     status: "accepted" | "rejected",
   ) => {
@@ -397,6 +398,26 @@ export default function App() {
       await loadCateringRequests();
     } catch (error) {
       console.error("Unable to update catering request:", error);
+    }
+  };
+
+  // Saves catering follow-up information and refreshes the request list
+  const updateCateringFollowUp = async (
+    requestId: string,
+    followUpNeeded: boolean,
+    followUpNotes: string,
+  ) => {
+    try {
+      await updateCateringFollowUpService(
+        requestId,
+        followUpNeeded,
+        followUpNotes,
+      );
+
+      await loadCateringRequests();
+    } catch (error) {
+      console.error("Unable to update catering follow-up:", error);
+      throw error;
     }
   };
 
@@ -1005,7 +1026,8 @@ export default function App() {
       Header={Header}
       BusinessBackButton={BusinessBackButton}
       cateringRequests={cateringRequests}
-      updateCateringRequestStatus={udpateCateringRequestStatus}
+      updateCateringRequestStatus={updateCateringRequestStatus}
+      updateCateringFollowUp={updateCateringFollowUp}
     />
   );
 

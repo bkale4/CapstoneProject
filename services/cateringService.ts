@@ -136,3 +136,22 @@ export const updateCateringRequestStatus = async (
     throw error;
   }
 };
+
+// Saves admin follow-up information for a catering request
+export const updateCateringFollowUp = async (
+  requestId: string,
+  followUpNeeded: boolean,
+  followUpNotes: string,
+) => {
+  try {
+    await updateDoc(doc(db, "cateringRequests", requestId), {
+      followUpNeeded: followUpNeeded,
+      followUpNotes: followUpNotes,
+    });
+
+    console.log("Catering follow-up updated:", requestId);
+  } catch (error) {
+    console.error("Error updating catering follow-up:", error);
+    throw error;
+  }
+};

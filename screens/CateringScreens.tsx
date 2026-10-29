@@ -1,5 +1,5 @@
 // Import React and the components used to display catering menus
-import React from "react";
+import React, { useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 // Imports the shared category expansion functionality
@@ -428,9 +428,25 @@ export const CateringManagementScreen = ({
   BusinessBackButton,
   cateringRequests,
   updateCateringRequestStatus,
+  updateCateringFollowUp,
 }: CateringManagementScreenProps) => {
   // Manages expandable catering request status groups
   const { expandedGroups, toggleGroup } = useStatusGroups(["pending"]);
+
+  // Stores follow-up notes being edited for each catering request
+  const [followUpNotes, setFollowUpNotes] = useState<Record<string, string>>(
+    {},
+  );
+
+  // Tracks which catering request follow-up controls are being edited
+  const [editingFollowUpId, setEditingFollowUpId] = useState<string | null>(
+    null,
+  );
+
+  // Tracks whether each catering request requires follow-up
+  const [followUpNeeded, setFollowUpNeeded] = useState<Record<string, boolean>>(
+    {},
+  );
 
   // Defines the catering request groups and their display order
   const requestGroups = [
@@ -512,6 +528,112 @@ export const CateringManagementScreen = ({
                       <Text style={styles.cardTitle}>
                         Status: {request.status}
                       </Text>
+
+                      {/* Displays whether the catering request requires follow-up */}
+                      <Text style={styles.cardSubtitle}>
+                        Follow-Up:{" "}
+                        {request.followUpNeeded ? "Needed" : "Not Needed"}
+                      </Text>
+
+                      {/* Displays saved follow-up notes */}
+                      {!!request.followUpNotes && (
+                        <Text style={styles.cardSubtitle}>
+                          Follow-Up Notes: {request.followUpNotes}
+                        </Text>
+                      )}
+
+                      {/* Opens the follow-up editor for the selected request */}
+                      <Pressable
+                        style={styles.adminButton}
+                        onPress={() => {
+                          setFollowUpNotes((prev) => ({
+                            ...prev,
+                            [request.id]: request.followUpNotes || "",
+                          }));
+
+                          setFollowUpNotes((prev) => ({
+                            ...prev,
+                            [request.id]: request.followUpNotes === true,
+                          }));
+
+                          setEditingFollowUpId(request.id);
+                        }}
+                      >
+                        <Text style={styles.adminButtonText}>
+                          Manage Follow-Up
+                        </Text>
+                      </Pressable>
+
+                      {/* Displays the follow-up editor for the selected request */}
+                      {editingFollowUpId === request.id && (
+                        <View style={{ marginTop: 10 }}>
+                          {/* Allows the admin to change follow-up status */}
+                          <Pressable
+                            style={styles.secondaryButton}
+                            onPress={() =>
+                              setFollowUpNeeded((prev) => ({
+                                ...prev,
+                                [request.id]: !prev[request.id],
+                              }))
+                            }
+                          >
+                            <Text style={styles.secondaryButtonText}>
+                              Follow Up Needed:{" "}
+                              {followUpNeeded[request.id] ? "Yes" : "No"}
+                            </Text>
+                          </Pressable>
+
+                          {/* Allows the admin to enter follow-up notes */}
+                          <TextInput
+                            style={styles.input}
+                            placeholder="Enter follow-up notes"
+                            multiline
+                            value={followUpNotes[request.id] || ""}
+                            onChangeText={(text) =>
+                              setFollowUpNotes((prev) => ({
+                                ...prev,
+                                [request.id]: text,
+                              }))
+                            }
+                          />
+
+                          {/* Saves follow-up information to Firestore */}
+                          <Pressable
+                            style={styles.primaryButton}
+                            onPress={async () => {
+                              // Saves follow-up changes and closes the editor only if saving succeeds
+                              try {
+                                await updateCateringFollowUp(
+                                  request.id,
+                                  followUpNeeded[request.id] ?? false,
+                                  followUpNotes[request.id] || "",
+                                );
+                                setEditingFollowUpId(null);
+                              } catch (error) {
+                                console.error(
+                                  "Unable to save follow-up changes:",
+                                  error,
+                                );
+                              }
+                            }}
+                          >
+                            <Text style={styles.primaryButtonText}>
+                              Save Follow-Up
+                            </Text>
+                          </Pressable>
+
+                          {/* Closes the editor without saving */}
+                          <Pressable
+                            style={styles.secondaryButton}
+                            onPress={() => setEditingFollowUpId(null)}
+                          >
+                            <Text style={styles.secondaryButtonText}>
+                              Cancel
+                            </Text>
+                          </Pressable>
+                        </View>
+                      )}
+
                       {/* Allows admin to accept or reject pending requests */}
                       {request.status === "pending" && (
                         <View

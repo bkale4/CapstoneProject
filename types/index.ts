@@ -187,6 +187,13 @@ export type CateringManagementScreenProps = {
     requestId: string,
     status: "accepted" | "rejected",
   ) => Promise<void>;
+
+  // Allows admin to save catering request follow-up information
+  updateCateringFollowUp: (
+    requestId: string,
+    followUpNeeded: boolean,
+    followUpNotes: string,
+  ) => Promise<void>;
 };
 
 // Defines the properties required by the Cart screen
