@@ -113,6 +113,6 @@ export const handleBusinessLogin = async (
       setLoginMessage("Access Denied. This area is for admin use only.");
     }
   } catch (error) {
-    setLoginMessage("Access Denied. Please check your email and passowrd.");
+    setLoginMessage("Access Denied. Please check your email and password.");
   }
 };
