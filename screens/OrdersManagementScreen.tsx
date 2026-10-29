@@ -2,6 +2,8 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
+import { useStatusGroups } from "../hooks/useStatusGroups";
+
 // Imports shared application styles
 import { styles } from "../styles/styles";
 
@@ -16,90 +18,125 @@ export const OrdersManagementScreen = ({
   markOrderAsFilled,
   markOrderAsOpen,
   markOrderAsCancelled,
-}: OrdersManagementScreenProps) => (
-  <>
-    <Header title="Incoming Orders" />
+}: OrdersManagementScreenProps) => {
+  // Manages expandable order status groups
+  const { expandedGroups, toggleGroup } = useStatusGroups(["Open"]);
+  return (
+    <>
+      <Header title="Incoming Orders" />
 
-    <ScrollView contentContainerStyle={styles.content}>
-      {/* Returns to the business administration screen */}
-      <BusinessBackButton />
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* Returns to the business administration screen */}
+        <BusinessBackButton />
 
-      {/* Displays an empty message when there are no orders */}
-      {adminOrders.length === 0 ? (
-        <Text style={styles.cardSubtitle}>No customer orders found.</Text>
-      ) : (
-        // Groups customer orders by their current status
-        ["Open", "Filled", "Cancelled"].map((status) => (
-          <View key={status}>
-            <Text style={styles.menuSectionTitle}>{status} Orders</Text>
+        {/* Displays an empty message when there are no orders */}
+        {adminOrders.length === 0 ? (
+          <Text style={styles.cardSubtitle}>No customer orders found.</Text>
+        ) : (
+          // Groups customer orders by their current status
+          ["Open", "Filled", "Cancelled"].map((status) => {
+            // Finds requests belonging to the current status group
+            const groupOrders = adminOrders.filter(
+              (order) => order.status === status,
+            );
 
-            {/* Displays all orders matching the selected status */}
-            {adminOrders
-              .filter((order: any) => order.status === status)
-              .map((order: any) => (
-                <View key={order.id} style={styles.card}>
-                  {/* Displays order identification and customer information */}
-                  <Text style={styles.orderNumberTitle}>
-                    Order #{order.id.slice(0, 8)}
+            const isExpanded = expandedGroups.includes(status);
+
+            return (
+              <View key={status}>
+                {/* Displays the expandable status group heading */}
+                <Pressable
+                  style={styles.card}
+                  onPress={() => toggleGroup(status)}
+                >
+                  <Text style={styles.cardTitle}>
+                    {status} Orders ({groupOrders.length}){" "}
+                    {isExpanded ? "▲" : "▼"}
                   </Text>
+                </Pressable>
 
-                  <Text style={styles.cardSubtitle}>
-                    Customer: {order.customerName}
-                  </Text>
-
-                  <Text style={styles.cardSubtitle}>
-                    Status: {order.status}
-                  </Text>
-
-                  <Text style={styles.cardSubtitle}>
-                    Payment Status: {order.paymentStatus}
-                  </Text>
-
-                  {/* Displays the items and quantities in the order */}
-                  <Text style={styles.orderedItemsTitle}>Ordered Items:</Text>
-
-                  {order.items?.map((item: any, index: number) => (
-                    <Text key={index} style={styles.cardSubtitle}>
-                      {item.name} - Quantity: {item.quantity}
-                    </Text>
-                  ))}
-
-                  {/* Allows the client to mark an order as filled */}
-                  {order.status !== "Filled" && (
-                    <Pressable
-                      style={styles.adminButton}
-                      onPress={() => markOrderAsFilled(order.id)}
-                    >
-                      <Text style={styles.adminButtonText}>Mark as Filled</Text>
-                    </Pressable>
-                  )}
-
-                  {/* Allows the client to reopen an order */}
-                  {order.status !== "Open" && (
-                    <Pressable
-                      style={styles.adminButton}
-                      onPress={() => markOrderAsOpen(order.id)}
-                    >
-                      <Text style={styles.adminButtonText}>Mark as Open</Text>
-                    </Pressable>
-                  )}
-
-                  {/* Allows the client to cancel an order */}
-                  {order.status !== "Cancelled" && (
-                    <Pressable
-                      style={styles.adminButton}
-                      onPress={() => markOrderAsCancelled(order.id)}
-                    >
-                      <Text style={styles.adminButtonText}>
-                        Mark as Cancelled
+                {/* Displays requests only when the group is expanded */}
+                {isExpanded &&
+                  groupOrders.map((order) => (
+                    <View key={order.id} style={styles.card}>
+                      {/* Displays order identification and customer information */}
+                      <Text style={styles.orderNumberTitle}>
+                        Order #{order.id.slice(0, 8)}
                       </Text>
-                    </Pressable>
-                  )}
-                </View>
-              ))}
-          </View>
-        ))
-      )}
-    </ScrollView>
-  </>
-);
+
+                      <Text style={styles.cardSubtitle}>
+                        Customer: {order.customerName}
+                      </Text>
+
+                      <Text style={styles.cardSubtitle}>
+                        Status: {order.status}
+                      </Text>
+
+                      <Text style={styles.cardSubtitle}>
+                        Payment Status: {order.paymentStatus}
+                      </Text>
+
+                      {/* Displays the items and quantities in the order */}
+                      <Text style={styles.orderedItemsTitle}>
+                        Ordered Items:
+                      </Text>
+
+                      {order.items?.map((item: any, index: number) => (
+                        <Text key={index} style={styles.cardSubtitle}>
+                          {item.name} - Quantity: {item.quantity}
+                        </Text>
+                      ))}
+
+                      {/* Allows the client to mark an order as filled */}
+                      {order.status !== "Filled" && (
+                        <Pressable
+                          style={styles.adminButton}
+                          onPress={() => markOrderAsFilled(order.id)}
+                        >
+                          <Text style={styles.adminButtonText}>
+                            Mark as Filled
+                          </Text>
+                        </Pressable>
+                      )}
+
+                      {/* Allows the client to reopen an order */}
+                      {order.status !== "Open" && (
+                        <Pressable
+                          style={styles.adminButton}
+                          onPress={() => markOrderAsOpen(order.id)}
+                        >
+                          <Text style={styles.adminButtonText}>
+                            Mark as Open
+                          </Text>
+                        </Pressable>
+                      )}
+
+                      {/* Allows the client to cancel an order */}
+                      {order.status !== "Cancelled" && (
+                        <Pressable
+                          style={styles.adminButton}
+                          onPress={() => markOrderAsCancelled(order.id)}
+                        >
+                          <Text style={styles.adminButtonText}>
+                            Mark as Cancelled
+                          </Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  ))}
+                {/* Displays a message when an expanded group is empty */}
+                {isExpanded && groupOrders.length === 0 && (
+                  <View style={styles.card}>
+                    <Text style={styles.cardSubtitle}>
+                      No {status.toLowerCase()} orders.
+                    </Text>
+                  </View>
+                )}
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
+    </>
+  );
+};
