@@ -11,7 +11,10 @@ import {
   View,
 } from "react-native";
 
-import { selectMenuItemPhoto } from "../services/imageService";
+import {
+  compressMenuItemPhoto,
+  selectMenuItemPhoto,
+} from "../services/imageService";
 
 // Imports shared application styles
 import { styles } from "../styles/styles";
@@ -708,6 +711,9 @@ export const ManageMenuItemsScreen = ({
                       // Updates the preview when a photo is selected
                       if (selectedPhoto) {
                         setNewItemPhoto(selectedPhoto);
+
+                        // Tests image compression without saving to Firestore
+                        await compressMenuItemPhoto(selectedPhoto);
                       }
                     }}
                   >

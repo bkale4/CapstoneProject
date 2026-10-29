@@ -530,6 +530,8 @@ export default function App() {
       newItemCategoryIndex,
       newItemName,
       newItemDescription,
+      newItemPhoto,
+      setNewItemPhoto,
       newItemPricingType,
       newItemPrice,
       newItemHalfPrice,

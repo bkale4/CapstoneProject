@@ -11,6 +11,9 @@ import {
 // Imports the Firebase database connection
 import { db } from "../firebaseConfig";
 
+// Compresses selected photos and saves them to Firestore
+import { compressMenuItemPhoto, saveMenuItemPhoto } from "./imageService";
+
 import type { Screen } from "../types";
 
 // Creates a new menu in Firestore
@@ -496,6 +499,8 @@ export const addNewMenuItem = async (
   newItemCategoryIndex: number | null,
   newItemName: string,
   newItemDescription: string,
+  newItemPhoto: string | null,
+  setNewItemPhoto: React.Dispatch<React.SetStateAction<string | null>>,
   newItemPricingType: "single" | "halfFull",
   newItemPrice: string,
   newItemHalfPrice: string,
@@ -586,6 +591,9 @@ export const addNewMenuItem = async (
   }
 
   try {
+    // Generates the new item's ID before saving its photo
+    const newItemId = doc(collection(db, "menuItemImages")).id;
+
     const updatedCategories = [...(selectedAdminMenu.categories || [])];
 
     const category = updatedCategories[newItemCategoryIndex];
@@ -599,6 +607,7 @@ export const addNewMenuItem = async (
       items: [
         ...(category.items || []),
         {
+          id: newItemId,
           name: newItemName.trim(),
           description: newItemDescription.trim(),
           pricingType: newItemPricingType,
@@ -619,6 +628,12 @@ export const addNewMenuItem = async (
       ],
     };
 
+    // Compresses and saves the new item's photo using its unique ID
+    if (newItemPhoto) {
+      const compressedPhoto = await compressMenuItemPhoto(newItemPhoto);
+      await saveMenuItemPhoto(newItemId, compressedPhoto);
+    }
+
     await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
       categories: updatedCategories,
     });
@@ -630,6 +645,7 @@ export const addNewMenuItem = async (
 
     setNewItemName("");
     setNewItemDescription("");
+    setNewItemPhoto(null);
     setNewItemPrice("");
     setNewItemPricingType("single");
     setNewItemHalfPrice("");
