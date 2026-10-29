@@ -423,6 +423,10 @@ export type ManageMenuItemsScreenProps = {
   setNewItemName: React.Dispatch<React.SetStateAction<string>>;
   newItemDescription: string;
   setNewItemDescription: React.Dispatch<React.SetStateAction<string>>;
+  newItemPhoto: string | null;
+  setNewItemPhoto: React.Dispatch<React.SetStateAction<string | null>>;
+  editItemPhoto: string | null;
+  setEditItemPhoto: React.Dispatch<React.SetStateAction<string | null>>;
   newItemPricingType: "single" | "halfFull";
   setNewItemPricingType: React.Dispatch<
     React.SetStateAction<"single" | "halfFull">
@@ -466,6 +470,9 @@ export type EditMenuItemScreenProps = {
 
   editItemName: string;
   setEditItemName: React.Dispatch<React.SetStateAction<string>>;
+
+  editItemPhoto: string | null;
+  setEditItemPhoto: React.Dispatch<React.SetStateAction<string | null>>;
 
   editItemDescription: string;
   setEditItemDescription: React.Dispatch<React.SetStateAction<string>>;

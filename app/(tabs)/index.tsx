@@ -210,6 +210,7 @@ export default function App() {
   const [newItemName, setNewItemName] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
+  const [newItemPhoto, setNewItemPhoto] = useState<string | null>(null);
   const [newItemPricingType, setNewItemPricingType] = useState<
     "single" | "halfFull"
   >("single");
@@ -233,6 +234,7 @@ export default function App() {
 
   const [editItemName, setEditItemName] = useState("");
   const [editItemDescription, setEditItemDescription] = useState("");
+  const [editItemPhoto, setEditItemPhoto] = useState<string | null>(null);
   const [editItemPrice, setEditItemPrice] = useState("");
   const [editItemPricingType, setEditItemPricingType] = useState<
     "single" | "halfFull"
@@ -1114,6 +1116,10 @@ export default function App() {
       setNewItemName={setNewItemName}
       newItemDescription={newItemDescription}
       setNewItemDescription={setNewItemDescription}
+      newItemPhoto={newItemPhoto}
+      setNewItemPhoto={setNewItemPhoto}
+      editItemPhoto={newItemPhoto}
+      setEditItemPhoto={setNewItemPhoto}
       newItemPricingType={newItemPricingType}
       setNewItemPricingType={setNewItemPricingType}
       newItemPrice={newItemPrice}
@@ -1161,6 +1167,8 @@ export default function App() {
       Header={Header}
       setScreen={setScreen}
       editItemName={editItemName}
+      editItemPhoto={editItemPhoto}
+      setEditItemPhoto={setEditItemPhoto}
       setEditItemName={setEditItemName}
       editItemDescription={editItemDescription}
       setEditItemDescription={setEditItemDescription}

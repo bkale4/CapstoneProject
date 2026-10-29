@@ -2,6 +2,7 @@
 import React from "react";
 import {
   Alert,
+  Image,
   Platform,
   Pressable,
   ScrollView,
@@ -9,6 +10,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+
+import { selectMenuItemPhoto } from "../services/imageService";
 
 // Imports shared application styles
 import { styles } from "../styles/styles";
@@ -430,6 +433,10 @@ export const ManageMenuItemsScreen = ({
   setNewItemCategoryIndex,
   newItemName,
   setNewItemName,
+  newItemPhoto,
+  setNewItemPhoto,
+  editItemPhoto,
+  setEditItemPhoto,
   newItemDescription,
   setNewItemDescription,
   newItemPricingType,
@@ -689,6 +696,46 @@ export const ManageMenuItemsScreen = ({
                     onChangeText={setNewItemDescription}
                     placeholder="Description"
                   />
+
+                  {/* Allows the admin to select a photo for the new menu item */}
+                  <Text style={styles.label}>Item Photo (Optional)</Text>
+
+                  <Pressable
+                    style={styles.adminButton}
+                    onPress={async () => {
+                      const selectedPhoto = await selectMenuItemPhoto();
+
+                      // Updates the preview when a photo is selected
+                      if (selectedPhoto) {
+                        setNewItemPhoto(selectedPhoto);
+                      }
+                    }}
+                  >
+                    <Text style={styles.adminButtonText}>
+                      {newItemPhoto ? "Change Photo" : "Upload Photo"}
+                    </Text>
+                  </Pressable>
+
+                  {/* Displays a preview of the selected photo */}
+                  {newItemPhoto && (
+                    <View style={{ marginTop: 10 }}>
+                      <Image
+                        source={{ uri: newItemPhoto }}
+                        style={styles.menuItemImage}
+                        resizeMode="cover"
+                      />
+
+                      {/* Removes the selected photo before saving */}
+                      <Pressable
+                        style={styles.secondaryButton}
+                        onPress={() => setNewItemPhoto(null)}
+                      >
+                        <Text style={styles.secondaryButtonText}>
+                          Remove Photo
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
 
                   {/* Allows selection of single or half/full pricing */}
                   <Text style={styles.label}>Pricing Type</Text>
@@ -951,6 +998,8 @@ export const EditMenuItemScreen = ({
   setScreen,
   editItemName,
   setEditItemName,
+  editItemPhoto,
+  setEditItemPhoto,
   editItemDescription,
   setEditItemDescription,
   editItemPricingType,
@@ -1000,6 +1049,44 @@ export const EditMenuItemScreen = ({
         onChangeText={setEditItemDescription}
         placeholder="Enter description"
       />
+
+      {/* Allows the admin to select a photo for the new menu item */}
+      <Text style={styles.label}>Item Photo (Optional)</Text>
+
+      <Pressable
+        style={styles.adminButton}
+        onPress={async () => {
+          const selectedPhoto = await selectMenuItemPhoto();
+
+          // Updates the preview when a photo is selected
+          if (selectedPhoto) {
+            setEditItemPhoto(selectedPhoto);
+          }
+        }}
+      >
+        <Text style={styles.adminButtonText}>
+          {editItemPhoto ? "Change Photo" : "Upload Photo"}
+        </Text>
+      </Pressable>
+
+      {/* Displays a preview of the selected photo */}
+      {editItemPhoto && (
+        <View style={{ marginTop: 10 }}>
+          <Image
+            source={{ uri: editItemPhoto }}
+            style={styles.menuItemImage}
+            resizeMode="cover"
+          />
+
+          {/* Removes the selected photo before saving */}
+          <Pressable
+            style={styles.secondaryButton}
+            onPress={() => setEditItemPhoto(null)}
+          >
+            <Text style={styles.secondaryButtonText}>Remove Photo</Text>
+          </Pressable>
+        </View>
+      )}
 
       {/* Allows switching between single and half/full pricing */}
       <Text style={styles.label}>Pricing Type</Text>
