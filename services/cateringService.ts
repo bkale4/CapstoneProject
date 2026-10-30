@@ -57,16 +57,17 @@ export const toggleAvailability = async (
 ) => {
   const newAvailability = availability[dateKey] === false;
 
-  setAvailability((prev) => ({
-    ...prev,
-    [dateKey]: newAvailability,
-  }));
-
   try {
     await setDoc(doc(db, "availability", dateKey), {
       date: dateKey,
       available: newAvailability,
     });
+
+    // Updates the calendar only after Firestore saves successfully
+    setAvailability((prev) => ({
+      ...prev,
+      [dateKey]: newAvailability,
+    }));
 
     console.log("Availability saved:", dateKey, newAvailability);
   } catch (error) {
