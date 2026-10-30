@@ -49,6 +49,15 @@ export type BusinessLoginScreenProps = {
   loginMessage: string;
 };
 
+// Defines the properties needed by the Business Dashboard
+export type BusinessDashBoardScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  loadAdminOrders: () => Promise<void>;
+  loadCateringRequests: () => Promise<void>;
+  loadAdminMenus: () => Promise<void>;
+  setScreen: (screen: any) => void;
+};
+
 // Defines the properties required by the Home screen
 export type HomeScreenProps = {
   Header: ({ title }: { title: string }) => React.JSX.Element;
