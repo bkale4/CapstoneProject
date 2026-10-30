@@ -2,11 +2,13 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
   setDoc,
   updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import type { Screen } from "../types";
@@ -127,9 +129,37 @@ export const updateCateringRequestStatus = async (
   status: "accepted" | "rejected",
 ) => {
   try {
-    await updateDoc(doc(db, "cateringRequests", requestId), {
+    // Retrieves the catering request so its date can be used to update availability
+    const requestSnapshot = await getDoc(
+      doc(db, "cateringRequests", requestId),
+    );
+
+    // Stops the update if the catering request no longer exists
+    if (!requestSnapshot.exists()) {
+      throw new Error("Catering request not found.");
+    }
+
+    // Gets the requested catering date
+    const cateringDate = requestSnapshot.data().date;
+
+    // Creates a batch so the request status and availability save together
+    const batch = writeBatch(db);
+
+    // Updates the catering request's acceptance status
+    batch.update(doc(db, "cateringRequests", requestId), {
       status: status,
     });
+
+    // Automatically blocks the date when a catering request is accepted
+    if (status === "accepted") {
+      batch.set(doc(db, "availability", cateringDate), {
+        date: cateringDate,
+        available: false,
+      });
+    }
+
+    // Save all changes together, preventing partial updates
+    await batch.commit();
 
     console.log("Catering request status updated:", requestId, status);
   } catch (error) {

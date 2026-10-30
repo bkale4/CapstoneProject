@@ -91,6 +91,7 @@ import {
 
 // Imports the catering request submission service
 import {
+  loadAvailability,
   loadAvailability as loadAvailabilityService,
   loadCateringRequests as loadCateringRequestsService,
   submitCateringRequest as submitCateringRequestService,
@@ -400,6 +401,9 @@ export default function App() {
     try {
       await updateCateringRequestStatusService(requestId, status);
       await loadCateringRequests();
+
+      // Refreshes calendar availability after a catering request status changes
+      await loadAvailability(setAvailability);
     } catch (error) {
       console.error("Unable to update catering request:", error);
     }
