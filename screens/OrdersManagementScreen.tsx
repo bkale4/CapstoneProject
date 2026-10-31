@@ -34,7 +34,7 @@ export const OrdersManagementScreen = ({
           <Text style={styles.cardSubtitle}>No customer orders found.</Text>
         ) : (
           // Groups customer orders by their current status
-          ["Open", "Filled", "Cancelled"].map((status) => {
+          ["Pending Payment", "Open", "Filled", "Cancelled"].map((status) => {
             // Finds requests belonging to the current status group
             const groupOrders = adminOrders.filter(
               (order) => order.status === status,
@@ -88,40 +88,43 @@ export const OrdersManagementScreen = ({
                       ))}
 
                       {/* Allows the client to mark an order as filled */}
-                      {order.status !== "Filled" && (
-                        <Pressable
-                          style={styles.adminButton}
-                          onPress={() => markOrderAsFilled(order.id)}
-                        >
-                          <Text style={styles.adminButtonText}>
-                            Mark as Filled
-                          </Text>
-                        </Pressable>
-                      )}
+                      {order.status !== "Filled" &&
+                        order.status !== "Pending Payment" && (
+                          <Pressable
+                            style={styles.adminButton}
+                            onPress={() => markOrderAsFilled(order.id)}
+                          >
+                            <Text style={styles.adminButtonText}>
+                              Mark as Filled
+                            </Text>
+                          </Pressable>
+                        )}
 
                       {/* Allows the client to reopen an order */}
-                      {order.status !== "Open" && (
-                        <Pressable
-                          style={styles.adminButton}
-                          onPress={() => markOrderAsOpen(order.id)}
-                        >
-                          <Text style={styles.adminButtonText}>
-                            Mark as Open
-                          </Text>
-                        </Pressable>
-                      )}
+                      {order.status !== "Open" &&
+                        order.status !== "Pending Payment" && (
+                          <Pressable
+                            style={styles.adminButton}
+                            onPress={() => markOrderAsOpen(order.id)}
+                          >
+                            <Text style={styles.adminButtonText}>
+                              Mark as Open
+                            </Text>
+                          </Pressable>
+                        )}
 
                       {/* Allows the client to cancel an order */}
-                      {order.status !== "Cancelled" && (
-                        <Pressable
-                          style={styles.adminButton}
-                          onPress={() => markOrderAsCancelled(order.id)}
-                        >
-                          <Text style={styles.adminButtonText}>
-                            Mark as Cancelled
-                          </Text>
-                        </Pressable>
-                      )}
+                      {order.status !== "Cancelled" &&
+                        order.status !== "Pending Payment" && (
+                          <Pressable
+                            style={styles.adminButton}
+                            onPress={() => markOrderAsCancelled(order.id)}
+                          >
+                            <Text style={styles.adminButtonText}>
+                              Mark as Cancelled
+                            </Text>
+                          </Pressable>
+                        )}
                     </View>
                   ))}
                 {/* Displays a message when an expanded group is empty */}
