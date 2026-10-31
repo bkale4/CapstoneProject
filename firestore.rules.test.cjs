@@ -92,6 +92,63 @@ test("Unauthenticated users cannot modify menus", async () => {
       }),
     );
 
+    // Verifies that Venmo orders can be created with Pending Payment status
+    await assert.doesNotReject(
+      setDoc(doc(db, "orders", "test-venmo-order"), {
+        customerName: "Test Customer",
+        phone: "5551234567",
+        email: "customer@example.com",
+        menuType: "Food Trailer",
+        location: "Test Location",
+        eventName: "Test Event",
+        items: [],
+        total: 25,
+        paymentMethod: "Venmo",
+        paymentStatus: "Not Paid",
+        status: "Pending Payment",
+        createdAt: new Date(),
+      }),
+    );
+
+    // Verifies that PayPal and Zelle orders can be held pending payment
+    for (const paymentMethod of ["PayPal", "Zelle"]) {
+      await assert.doesNotReject(
+        setDoc(doc(db, "orders", `test-${paymentMethod.toLowerCase()}-order`), {
+          customerName: "Test Customer",
+          phone: "5551234567",
+          email: "customer@example.com",
+          menuType: "Food Trailer",
+          location: "Test Location",
+          eventName: "Test Event",
+          items: [],
+          total: 25,
+          paymentMethod: paymentMethod,
+          paymentStatus: "Not Paid",
+          status: "Pending Payment",
+          createdAt: new Date(),
+        }),
+      );
+    }
+
+    // Verifies that customers cannot create an order already marked as Paid
+    await assert.rejects(
+      setDoc(doc(db, "orders", "test-unverified-payment"), {
+        customerName: "Test Customer",
+        phone: "5551234567",
+        email: "customer@example.com",
+        menuType: "Food Trailer",
+        location: "Test Location",
+        eventName: "Test Event",
+        items: [],
+        total: 25,
+        paymentMethod: "Venmo",
+        paymentStatus: "Paid",
+        status: "Open",
+        createdAt: new Date(),
+      }),
+      (error) => error.code === "permission-denied",
+    );
+
     // Verifies that customers can submit catering requests without signing in
     await assert.doesNotReject(
       setDoc(doc(db, "cateringRequests", "test-catering-request"), {

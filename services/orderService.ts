@@ -1,10 +1,10 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDocs,
-    serverTimestamp,
-    updateDoc,
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import type React from "react";
 import { db } from "../firebaseConfig";
@@ -102,7 +102,8 @@ export const submitOrder = async (
       total: cartTotal,
       paymentMethod: paymentMethod,
       paymentStatus: "Not Paid",
-      status: "Open",
+      status:
+        paymentMethod.toLowerCase() === "cash" ? "Open" : "Pending Payment",
       createdAt: serverTimestamp(),
     });
 

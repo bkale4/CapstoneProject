@@ -33,7 +33,13 @@ service cloud.firestore {
       allow read: if isAdmin();
 
       // Allows customers to submit orders with the required inital statuses
-      allow create: if request.resource.data.status == "Open"
+      allow create: if (
+        (request.resource.data.paymentMethod == "Cash"
+          && request.resource.data.status == "Open")
+        ||
+        (request.resource.data.paymentMethod in ["Venmo", "PayPal", "Zelle"]
+          && request.resource.data.status == "Pending Payment")
+      )
         && request.resource.data.paymentStatus == "Not Paid"
         && request.resource.data.keys().hasOnly([
           "customerName",
