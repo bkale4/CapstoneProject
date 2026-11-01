@@ -291,6 +291,9 @@ export default function App() {
     );
   };
 
+  // Tracks whether an order is being submitted to prevent duplicate submissions
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+
   const [availability, setAvailability] = useState<Record<string, boolean>>({});
   const [cateringCustomerName, setCateringCustomerName] = useState("");
   const [selectedCateringDate, setSelectedCateringDate] = useState<string>("");
@@ -600,6 +603,12 @@ export default function App() {
 
   // Passes the customer order information to the order service
   const submitOrder = async () => {
+    // Prevents another submission while an order is already being saved
+    if (isSubmittingOrder) {
+      return;
+    }
+    // Marks the order as being submitted
+    setIsSubmittingOrder(true);
     const customerName = isCustomerLoggedIn ? loggedInCustomerName : guestName;
 
     const customerPhone = isCustomerLoggedIn
@@ -623,10 +632,17 @@ export default function App() {
       paymentMethod,
       setScreen,
     );
+
+    // Allows another submission once Firestore finishes saving the order
+    setIsSubmittingOrder(false);
+
     // Stops checkout if the order could not be saved to Firestore
     if (!orderSaved) {
       return;
     }
+
+    // Clears the customer's cart only after the order saves successfully
+    setCartItems([]);
 
     // Identifies the selected electronic payment method
     const selectedPaymentLink =
@@ -936,6 +952,7 @@ export default function App() {
       cartItems={cartItems}
       cartTotal={cartTotal}
       submitOrder={submitOrder}
+      isSubmittingOrder={isSubmittingOrder}
     />
   );
 

@@ -7,8 +7,8 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Checkout screen
 import type {
-    CheckoutScreenProps,
-    OrderConfirmationScreenProps,
+  CheckoutScreenProps,
+  OrderConfirmationScreenProps,
 } from "../types";
 
 // Displays customer information, payment options, and the final order
@@ -32,6 +32,7 @@ export const CheckoutScreen = ({
   cartItems,
   cartTotal,
   submitOrder,
+  isSubmittingOrder,
 }: CheckoutScreenProps) => (
   <>
     <Header title="Checkout" />
@@ -149,8 +150,17 @@ export const CheckoutScreen = ({
         <Text style={styles.summaryTotal}>Total: ${cartTotal.toFixed(2)}</Text>
       </View>
 
-      <Pressable style={styles.primaryButton} onPress={submitOrder}>
-        <Text style={styles.primaryButtonText}>Place Order</Text>
+      <Pressable
+        style={[
+          styles.primaryButton,
+          isSubmittingOrder && styles.disabledButton,
+        ]}
+        onPress={submitOrder}
+        disabled={isSubmittingOrder}
+      >
+        <Text style={styles.primaryButtonText}>
+          {isSubmittingOrder ? "Placing Order..." : "Place Order"}
+        </Text>
       </Pressable>
     </ScrollView>
   </>

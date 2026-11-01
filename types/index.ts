@@ -229,6 +229,7 @@ export type CartScreenProps = {
 // Defines the properties requireed by the Checkout screen
 export type CheckoutScreenProps = {
   Header: React.ComponentType<{ title: string }>;
+  isSubmittingOrder: boolean;
   isCustomerLoggedIn: boolean;
   loggedInCustomerName: string;
   loggedInCustomerPhone: string;
