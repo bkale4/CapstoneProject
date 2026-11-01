@@ -20,6 +20,7 @@ export type Screen =
   | "businessLogin"
   | "business"
   | "ordersManagement"
+  | "paymentManagement"
   | "cateringManagement"
   | "cateringEvents"
   | "menuManagement"
@@ -524,6 +525,12 @@ export type OrdersManagementScreenProps = {
   markOrderAsPaid: (orderId: string) => void | Promise<void>;
   markOrderAsOpen: (orderId: string) => void | Promise<void>;
   markOrderAsCancelled: (orderId: string) => void | Promise<void>;
+};
+
+// Defines the properties required by the Payment Management screen
+export type PaymentManagementScreenProps = {
+  Header: React.ComponentType<{ title: string }>;
+  BusinessBackButton: React.ComponentType;
 };
 
 // Defines the properties required by the Availability Management screen

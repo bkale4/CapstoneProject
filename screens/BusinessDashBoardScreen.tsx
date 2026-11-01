@@ -18,6 +18,7 @@ export const BusinessDashboardScreen = ({
   <>
     <Header title="Business Dashboard" />
     <ScrollView contentContainerStyle={styles.content}>
+      {/* Displays the Incoming Orders card */}
       <Pressable
         style={styles.card}
         onPress={async () => {
@@ -28,6 +29,17 @@ export const BusinessDashboardScreen = ({
         <Text style={styles.cardTitle}>Incoming Orders</Text>
         <Text style={styles.cardSubtitle}>
           Track food orders and update status.
+        </Text>
+      </Pressable>
+
+      {/* Opens Payment Management so the client can check electronic payments */}
+      <Pressable
+        style={styles.card}
+        onPress={() => setScreen("paymentManagement")}
+      >
+        <Text style={styles.cardTitle}>Payment Management</Text>
+        <Text style={styles.cardSubtitle}>
+          Access Venmo, PayPal, and Zelle to verify customer payments.
         </Text>
       </Pressable>
 

@@ -59,6 +59,9 @@ import {
   MenuManagementScreen as SharedMenuManagementScreen,
 } from "../../screens/MenuManagementScreens";
 
+// Imports the Payment Management screen for administrator access
+import { PaymentManagementScreen } from "../../screens/PaymentManagementScreen";
+
 // Imports the shared Orders Management screen
 import { OrdersManagementScreen as SharedOrdersManagementScreen } from "../../screens/OrdersManagementScreen";
 
@@ -1279,6 +1282,13 @@ export default function App() {
         />
       )}
       {screen === "ordersManagement" && OrdersManagementScreen()}
+      {/* Displays the administrator Payment Management screen */}
+      {screen === "paymentManagement" && (
+        <PaymentManagementScreen
+          Header={Header}
+          BusinessBackButton={BusinessBackButton}
+        />
+      )}
       {screen === "availabilityManagement" && AvailabilityManagementScreen()}
       {screen === "menuManagement" && MenuManagementScreen()}
       {screen === "addMenu" && AddMenuScreen()}
