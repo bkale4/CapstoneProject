@@ -129,7 +129,12 @@ export const submitOrder = async (
 
     console.log("Order saved to Firebase");
     setScreen("orderConfirmation");
+
+    // Confirms that the order was successfully saved to Firestore
+    return true;
   } catch (error) {
     console.error("Error saving order:", error);
+    // Reports that the order was not saved so payment does not begin
+    return false;
   }
 };

@@ -118,7 +118,14 @@ import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 
 import { db } from "../../firebaseConfig";
 
-import { Pressable, ScrollView, Text } from "react-native";
+import { Linking, Pressable, ScrollView, Text } from "react-native";
+
+// Stores customer payment destinations until the client's account details are available
+const CUSTOMER_PAYMENT_LINKS = {
+  venmo: "",
+  paypal: "",
+  zelle: "",
+};
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
@@ -603,7 +610,8 @@ export default function App() {
       ? loggedInCustomerEmail
       : guestEmail;
 
-    await submitOrderService(
+    // Tracks whether the order was successfully saved before opening payment
+    const orderSaved = await submitOrderService(
       customerName,
       customerPhone,
       customerEmail,
@@ -615,6 +623,26 @@ export default function App() {
       paymentMethod,
       setScreen,
     );
+    // Stops checkout if the order could not be saved to Firestore
+    if (!orderSaved) {
+      return;
+    }
+
+    // Identifies the selected electronic payment method
+    const selectedPaymentLink =
+      CUSTOMER_PAYMENT_LINKS[
+        paymentMethod.toLowerCase() as keyof typeof CUSTOMER_PAYMENT_LINKS
+      ];
+
+    // Opens the selected payment service after the order is saved
+    if (selectedPaymentLink) {
+      try {
+        await Linking.openURL(selectedPaymentLink);
+      } catch (error) {
+        // Keeps the saved order intact if the payment link cannot be opened
+        console.error("Unable to open payment service:", error);
+      }
+    }
   };
 
   // Passes the catering request information to the catering service

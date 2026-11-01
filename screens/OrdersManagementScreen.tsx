@@ -77,6 +77,20 @@ export const OrdersManagementScreen = ({
                         Payment Status: {order.paymentStatus}
                       </Text>
 
+                      {/* Displays the selected payment method so the client knows where to verify payment */}
+                      {order.status === "Pending Payment" && (
+                        <Text style={styles.cardSubtitle}>
+                          Payment Method: {order.paymentMethod}
+                        </Text>
+                      )}
+
+                      {/* Shows the amount the client needs to verify before marking the order as paid */}
+                      {order.status === "Pending Payment" && (
+                        <Text style={styles.cardSubtitle}>
+                          Amount Due: ${Number(order.total).toFixed(2)}
+                        </Text>
+                      )}
+
                       {/* Displays the items and quantities in the order */}
                       <Text style={styles.orderedItemsTitle}>
                         Ordered Items:
