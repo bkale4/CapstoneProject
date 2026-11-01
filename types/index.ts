@@ -521,6 +521,7 @@ export type OrdersManagementScreenProps = {
   BusinessBackButton: React.ComponentType;
   adminOrders: any[];
   markOrderAsFilled: (orderId: string) => void | Promise<void>;
+  markOrderAsPaid: (orderId: string) => void | Promise<void>;
   markOrderAsOpen: (orderId: string) => void | Promise<void>;
   markOrderAsCancelled: (orderId: string) => void | Promise<void>;
 };

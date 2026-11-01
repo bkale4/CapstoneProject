@@ -16,6 +16,7 @@ export const OrdersManagementScreen = ({
   BusinessBackButton,
   adminOrders,
   markOrderAsFilled,
+  markOrderAsPaid,
   markOrderAsOpen,
   markOrderAsCancelled,
 }: OrdersManagementScreenProps) => {
@@ -86,6 +87,18 @@ export const OrdersManagementScreen = ({
                           {item.name} - Quantity: {item.quantity}
                         </Text>
                       ))}
+
+                      {/* Allows the client to confirm payment for an electronic order */}
+                      {order.status === "Pending Payment" && (
+                        <Pressable
+                          style={styles.adminButton}
+                          onPress={() => markOrderAsPaid(order.id)}
+                        >
+                          <Text style={styles.adminButtonText}>
+                            Mark as Paid
+                          </Text>
+                        </Pressable>
+                      )}
 
                       {/* Allows the client to mark an order as filled */}
                       {order.status !== "Filled" &&

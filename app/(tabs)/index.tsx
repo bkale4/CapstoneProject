@@ -89,6 +89,7 @@ import {
   markOrderAsCancelled as markOrderAsCancelledService,
   markOrderAsFilled as markOrderAsFilledService,
   markOrderAsOpen as markOrderAsOpenService,
+  markOrderAsPaid as markOrderAsPaidService,
   submitOrder as submitOrderService,
 } from "../../services/orderService";
 
@@ -435,6 +436,11 @@ export default function App() {
   // Marks an order as filled through the order service
   const markOrderAsFilled = async (orderId: string) => {
     await markOrderAsFilledService(orderId, loadAdminOrders);
+  };
+
+  // Confirms an electronic payment and updates the order through the service
+  const markOrderAsPaid = async (orderId: string) => {
+    await markOrderAsPaidService(orderId, loadAdminOrders);
   };
 
   // Marks an order as open through the order service
@@ -973,6 +979,7 @@ export default function App() {
       BusinessBackButton={BusinessBackButton}
       adminOrders={adminOrders}
       markOrderAsFilled={markOrderAsFilled}
+      markOrderAsPaid={markOrderAsPaid}
       markOrderAsOpen={markOrderAsOpen}
       markOrderAsCancelled={markOrderAsCancelled}
     />

@@ -45,6 +45,26 @@ export const markOrderAsFilled = async (
   }
 };
 
+// Marks a verified electronic payment as Paid and releases the order for preparation
+export const markOrderAsPaid = async (
+  orderId: string,
+  loadAdminOrders: () => Promise<void>,
+) => {
+  try {
+    // Updates both statuses together in a single Firestore operation
+    await updateDoc(doc(db, "orders", orderId), {
+      paymentStatus: "Paid",
+      status: "Open",
+    });
+
+    // Refreshes Incoming Orders to display the updated order
+    await loadAdminOrders();
+  } catch (error) {
+    console.error("Error marking order as paid:", error);
+    throw error;
+  }
+};
+
 // Marks an order as open and refreshes the order list
 export const markOrderAsOpen = async (
   orderId: string,
