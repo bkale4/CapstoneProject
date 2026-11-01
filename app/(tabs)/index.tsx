@@ -135,6 +135,9 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
 
+  // Stores the total of the most recently submitted order for the confirmation screen
+  const [confirmedOrderTotal, setConfirmedOrderTotal] = useState(0);
+
   const [activeFoodTrailerMenu, setActiveFoodTrailerMenu] = useState<any>(null);
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
   const [foodTrailerEventName, setFoodTrailerEventName] = useState("");
@@ -641,6 +644,9 @@ export default function App() {
       return;
     }
 
+    // Preserves the submitted order total before clearing the cart
+    setConfirmedOrderTotal(cartTotal);
+
     // Clears the customer's cart only after the order saves successfully
     setCartItems([]);
 
@@ -961,7 +967,7 @@ export default function App() {
     <SharedOrderConfirmationScreen
       Header={Header}
       paymentMethod={paymentMethod}
-      cartTotal={cartTotal}
+      cartTotal={confirmedOrderTotal}
       setScreen={setScreen}
     />
   );
