@@ -171,6 +171,7 @@ export const OrderConfirmationScreen = ({
   Header,
   paymentMethod,
   cartTotal,
+  confirmedOrderId,
   setScreen,
 }: OrderConfirmationScreenProps) => (
   <>
@@ -181,8 +182,9 @@ export const OrderConfirmationScreen = ({
         <Text style={styles.summaryLine}>
           Your order has been successfully placed.
         </Text>
-        <Text style={styles.summaryLine}>Order Number: #1042</Text>
-        <Text style={styles.summaryLine}>Estimated Ready Time: 20 minutes</Text>
+        <Text style={styles.summaryLine}>
+          Order Number: #{confirmedOrderId.slice(0, 8)}
+        </Text>
         <Text style={styles.summaryLine}>Payment Method: {paymentMethod}</Text>
         <Text style={styles.summaryTotal}>Total: ${cartTotal.toFixed(2)}</Text>
       </View>

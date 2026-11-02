@@ -255,6 +255,7 @@ export type OrderConfirmationScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   paymentMethod: string;
   cartTotal: number;
+  confirmedOrderId: string;
   setScreen: (screen: Screen) => void;
 };
 

@@ -111,7 +111,7 @@ export const submitOrder = async (
   setScreen: (screen: Screen) => void,
 ) => {
   try {
-    await addDoc(collection(db, "orders"), {
+    const orderDoc = await addDoc(collection(db, "orders"), {
       customerName: customerName,
       phone: customerPhone,
       email: customerEmail,
@@ -127,11 +127,14 @@ export const submitOrder = async (
       createdAt: serverTimestamp(),
     });
 
+    // Stores the generated order ID for use on the confirmation screen
+    const orderId = orderDoc.id;
+
     console.log("Order saved to Firebase");
     setScreen("orderConfirmation");
 
     // Confirms that the order was successfully saved to Firestore
-    return true;
+    return orderId;
   } catch (error) {
     console.error("Error saving order:", error);
     // Reports that the order was not saved so payment does not begin

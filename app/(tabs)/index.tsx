@@ -137,6 +137,8 @@ export default function App() {
 
   // Stores the total of the most recently submitted order for the confirmation screen
   const [confirmedOrderTotal, setConfirmedOrderTotal] = useState(0);
+  // Stores the Firestore ID of the most recently submitted order
+  const [confirmedOrderId, setConfirmedOrderId] = useState("");
 
   const [activeFoodTrailerMenu, setActiveFoodTrailerMenu] = useState<any>(null);
   const [foodTrailerLocation, setFoodTrailerLocation] = useState("");
@@ -644,6 +646,9 @@ export default function App() {
       return;
     }
 
+    // Saves the successful order's ID for the confirmation screen
+    setConfirmedOrderId(orderSaved);
+
     // Preserves the submitted order total before clearing the cart
     setConfirmedOrderTotal(cartTotal);
 
@@ -968,6 +973,7 @@ export default function App() {
       Header={Header}
       paymentMethod={paymentMethod}
       cartTotal={confirmedOrderTotal}
+      confirmedOrderId={confirmedOrderId}
       setScreen={setScreen}
     />
   );
