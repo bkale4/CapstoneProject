@@ -187,6 +187,12 @@ export const OrderConfirmationScreen = ({
         </Text>
         <Text style={styles.summaryLine}>Payment Method: {paymentMethod}</Text>
         <Text style={styles.summaryTotal}>Total: ${cartTotal.toFixed(2)}</Text>
+        {/* Displays payment instructions based on the customer's selected method */}
+        <Text style={styles.summaryLine}>
+          {paymentMethod.toLowerCase() === "cash"
+            ? "Please have your payment ready at pickup."
+            : "Please complete your payment using your selected payment method."}
+        </Text>
       </View>
 
       <Pressable style={styles.primaryButton} onPress={() => setScreen("home")}>
