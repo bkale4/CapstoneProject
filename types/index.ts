@@ -33,6 +33,8 @@ export type Screen =
 // Defines the information stored for each cart item
 export type CartItem = {
   id: string;
+  menuItemId: string;
+  menuId: string;
   name: string;
   price: number;
   quantity: number;
@@ -107,7 +109,13 @@ export type FoodTrailerScreenProps = {
   >;
 
   // Adds the selected menu item to the customer's cart
-  addToCart: (id: string, name: string, price: number) => void;
+  addToCart: (
+    id: string,
+    name: string,
+    price: number,
+    menuItemId: string,
+    menuId: string,
+  ) => void;
 
   // Navigates to another screen in the application
   setScreen: (screen: Screen) => void;

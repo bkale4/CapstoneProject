@@ -118,7 +118,14 @@ import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 
 import { db } from "../../firebaseConfig";
 
-import { Linking, Pressable, ScrollView, Text } from "react-native";
+import {
+  Alert,
+  Linking,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+} from "react-native";
 
 // Stores customer payment destinations until the client's account details are available
 const CUSTOMER_PAYMENT_LINKS = {
@@ -131,6 +138,37 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>("home");
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  // Notifies customers when a sold-out item is removed from their cart
+  const notifySoldOutItems = () => {
+    const title = "Item No Longer Available";
+    const message =
+      "One or more items in your cart have sold out and were automatically removed. Your cart total has been updated.";
+
+    if (Platform.OS === "web") {
+      window.alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
+  // Keeps the latest cart items available for Firestore availability checks
+  const cartItemsRef = useRef<CartItem[]>([]);
+
+  // Updates the reference whenever the cart changes
+  useEffect(() => {
+    cartItemsRef.current = cartItems;
+  }, [cartItems]);
+
+  // Tracks whether sold-out items were removed so the customer can be notified
+  const [soldOutCartNotice, setSoldOutCartNotice] = useState(false);
+  // Displays a notification when sold-out items are removed from the cart
+  useEffect(() => {
+    if (soldOutCartNotice) {
+      notifySoldOutItems();
+      setSoldOutCartNotice(false);
+    }
+  }, [soldOutCartNotice]);
+
   const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
@@ -319,8 +357,20 @@ export default function App() {
             setActiveFoodTrailerMenu(null);
             setActiveCateringMenu([]);
 
+            // Stores the IDs of menu items currently marked as Sold Out
+            const soldOutItemIds = new Set<string>();
+
             menuSnapshot.forEach((menuDoc) => {
               const menuData = menuDoc.data();
+
+              // Checks each menu category for sold-out items
+              menuData.categories?.forEach((category: any) => {
+                category.items?.forEach((item: any) => {
+                  if (item.status === "Sold Out" && item.id) {
+                    soldOutItemIds.add(`${menuDoc.id}:${item.id}`);
+                  }
+                });
+              });
 
               if (menuData.type === "foodTrailer" && menuData.active === true) {
                 setActiveFoodTrailerMenu({
@@ -350,6 +400,26 @@ export default function App() {
                 ]);
               }
             });
+
+            // Checks whether the current cart contains any sold-out items
+            const hasSoldOutCartItems = cartItemsRef.current.some((cartItem) =>
+              soldOutItemIds.has(`${cartItem.menuId}:${cartItem.menuItemId}`),
+            );
+
+            // Triggers a customer notificaiton when sold-out items are detected
+            if (hasSoldOutCartItems) {
+              setSoldOutCartNotice(true);
+            }
+
+            // Removes cart items that have become sold out
+            setCartItems((previous) =>
+              previous.filter(
+                (cartItem) =>
+                  !soldOutItemIds.has(
+                    `${cartItem.menuId}:${cartItem.menuItemId}`,
+                  ),
+              ),
+            );
           },
         );
 
@@ -741,7 +811,13 @@ export default function App() {
     });
   };
 
-  const addToCart = (id: string, name: string, price: number) => {
+  const addToCart = (
+    id: string,
+    name: string,
+    price: number,
+    menuItemId: string,
+    menuId: string,
+  ) => {
     setCartItems((prev) => {
       const existingItem = prev.find((item) => item.id === id);
 
@@ -751,7 +827,7 @@ export default function App() {
         );
       }
 
-      return [...prev, { id, name, price, quantity: 1 }];
+      return [...prev, { id, name, price, quantity: 1, menuItemId, menuId }];
     });
   };
 

@@ -2,11 +2,16 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
+
 import type React from "react";
+
+import { Alert, Platform } from "react-native";
+
 import { db } from "../firebaseConfig";
 
 import type { CartItem, Screen } from "../types";
@@ -111,6 +116,29 @@ export const submitOrder = async (
   setScreen: (screen: Screen) => void,
 ) => {
   try {
+    // Checks that each cart item's menu and availability are still valid
+    for (const cartItem of cartItems) {
+      const menuRef = doc(db, "menus", cartItem.menuId);
+      const menuSnapshot = await getDoc(menuRef);
+
+      // Prevents ordering from menus that no longer exist or are inactive
+      if (!menuSnapshot.exists() || menuSnapshot.data().active !== true) {
+        throw new Error(`${cartItem.name} is no longer available.`);
+      }
+
+      const menuData = menuSnapshot.data();
+
+      // Finds the original item within the menu's categories
+      const menuItem = menuData.categories
+        ?.flatMap((category: any) => category.items || [])
+        .find((item: any) => item.id === cartItem.menuItemId);
+
+      // Prevents deleted or sold-out items from being ordered
+      if (!menuItem || menuItem.status === "Sold Out") {
+        throw new Error(`${cartItem.name} is no longer available.`);
+      }
+    }
+
     const orderDoc = await addDoc(collection(db, "orders"), {
       customerName: customerName,
       phone: customerPhone,
@@ -137,7 +165,20 @@ export const submitOrder = async (
     return orderId;
   } catch (error) {
     console.error("Error saving order:", error);
-    // Reports that the order was not saved so payment does not begin
+
+    // Displays the reason checkout failed to the customer
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Your order could not be submitted. Please try again.";
+
+    if (Platform.OS === "web") {
+      window.alert(`Order Not Submitted\n\n${message}`);
+    } else {
+      Alert.alert("Order Not Submitted", message);
+    }
+
+    // Prevents payment from continuing when the order is not saved
     return false;
   }
 };

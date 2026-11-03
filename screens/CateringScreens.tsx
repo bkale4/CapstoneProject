@@ -974,6 +974,7 @@ export const OnsiteCateringMenuScreen = ({
               )}
           </View>
         ))}
+
         {/* Displays menu categories that do not have a parent category */}
         {selectedOnsiteCateringMenu?.categories?.map(
           (category: any, categoryIndex: number) =>

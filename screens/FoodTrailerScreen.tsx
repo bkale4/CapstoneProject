@@ -217,7 +217,13 @@ export const FoodTrailerScreen = ({
                                 Number(item.price) +
                                 (hasAddOn ? Number(selectedAddOn.price) : 0);
 
-                              addToCart(cartId, cartName, finalPrice);
+                              addToCart(
+                                cartId,
+                                cartName,
+                                finalPrice,
+                                item.id,
+                                activeFoodTrailerMenu.id,
+                              );
 
                               // Resets the add-on selection after adding the item
                               setSelectedAddOnOptions((previous) => {
@@ -423,7 +429,13 @@ export const FoodTrailerScreen = ({
                                     ? Number(selectedAddOn?.price ?? 0)
                                     : 0);
 
-                                addToCart(cartId, cartName, finalPrice);
+                                addToCart(
+                                  cartId,
+                                  cartName,
+                                  finalPrice,
+                                  item.id,
+                                  activeFoodTrailerMenu.id,
+                                );
 
                                 setSelectedAddOnOptions((previous) => {
                                   const updated = { ...previous };
@@ -607,7 +619,13 @@ export const FoodTrailerScreen = ({
                             Number(item.price) +
                             (hasAddOn ? Number(selectedAddOn?.price ?? 0) : 0);
 
-                          addToCart(cartId, cartName, finalPrice);
+                          addToCart(
+                            cartId,
+                            cartName,
+                            finalPrice,
+                            item.id,
+                            activeFoodTrailerMenu.id,
+                          );
 
                           setSelectedAddOnOptions((previous) => {
                             const updated = { ...previous };
