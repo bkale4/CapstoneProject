@@ -151,6 +151,19 @@ export default function App() {
     }
   };
 
+  // Notices customers when their cart is cleared because a Food Trailer menu becomes inactive
+  const notifyInactiveMenu = () => {
+    const title = "Menu No Longer Available";
+    const message =
+      "The Food Trailer menu you were ordering from is no longer available. The items from that menu have been automatically removed from your cart.";
+
+    if (Platform.OS === "web") {
+      window.alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
   // Keeps the latest cart items available for Firestore availability checks
   const cartItemsRef = useRef<CartItem[]>([]);
 
@@ -161,6 +174,10 @@ export default function App() {
 
   // Tracks whether sold-out items were removed so the customer can be notified
   const [soldOutCartNotice, setSoldOutCartNotice] = useState(false);
+
+  // Tracks whether items were removed because a Food Trailer menu became inactive
+  const [inactiveMenuCartNotice, setInactiveMenuCartNotice] = useState(false);
+
   // Displays the sold-out notification only when sold-out items are removed from the cartthe customer is outsief
   useEffect(() => {
     if (soldOutCartNotice && screen !== "business") {
@@ -168,6 +185,14 @@ export default function App() {
       setSoldOutCartNotice(false);
     }
   }, [soldOutCartNotice]);
+
+  // Notifies the customer when items are removed because their Food Trailer menu becomes inactive.
+  useEffect(() => {
+    if (inactiveMenuCartNotice) {
+      notifyInactiveMenu();
+      setInactiveMenuCartNotice(false);
+    }
+  }, [inactiveMenuCartNotice]);
 
   const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
@@ -416,6 +441,16 @@ export default function App() {
             const hasSoldOutCartItems = cartItemsRef.current.some((cartItem) =>
               soldOutItemIds.has(`${cartItem.menuId}:${cartItem.menuItemId}`),
             );
+
+            // Checks whether the cart contains items from an inactive Food Trailer menu.
+            const hasInactiveMenuCartItems = cartItemsRef.current.some(
+              (cartItem) => inactiveFoodTrailerMenuIds.has(cartItem.menuId),
+            );
+
+            // Triggers a customer notification when inactive menu items are detected.
+            if (hasInactiveMenuCartItems) {
+              setInactiveMenuCartNotice(true);
+            }
 
             // Triggers a customer notificaiton when sold-out items are detected
             if (hasSoldOutCartItems) {
