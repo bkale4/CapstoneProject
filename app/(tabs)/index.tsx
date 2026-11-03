@@ -382,6 +382,7 @@ export default function App() {
       editItemStatus,
       editItemAddOnName,
       editItemAddOnPrice,
+      additionalAddOns,
       setSelectedAdminMenu,
       loadAdminMenus,
       setScreen,
@@ -1192,6 +1193,8 @@ export default function App() {
       setEditItemAddOnName={setEditItemAddOnName}
       editItemAddOnPrice={editItemAddOnPrice}
       setEditItemAddOnPrice={setEditItemAddOnPrice}
+      additionalAddOns={additionalAddOns}
+      setAdditionalAddOns={setAdditionalAddOns}
       editItemStatus={editItemStatus}
       setEditItemStatus={setEditItemStatus}
       itemStatusDropdown={itemStatusDropdown}

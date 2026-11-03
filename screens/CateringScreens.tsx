@@ -105,6 +105,65 @@ export const DropOffCateringMenuScreen = ({
               </Text>
             </Pressable>
 
+            {/* Displays items belonging directly to the expanded parent category */}
+            {expandedParentCategories.includes(parentCategory) &&
+              selectedDropOffCateringMenu?.categories?.map(
+                (category: any, categoryIndex: number) =>
+                  category.name?.trim() === parentCategory &&
+                  !category.parentCategory?.trim()
+                    ? category.items?.map((item: any, itemIndex: number) => (
+                        <View
+                          key={`${categoryIndex}-${itemIndex}`}
+                          style={styles.card}
+                        >
+                          <Text style={styles.cardTitle}>{item.name}</Text>
+
+                          <Text style={styles.menuDescription}>
+                            {item.description}
+                          </Text>
+
+                          {/* Displays the saved photo for a parent-category item */}
+                          <SavedMenuItemPhoto photoId={item.id} />
+
+                          {/* Displays half/full or single pricing */}
+                          {item.pricingType === "halfFull" ? (
+                            <>
+                              <Text style={styles.cateringPrice}>
+                                Half: ${Number(item.halfPrice).toFixed(2)}
+                              </Text>
+                              <Text style={styles.cateringPrice}>
+                                Full: ${Number(item.fullPrice).toFixed(2)}
+                              </Text>
+                            </>
+                          ) : (
+                            <Text style={styles.cateringPrice}>
+                              {item.price === null ||
+                              item.price === undefined ||
+                              item.price === ""
+                                ? "Contact for Pricing"
+                                : `$${Number(item.price).toFixed(2)}`}
+                            </Text>
+                          )}
+
+                          {/* Displays Limited or Sold Out availability */}
+                          {(item.status === "Limited" ||
+                            item.status === "Sold Out") && (
+                            <Text
+                              style={[
+                                styles.statusText,
+                                item.status === "Sold Out"
+                                  ? styles.soldOutText
+                                  : styles.limitedText,
+                              ]}
+                            >
+                              {item.status}
+                            </Text>
+                          )}
+                        </View>
+                      ))
+                    : null,
+              )}
+
             {/* Displays subcategories when a parent category is expanded */}
             {expandedParentCategories.includes(parentCategory) &&
               selectedDropOffCateringMenu?.categories?.map(
@@ -189,7 +248,8 @@ export const DropOffCateringMenuScreen = ({
         {/* Displays menu categories that do not have a parent category */}
         {selectedDropOffCateringMenu?.categories?.map(
           (category: any, categoryIndex: number) =>
-            !category.parentCategory?.trim() ? (
+            !category.parentCategory?.trim() &&
+            !parentCategories.includes(category.name?.trim()) ? (
               <View key={categoryIndex}>
                 <Pressable
                   style={styles.menuDropdownButton}
@@ -754,14 +814,14 @@ export const OnsiteCateringMenuScreen = ({
           {selectedOnsiteCateringMenu?.name}
         </Text>
 
-        {/* Displays the selected Drop-Off Catering menu description */}
+        {/* Displays the selected Onsite Catering menu description */}
         {selectedOnsiteCateringMenu?.description?.trim() && (
           <Text style={styles.menuDescription}>
             {selectedOnsiteCateringMenu.description}
           </Text>
         )}
 
-        {/* Displays expandable parent categories in the Drop-Off Catering menu */}
+        {/* Displays expandable parent categories in the Onsite Catering menu */}
         {parentCategories.map((parentCategory) => (
           <View key={parentCategory}>
             <Pressable
@@ -773,6 +833,65 @@ export const OnsiteCateringMenuScreen = ({
                 {expandedParentCategories.includes(parentCategory) ? "▲" : "▼"}
               </Text>
             </Pressable>
+
+            {/* Displays items belonging directly to the expanded parent category */}
+            {expandedParentCategories.includes(parentCategory) &&
+              selectedOnsiteCateringMenu?.categories?.map(
+                (category: any, categoryIndex: number) =>
+                  category.name?.trim() === parentCategory &&
+                  !category.parentCategory?.trim()
+                    ? category.items?.map((item: any, itemIndex: number) => (
+                        <View
+                          key={`${categoryIndex}-${itemIndex}`}
+                          style={styles.card}
+                        >
+                          <Text style={styles.cardTitle}>{item.name}</Text>
+
+                          <Text style={styles.menuDescription}>
+                            {item.description}
+                          </Text>
+
+                          {/* Displays the saved photo for a parent-category item */}
+                          <SavedMenuItemPhoto photoId={item.id} />
+
+                          {/* Displays half/full or single pricing */}
+                          {item.pricingType === "halfFull" ? (
+                            <>
+                              <Text style={styles.cateringPrice}>
+                                Half: ${Number(item.halfPrice).toFixed(2)}
+                              </Text>
+                              <Text style={styles.cateringPrice}>
+                                Full: ${Number(item.fullPrice).toFixed(2)}
+                              </Text>
+                            </>
+                          ) : (
+                            <Text style={styles.cateringPrice}>
+                              {item.price === null ||
+                              item.price === undefined ||
+                              item.price === ""
+                                ? "Contact for Pricing"
+                                : `$${Number(item.price).toFixed(2)}`}
+                            </Text>
+                          )}
+
+                          {/* Displays Limited or Sold Out availability */}
+                          {(item.status === "Limited" ||
+                            item.status === "Sold Out") && (
+                            <Text
+                              style={[
+                                styles.statusText,
+                                item.status === "Sold Out"
+                                  ? styles.soldOutText
+                                  : styles.limitedText,
+                              ]}
+                            >
+                              {item.status}
+                            </Text>
+                          )}
+                        </View>
+                      ))
+                    : null,
+              )}
 
             {/* Displays subcategories when a parent category is expanded */}
             {expandedParentCategories.includes(parentCategory) &&
@@ -858,7 +977,8 @@ export const OnsiteCateringMenuScreen = ({
         {/* Displays menu categories that do not have a parent category */}
         {selectedOnsiteCateringMenu?.categories?.map(
           (category: any, categoryIndex: number) =>
-            !category.parentCategory?.trim() ? (
+            !category.parentCategory?.trim() &&
+            !parentCategories.includes(category.name?.trim()) ? (
               <View key={categoryIndex}>
                 <Pressable
                   style={styles.menuDropdownButton}

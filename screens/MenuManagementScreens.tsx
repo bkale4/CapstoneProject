@@ -881,7 +881,7 @@ export const ManageMenuItemsScreen = ({
                             ),
                           )
                         }
-                        placeholder={`Additional add-on \${index + 1} name`}
+                        placeholder={`Additional add-on ${index + 1} name`}
                       />
 
                       <TextInput
@@ -951,12 +951,18 @@ export const ManageMenuItemsScreen = ({
                   </Text>
                 )}
 
-                {/* Displays the item's add-on and availability */}
-                {item.addOn && (
-                  <Text style={styles.cardSubtitle}>
-                    Add-on: {item.addOn.name} (+$
-                    {Number(item.addOn.price).toFixed(2)})
-                  </Text>
+                {/* Displays all saved add-ons for the menu item */}
+                {(item.addOns?.length
+                  ? item.addOns
+                  : item.addOn
+                    ? [item.addOn]
+                    : []
+                ).map(
+                  (addOn: { name: string; price: number }, index: number) => (
+                    <Text key={index} style={styles.cardSubtitle}>
+                      Add-on: {addOn.name} (+${Number(addOn.price).toFixed(2)})
+                    </Text>
+                  ),
                 )}
 
                 <Text style={styles.cardSubtitle}>Status: {item.status}</Text>
@@ -993,6 +999,16 @@ export const ManageMenuItemsScreen = ({
                     setEditItemAddOnName(item.addOn?.name || "");
                     setEditItemAddOnPrice(
                       item.addOn?.price != null ? String(item.addOn.price) : "",
+                    );
+
+                    // Loads the item's additional saved add-ons into the existing add-on state
+                    setAdditionalAddOns(
+                      (item.addOns || [])
+                        .slice(1)
+                        .map((addOn: { name: string; price: number }) => ({
+                          name: addOn.name,
+                          price: String(addOn.price),
+                        })),
                     );
 
                     setScreen("editMenuItem");
@@ -1079,6 +1095,8 @@ export const EditMenuItemScreen = ({
   setEditItemAddOnName,
   editItemAddOnPrice,
   setEditItemAddOnPrice,
+  additionalAddOns,
+  setAdditionalAddOns,
   editItemStatus,
   setEditItemStatus,
   itemStatusDropdown,
@@ -1216,6 +1234,50 @@ export const EditMenuItemScreen = ({
         placeholder="Add-on price"
         keyboardType="decimal-pad"
       />
+
+      {/* Allows multiple add-ons for a menu item */}
+      <Pressable
+        style={styles.adminButton}
+        onPress={() =>
+          setAdditionalAddOns((previous) => [
+            ...previous,
+            { name: "", price: "" },
+          ])
+        }
+      >
+        <Text style={styles.adminButtonText}>Add Another Add-on</Text>
+      </Pressable>
+
+      {additionalAddOns.map((addOn, index) => (
+        <View key={index}>
+          <TextInput
+            style={styles.input}
+            value={addOn.name}
+            onChangeText={(text) =>
+              setAdditionalAddOns((previous) =>
+                previous.map((option, optionIndex) =>
+                  optionIndex === index ? { ...option, name: text } : option,
+                ),
+              )
+            }
+            placeholder={`Additional add-on ${index + 1} name`}
+          />
+
+          <TextInput
+            style={styles.input}
+            value={addOn.price}
+            onChangeText={(text) =>
+              setAdditionalAddOns((previous) =>
+                previous.map((option, optionIndex) =>
+                  optionIndex === index ? { ...option, price: text } : option,
+                ),
+              )
+            }
+            placeholder="Additional add-on price"
+            keyboardType="decimal-pad"
+          />
+        </View>
+      ))}
 
       {/* Displays the dropdown for selecting item availability */}
       <Text style={styles.label}>Availability Status</Text>

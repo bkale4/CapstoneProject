@@ -509,6 +509,14 @@ export type EditMenuItemScreenProps = {
   editItemAddOnPrice: string;
   setEditItemAddOnPrice: React.Dispatch<React.SetStateAction<string>>;
 
+  // Provides the existing additional add-ons to the Edit Item screen
+  additionalAddOns: { name: string; price: string }[];
+
+  // Allows the Edit Item screen to update additional add-ons
+  setAdditionalAddOns: React.Dispatch<
+    React.SetStateAction<{ name: string; price: string }[]>
+  >;
+
   editItemStatus: string;
   setEditItemStatus: React.Dispatch<React.SetStateAction<string>>;
 

@@ -35,7 +35,8 @@ export const FoodTrailerScreen = ({
     toggleCategory,
     toggleParentCategory,
   } = useMenuCategories();
-  // Gets the parent categories used to organize the Food Trailer menu
+
+  // Collects unique parent category names, including those with their own items
   const parentCategories: string[] = [
     ...new Set<string>(
       (activeFoodTrailerMenu?.categories || [])
@@ -65,6 +66,180 @@ export const FoodTrailerScreen = ({
                 {expandedParentCategories.includes(parentCategory) ? "▲" : "▼"}
               </Text>
             </Pressable>
+
+            {/* Displays items belonging directly to the expanded parent category */}
+            {expandedParentCategories.includes(parentCategory) &&
+              activeFoodTrailerMenu?.categories?.map(
+                (category: any, categoryIndex: number) =>
+                  category.name?.trim() === parentCategory &&
+                  !category.parentCategory?.trim()
+                    ? category.items?.map((item: any, itemIndex: number) => (
+                        <View
+                          key={`${categoryIndex}-${itemIndex}`}
+                          style={styles.card}
+                        >
+                          <Text style={styles.cardTitle}>{item.name}</Text>
+
+                          <Text style={styles.menuDescription}>
+                            {item.description}
+                          </Text>
+
+                          {/* Displays the item's saved photo */}
+                          <SavedMenuItemPhoto photoId={item.id} />
+
+                          <Text style={styles.sectionText}>
+                            ${Number(item.price).toFixed(2)}
+                          </Text>
+
+                          {/* Allows customers to select an add-on for a parent-category item */}
+                          {item.addOn?.name && (
+                            <Pressable
+                              onPress={() => {
+                                const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
+
+                                if (item.addOns?.length > 1) {
+                                  setSelectedAddOnOptions((previous) => ({
+                                    ...previous,
+                                    [itemId]: previous[itemId] === 0 ? -1 : 0,
+                                  }));
+                                } else {
+                                  setSelectedAddOns((previous) =>
+                                    previous.includes(itemId)
+                                      ? previous.filter((id) => id !== itemId)
+                                      : [...previous, itemId],
+                                  );
+                                }
+                              }}
+                            >
+                              <Text style={styles.addOnText}>
+                                {item.addOns?.length > 1
+                                  ? selectedAddOnOptions[
+                                      `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`
+                                    ] === 0
+                                    ? "☑ "
+                                    : "☐ "
+                                  : selectedAddOns.includes(
+                                        `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`,
+                                      )
+                                    ? "☑ "
+                                    : "☐ "}
+                                {item.addOn.name} (+$
+                                {Number(item.addOn.price).toFixed(2)})
+                              </Text>
+                            </Pressable>
+                          )}
+
+                          {/* Displays additional add-on options for parent-category items */}
+                          {item.addOns?.length > 1 &&
+                            item.addOns
+                              .slice(1)
+                              .map(
+                                (
+                                  addOn: { name: string; price: number },
+                                  addOnIndex: number,
+                                ) => {
+                                  const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
+                                  const optionIndex = addOnIndex + 1;
+
+                                  return (
+                                    <Pressable
+                                      key={optionIndex}
+                                      onPress={() => {
+                                        // Selects or deselects the additional add-on
+                                        setSelectedAddOnOptions((previous) => ({
+                                          ...previous,
+                                          [itemId]:
+                                            previous[itemId] === optionIndex
+                                              ? -1
+                                              : optionIndex,
+                                        }));
+                                      }}
+                                    >
+                                      <Text style={styles.addOnText}>
+                                        {selectedAddOnOptions[itemId] ===
+                                        optionIndex
+                                          ? "☑ "
+                                          : "☐ "}
+                                        {addOn.name} (+$
+                                        {Number(addOn.price).toFixed(2)})
+                                      </Text>
+                                    </Pressable>
+                                  );
+                                },
+                              )}
+
+                          {/* Displays Limited or Sold Out status for parent-category items */}
+                          {(item.status === "Limited" ||
+                            item.status === "Sold Out") && (
+                            <Text
+                              style={[
+                                styles.statusText,
+                                item.status === "Sold Out"
+                                  ? styles.soldOutText
+                                  : styles.limitedText,
+                              ]}
+                            >
+                              {item.status}
+                            </Text>
+                          )}
+
+                          {/* Adds an available parent-category item to the cart */}
+                          <Pressable
+                            style={[
+                              styles.adminButton,
+                              item.status === "Sold Out" && { opacity: 0.5 },
+                            ]}
+                            disabled={item.status === "Sold Out"}
+                            onPress={() => {
+                              // Identifies the item and selected add-on
+                              const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
+                              const selectedOptionIndex =
+                                selectedAddOnOptions[itemId];
+
+                              const selectedAddOn =
+                                item.addOns?.length > 1
+                                  ? selectedOptionIndex >= 0
+                                    ? item.addOns[selectedOptionIndex]
+                                    : undefined
+                                  : selectedAddOns.includes(itemId)
+                                    ? item.addOn
+                                    : undefined;
+
+                              // Includes the selected add-on in the cart name, ID, and price
+                              const hasAddOn = Boolean(selectedAddOn?.name);
+                              const cartId = hasAddOn
+                                ? `${itemId}-addOn-${selectedAddOn.name}`
+                                : itemId;
+                              const cartName = hasAddOn
+                                ? `${item.name} + ${selectedAddOn.name}`
+                                : item.name;
+                              const finalPrice =
+                                Number(item.price) +
+                                (hasAddOn ? Number(selectedAddOn.price) : 0);
+
+                              addToCart(cartId, cartName, finalPrice);
+
+                              // Resets the add-on selection after adding the item
+                              setSelectedAddOnOptions((previous) => {
+                                const updated = { ...previous };
+                                delete updated[itemId];
+                                return updated;
+                              });
+                              setSelectedAddOns((previous) =>
+                                previous.filter((id) => id !== itemId),
+                              );
+                            }}
+                          >
+                            <Text style={styles.adminButtonText}>
+                              {item.status === "Sold Out"
+                                ? "Sold Out"
+                                : "Add to Cart"}
+                            </Text>
+                          </Pressable>
+                        </View>
+                      ))
+                    : null,
+              )}
 
             {/* Displays subcategories when a parent category is expanded */}
             {expandedParentCategories.includes(parentCategory) &&
@@ -273,7 +448,8 @@ export const FoodTrailerScreen = ({
         {/* Displays menu categories that do not have a parent category */}
         {activeFoodTrailerMenu?.categories?.map(
           (category: any, categoryIndex: number) =>
-            !category.parentCategory?.trim() ? (
+            !category.parentCategory?.trim() &&
+            !parentCategories.includes(category.name?.trim()) ? (
               <View key={categoryIndex}>
                 <Pressable
                   style={styles.menuDropdownButton}

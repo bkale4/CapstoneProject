@@ -135,12 +135,63 @@ export const addNewCategory = async (
   }
 
   try {
+    // Gets the existing categories and the requested parent category name
+    const existingCategories = selectedAdminMenu.categories || [];
+    const parentName = newCategoryParent.trim();
+
+    // Collects parent category names already used by the menu
+    const parentCategories = [
+      ...new Set(
+        existingCategories
+          .map((category: any) => category.parentCategory?.trim() || "")
+          .filter((name: string) => name !== ""),
+      ),
+    ];
+
+    // Creates a parent category entry if one does not already exist
+    const parentExists = existingCategories.some(
+      (category: any) =>
+        category.name.trim() === parentName && !category.parentCategory?.trim(),
+    );
+
+    // Preserves existing categories and creates parent categories only when needed
     const updatedCategories = [
-      ...(selectedAdminMenu.categories || []),
+      ...existingCategories,
+
+      // Creates entries for existing parent categories that do not already have one
+      ...parentCategories
+        .filter(
+          (name) =>
+            !existingCategories.some(
+              (category: any) =>
+                category.name?.trim() === name &&
+                !category.parentCategory?.trim(),
+            ),
+        )
+        .map((name) => ({
+          name,
+          description: "",
+          parentCategory: "",
+          items: [],
+        })),
+
+      // Creates the selected parent only if it does not already exist
+      ...(parentName && !parentExists && !parentCategories.includes(parentName)
+        ? [
+            {
+              name: parentName,
+              description: "",
+              parentCategory: "",
+              items: [],
+            },
+          ]
+        : []),
+
+      // Adds the new category entered by the client
       {
         name: newCategoryName.trim(),
         description: newCategoryDescription.trim(),
-        parentCategory: newCategoryParent.trim(),
+        parentCategory: parentName,
         items: [],
       },
     ];
@@ -301,6 +352,7 @@ export const saveMenuItemChanges = async (
   editItemStatus: string,
   editItemAddOnName: string,
   editItemAddOnPrice: string,
+  additionalAddOns: { name: string; price: string }[],
   setSelectedAdminMenu: React.Dispatch<React.SetStateAction<any>>,
   loadAdminMenus: () => Promise<void>,
   setScreen: (screen: Screen) => void,
@@ -328,6 +380,30 @@ export const saveMenuItemChanges = async (
 
   const hasAddOn = editItemAddOnName.trim() !== "";
   const addOnPrice = hasAddOn ? Number(editItemAddOnPrice) : 0;
+
+  // Combines the first add-on with any additional add-ons
+  const allAddOns = [
+    ...(hasAddOn
+      ? [{ name: editItemAddOnName.trim(), price: addOnPrice }]
+      : []),
+    ...additionalAddOns.map((addOn) => ({
+      name: addOn.name.trim(),
+      price: Number(addOn.price),
+    })),
+  ];
+
+  // Prevents invalid additional add-ons from being saved
+  if (
+    additionalAddOns.some(
+      (addOn) =>
+        !addOn.name.trim() ||
+        !addOn.price.trim() ||
+        !Number.isFinite(Number(addOn.price)) ||
+        Number(addOn.price) < 0,
+    )
+  ) {
+    return;
+  }
 
   if (
     (hasAddOn &&
@@ -382,16 +458,17 @@ export const saveMenuItemChanges = async (
             fullPrice: Number(editItemFullPrice),
           }),
       status: editItemStatus,
-      ...(hasAddOn && {
-        addOn: {
-          name: editItemAddOnName.trim(),
-          price: addOnPrice,
-        },
+      // Saves the complete add-on list and maintains the first add-on for compatibility
+      ...(allAddOns.length > 0 && {
+        addOns: allAddOns,
+        addOn: allAddOns[0],
       }),
     };
 
-    if (!hasAddOn) {
+    // Removes both add-on fields when no add-ons remain
+    if (allAddOns.length === 0) {
       delete updatedItems[selectedAdminItemIndex].addOn;
+      delete updatedItems[selectedAdminItemIndex].addOns;
     }
 
     if (editItemPricingType === "single") {
