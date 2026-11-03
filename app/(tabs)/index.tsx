@@ -161,9 +161,9 @@ export default function App() {
 
   // Tracks whether sold-out items were removed so the customer can be notified
   const [soldOutCartNotice, setSoldOutCartNotice] = useState(false);
-  // Displays a notification when sold-out items are removed from the cart
+  // Displays the sold-out notification only when sold-out items are removed from the cartthe customer is outsief
   useEffect(() => {
-    if (soldOutCartNotice) {
+    if (soldOutCartNotice && screen !== "business") {
       notifySoldOutItems();
       setSoldOutCartNotice(false);
     }
@@ -360,8 +360,19 @@ export default function App() {
             // Stores the IDs of menu items currently marked as Sold Out
             const soldOutItemIds = new Set<string>();
 
+            // Stores the IDs of Food Trailer menus that are currrently inactive
+            const inactiveFoodTrailerMenuIds = new Set<string>();
+
             menuSnapshot.forEach((menuDoc) => {
               const menuData = menuDoc.data();
+
+              // Tracks Food Trailer menus that have been marked inactibve
+              if (
+                menuData.type === "foodTrailer" &&
+                menuData.active === false
+              ) {
+                inactiveFoodTrailerMenuIds.add(menuDoc.id);
+              }
 
               // Checks each menu category for sold-out items
               menuData.categories?.forEach((category: any) => {
@@ -411,13 +422,13 @@ export default function App() {
               setSoldOutCartNotice(true);
             }
 
-            // Removes cart items that have become sold out
+            // Removes cart items that have become sold out or belong to an inactive Food Trailer menu
             setCartItems((previous) =>
               previous.filter(
                 (cartItem) =>
                   !soldOutItemIds.has(
                     `${cartItem.menuId}:${cartItem.menuItemId}`,
-                  ),
+                  ) && !inactiveFoodTrailerMenuIds.has(cartItem.menuId),
               ),
             );
           },
