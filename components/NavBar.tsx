@@ -33,3 +33,16 @@ export const NavBar = ({ setScreen, isAdminLoggedIn }: NavBarProps) => (
     </Pressable>
   </View>
 );
+
+// Creates a NavBar component connected to the application's navigation state
+export const createAppNavBar = (
+  setScreen: React.Dispatch<React.SetStateAction<Screen>>,
+  isAdminLoggedIn: boolean,
+) => {
+  // Displays the shared navigation bar with the current admin login state
+  const AppNavBar = () => (
+    <NavBar setScreen={setScreen} isAdminLoggedIn={isAdminLoggedIn} />
+  );
+
+  return AppNavBar;
+};

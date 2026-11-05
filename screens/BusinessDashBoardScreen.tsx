@@ -7,6 +7,10 @@ import { styles } from "../styles/styles";
 
 import type { BusinessDashBoardScreenProps } from "../types/index.ts";
 
+// Imports the navigation state type and React state setter types
+import type { Dispatch, SetStateAction } from "react";
+import type { Screen } from "../types/index.ts";
+
 // Displays the Business Dashboard and its admin management options
 export const BusinessDashboardScreen = ({
   Header,
@@ -93,4 +97,19 @@ export const BusinessDashboardScreen = ({
       </Pressable>
     </ScrollView>
   </>
+);
+
+// Defines the navigation information required by the Business Dashboard back button
+interface BusinessBackButtonProps {
+  setScreen: Dispatch<SetStateAction<Screen>>;
+}
+
+// Displays a button that requires the admin to the Business Dashboard
+export const BusinessBackButton = ({ setScreen }: BusinessBackButtonProps) => (
+  <Pressable
+    style={styles.secondaryButton}
+    onPress={() => setScreen("business")}
+  >
+    <Text style={styles.secondaryButtonText}>Back to Business Dashboard</Text>
+  </Pressable>
 );

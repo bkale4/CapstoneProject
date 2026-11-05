@@ -22,3 +22,13 @@ export function Header({ title, onHomePress }: HeaderProps) {
     </View>
   );
 }
+
+// Creates a Header component with the application's Home navigation
+export const createHomeHeader = (onHomePress: () => void) => {
+  // Displays the shared Header with its Home navigation configured
+  const HomeHeader = ({ title }: { title: string }) => (
+    <Header title={title} onHomePress={onHomePress} />
+  );
+
+  return HomeHeader;
+};
