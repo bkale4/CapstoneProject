@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { Dispatch, SetStateAction } from "react";
 
-import type { Screen } from "../types/index";
+import type { Screen } from "../types/types";
 
 import {
     handleBusinessLogin as handleBusinessLoginService,

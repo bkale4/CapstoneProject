@@ -15,17 +15,17 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Catering Menu Options screen
 import type {
-  AvailabilityCalendarScreenProps,
-  CateringConfirmationScreenProps,
-  CateringEventsScreenProps,
-  CateringManagementScreenProps,
-  CateringRequestScreenProps,
-  CateringScreenProps,
-  DropOffCateringMenuOptionsScreenProps,
-  DropOffCateringMenuScreenProps,
-  OnsiteCateringMenuOptionsScreenProps,
-  OnsiteCateringMenuScreenProps,
-} from "../types";
+    AvailabilityCalendarScreenProps,
+    CateringConfirmationScreenProps,
+    CateringEventsScreenProps,
+    CateringManagementScreenProps,
+    CateringRequestScreenProps,
+    CateringScreenProps,
+    DropOffCateringMenuOptionsScreenProps,
+    DropOffCateringMenuScreenProps,
+    OnsiteCateringMenuOptionsScreenProps,
+    OnsiteCateringMenuScreenProps,
+} from "../types/types";
 
 // Displays the available Drop-Off Catering menus for customers to select
 export const DropOffCateringMenuOptionsScreen = ({

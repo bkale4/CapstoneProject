@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
-    notifyInactiveMenu,
-    notifySoldOutItems,
+  notifyInactiveMenu,
+  notifySoldOutItems,
 } from "../utils/cartNotifications";
 
-import type { CartItem, Screen } from "../types/index.ts";
+import type { CartItem, Screen } from "../types/types";
 
 // Manages the customer's shopping cart state
 export const useCart = (screen: Screen) => {
@@ -104,6 +104,12 @@ export const useCart = (screen: Screen) => {
     0,
   );
 
+  // Calculates Maryland's 6% sales tax on the cart subtotal
+  const salesTax = Math.round(cartTotal * 0.06 * 100) / 100;
+
+  // Calculates the final order total including sales tax
+  const finalTotal = Math.round((cartTotal + salesTax) * 100) / 100;
+
   return {
     cartItems,
     setCartItems,
@@ -122,5 +128,7 @@ export const useCart = (screen: Screen) => {
     removeItem,
     clearCart,
     cartTotal,
+    salesTax,
+    finalTotal,
   };
 };

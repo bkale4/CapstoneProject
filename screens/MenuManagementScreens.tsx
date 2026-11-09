@@ -1,20 +1,20 @@
 // Imports React and the components used for administrative menu management
 import React, { useEffect, useState } from "react";
 import {
-  Alert,
-  Image,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    Image,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 
 import {
-  compressMenuItemPhoto,
-  loadMenuItemPhoto,
-  selectMenuItemPhoto,
+    compressMenuItemPhoto,
+    loadMenuItemPhoto,
+    selectMenuItemPhoto,
 } from "../services/imageService";
 
 // Imports shared application styles
@@ -22,12 +22,12 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Menu Management screen
 import type {
-  AddMenuScreenProps,
-  EditMenuItemScreenProps,
-  EditMenuScreenProps,
-  ManageMenuItemsScreenProps,
-  MenuManagementScreenProps,
-} from "../types";
+    AddMenuScreenProps,
+    EditMenuItemScreenProps,
+    EditMenuScreenProps,
+    ManageMenuItemsScreenProps,
+    MenuManagementScreenProps,
+} from "../types/types";
 
 // Displays menus and allows administrators to manage their settings and items
 export const MenuManagementScreen = ({

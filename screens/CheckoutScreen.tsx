@@ -9,7 +9,7 @@ import { styles } from "../styles/styles";
 import type {
   CheckoutScreenProps,
   OrderConfirmationScreenProps,
-} from "../types";
+} from "../types/types";
 
 // Displays customer information, payment options, and the final order
 export const CheckoutScreen = ({
@@ -31,6 +31,8 @@ export const CheckoutScreen = ({
   setPaymentMethod,
   cartItems,
   cartTotal,
+  salesTax,
+  finalTotal,
   submitOrder,
   isSubmittingOrder,
 }: CheckoutScreenProps) => (
@@ -147,7 +149,17 @@ export const CheckoutScreen = ({
             {(item.price * item.quantity).toFixed(2)}
           </Text>
         ))}
-        <Text style={styles.summaryTotal}>Total: ${cartTotal.toFixed(2)}</Text>
+        {/* Displays the order subtotal before sales tax */}
+        <Text style={styles.summaryLine}>
+          Subtotal: ${cartTotal.toFixed(2)}
+        </Text>
+        {/* Displays the calculated 6% */}
+        <Text style={styles.summaryTotal}>
+          Sales Tax (6%): ${salesTax.toFixed(2)}
+        </Text>
+
+        {/* Displays the final order total including sales tax */}
+        <Text style={styles.summaryTotal}>Total: ${finalTotal.toFixed(2)}</Text>
       </View>
 
       <Pressable

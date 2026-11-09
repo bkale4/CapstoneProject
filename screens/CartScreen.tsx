@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { styles } from "../styles/styles";
 
 // Imports the properties required by the Cart screen
-import type { CartScreenProps } from "../types";
+import type { CartScreenProps } from "../types/types";
 
 // Displays cart items, quantites, prices, and checkout options
 export const CartScreen = ({

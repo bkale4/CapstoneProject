@@ -1,17 +1,17 @@
 import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-  setDoc,
-  updateDoc,
-  writeBatch,
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    orderBy,
+    query,
+    setDoc,
+    updateDoc,
+    writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import type { Screen } from "../types";
+import type { Screen } from "../types/types";
 
 // Saves a catering request to Firestore
 export const submitCateringRequest = async (

@@ -7,10 +7,10 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Business and Customer Login screens
 import type {
-  BusinessLoginScreenProps,
-  CreateAccountScreenProps,
-  CustomerLoginScreenProps,
-} from "../types";
+    BusinessLoginScreenProps,
+    CreateAccountScreenProps,
+    CustomerLoginScreenProps,
+} from "../types/types";
 
 // Displays the admin login form
 export function BusinessLoginScreen({

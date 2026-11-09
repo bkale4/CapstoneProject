@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { styles } from "../styles/styles";
-import type { Screen } from "../types";
+import type { Screen } from "../types/types";
 
 type NavBarProps = {
   setScreen: React.Dispatch<React.SetStateAction<Screen>>;

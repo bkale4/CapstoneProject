@@ -23,7 +23,7 @@ import {
 
 // Imports the type used for application navigation
 import type { Dispatch, SetStateAction } from "react";
-import type { Screen } from "../types";
+import type { Screen } from "../types/types";
 
 import { loadAdminMenusService } from "../services/menuService";
 

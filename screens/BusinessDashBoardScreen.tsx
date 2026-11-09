@@ -5,11 +5,11 @@ import { Pressable, ScrollView, Text } from "react-native";
 // Imports shared application styles
 import { styles } from "../styles/styles";
 
-import type { BusinessDashBoardScreenProps } from "../types/index.ts";
+import type { BusinessDashBoardScreenProps } from "../types/types";
 
 // Imports the navigation state type and React state setter types
 import type { Dispatch, SetStateAction } from "react";
-import type { Screen } from "../types/index.ts";
+import type { Screen } from "../types/types";
 
 // Displays the Business Dashboard and its admin management options
 export const BusinessDashboardScreen = ({

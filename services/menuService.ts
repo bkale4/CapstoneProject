@@ -1,11 +1,11 @@
 // Imports Firestore functions for creating and managing menu documents
 import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  updateDoc,
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    updateDoc,
 } from "firebase/firestore";
 
 // Imports the Firebase database connection
@@ -13,12 +13,12 @@ import { db } from "../firebaseConfig";
 
 // Compresses selected photos and saves them to Firestore
 import {
-  compressMenuItemPhoto,
-  deleteMenuItemPhoto,
-  saveMenuItemPhoto,
+    compressMenuItemPhoto,
+    deleteMenuItemPhoto,
+    saveMenuItemPhoto,
 } from "./imageService";
 
-import type { Screen } from "../types";
+import type { Screen } from "../types/types";
 
 // Creates a new menu in Firestore
 export const createMenu = async (

@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { styles } from "../styles/styles";
 
 // Imports the properties required by the Availability Management screen
-import type { AvailabilityManagementScreenProps } from "../types";
+import type { AvailabilityManagementScreenProps } from "../types/types";
 
 // Displays the calendar and allows the client to manage available dates
 export const AvailabilityManagementScreen = ({

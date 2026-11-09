@@ -2,7 +2,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import type React from "react";
 import { auth, db } from "../firebaseConfig";
-import type { Screen } from "../types";
+import type { Screen } from "../types/types";
 
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { getDoc } from "firebase/firestore";

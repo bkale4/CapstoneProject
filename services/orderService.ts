@@ -14,7 +14,7 @@ import { Alert, Platform } from "react-native";
 
 import { db } from "../firebaseConfig";
 
-import type { CartItem, Screen } from "../types";
+import type { CartItem, Screen } from "../types/types";
 
 // Loads customer orders from Firestore for the Admin dashboard
 export const loadAdminOrders = async (
@@ -112,6 +112,8 @@ export const submitOrder = async (
   selectedEvent: string,
   cartItems: CartItem[],
   cartTotal: number,
+  salesTax: number,
+  finalTotal: number,
   paymentMethod: string,
   setScreen: (screen: Screen) => void,
 ) => {
@@ -147,7 +149,9 @@ export const submitOrder = async (
       location: selectedLocation,
       eventName: selectedEvent,
       items: cartItems,
-      total: cartTotal,
+      subtotal: cartTotal,
+      salesTax: salesTax,
+      total: finalTotal,
       paymentMethod: paymentMethod,
       paymentStatus: "Not Paid",
       status:

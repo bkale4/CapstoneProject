@@ -6,7 +6,7 @@ import { Linking, Pressable, ScrollView, Text } from "react-native";
 import { styles } from "../styles/styles";
 
 // Imports the properties required by the Payment Management screen
-import type { PaymentManagementScreenProps } from "../types";
+import type { PaymentManagementScreenProps } from "../types/types";
 
 // Stores the business's payment account links
 // Replace the empty strings with the actual links once the client provides them

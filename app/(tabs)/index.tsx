@@ -8,7 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles/styles";
 
 // Imports the Screen type used for application navigation
-import type { Screen } from "../../types";
+import type { Screen } from "../../types/types";
 
 // Imports the shared customer and admin authentication screens
 import {
@@ -130,6 +130,8 @@ export default function App() {
     removeItem,
     clearCart,
     cartTotal,
+    salesTax,
+    finalTotal,
   } = useCart(screen);
 
   // Retrieves admin login state from the authentication hook
@@ -404,6 +406,8 @@ export default function App() {
     selectedEvent,
     cartItems,
     cartTotal,
+    salesTax,
+    finalTotal,
     setCartItems,
     setScreen,
   });
@@ -564,6 +568,8 @@ export default function App() {
           setPaymentMethod={setPaymentMethod}
           cartItems={cartItems}
           cartTotal={cartTotal}
+          salesTax={salesTax}
+          finalTotal={finalTotal}
           submitOrder={submitOrder}
           isSubmittingOrder={isSubmittingOrder}
         />

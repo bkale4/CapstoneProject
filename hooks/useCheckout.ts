@@ -8,7 +8,7 @@ import { submitOrder as submitOrderService } from "../services/orderService";
 
 import { CUSTOMER_PAYMENT_LINKS } from "../constants/paymentLinks";
 
-import type { CartItem, Screen } from "../types";
+import type { CartItem, Screen } from "../types/types";
 
 // Imports the service for submitting customer orders
 
@@ -28,6 +28,8 @@ interface UseCheckoutOptions {
   selectedEvent: string;
   cartItems: CartItem[];
   cartTotal: number;
+  salesTax: number;
+  finalTotal: number;
   setCartItems: Dispatch<SetStateAction<CartItem[]>>;
   setScreen: Dispatch<SetStateAction<Screen>>;
 }
@@ -46,6 +48,8 @@ export const useCheckout = ({
   selectedEvent,
   cartItems,
   cartTotal,
+  salesTax,
+  finalTotal,
   setCartItems,
   setScreen,
 }: UseCheckoutOptions) => {
@@ -86,6 +90,8 @@ export const useCheckout = ({
       selectedEvent,
       cartItems,
       cartTotal,
+      salesTax,
+      finalTotal,
       paymentMethod,
       setScreen,
     );
@@ -101,8 +107,8 @@ export const useCheckout = ({
     // Saves the successful order's ID for the confirmation screen
     setConfirmedOrderId(orderSaved);
 
-    // Preserves the submitted order total before clearing the cart
-    setConfirmedOrderTotal(cartTotal);
+    // Preserves the final order including sales tax before clearing the cart
+    setConfirmedOrderTotal(finalTotal);
 
     // Clears the customer's cart only after the order saves successfully
     setCartItems([]);

@@ -12,7 +12,7 @@ import { SavedMenuItemPhoto } from "./MenuManagementScreens";
 import { styles } from "../styles/styles";
 
 // Imports the properties required by the Food Trailer screen
-import type { FoodTrailerScreenProps } from "../types";
+import type { FoodTrailerScreenProps } from "../types/types";
 
 // Displays the Food Trailer menu, including categories, items, add-ons, and cart functionality
 export const FoodTrailerScreen = ({

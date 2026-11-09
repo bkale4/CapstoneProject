@@ -255,6 +255,8 @@ export type CheckoutScreenProps = {
   setPaymentMethod: React.Dispatch<React.SetStateAction<string>>;
   cartItems: CartItem[];
   cartTotal: number;
+  salesTax: number;
+  finalTotal: number;
   submitOrder: () => void | Promise<void>;
 };
 

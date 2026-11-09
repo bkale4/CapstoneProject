@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import type { Dispatch, RefObject, SetStateAction } from "react";
 
-import type { CartItem } from "../types/index";
+import type { CartItem } from "../types/types";
 
 // Imports Firestore functions for listening to real-time menu updates
 import { collection, onSnapshot } from "firebase/firestore";

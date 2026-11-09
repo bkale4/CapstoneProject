@@ -8,7 +8,7 @@ import { useStatusGroups } from "../hooks/useStatusGroups";
 import { styles } from "../styles/styles";
 
 // Imports the properties required by the Orders Management screen
-import type { OrdersManagementScreenProps } from "../types";
+import type { OrdersManagementScreenProps } from "../types/types";
 
 // Displays customer orders and allows the client to update order statuses
 export const OrdersManagementScreen = ({

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 // Imports types for updating application navigation
 import type { Dispatch, SetStateAction } from "react";
-import type { Screen } from "../types";
+import type { Screen } from "../types/types";
 
 // Imports the service for retrieving catering requests from Firestore
 import {

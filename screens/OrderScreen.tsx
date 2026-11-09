@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView, Text } from "react-native";
 import { ServiceCard } from "../components/ServiceCard";
 import { styles } from "../styles/styles";
-import type { OrderScreenProps } from "../types";
+import type { OrderScreenProps } from "../types/types";
 
 // Displays the Order screen and allows customers to select the Food Trailer menu
 export const OrderScreen = ({
