@@ -188,11 +188,38 @@ export const OrderConfirmationScreen = ({
         <Text style={styles.summaryLine}>Payment Method: {paymentMethod}</Text>
         <Text style={styles.summaryTotal}>Total: ${cartTotal.toFixed(2)}</Text>
         {/* Displays payment instructions based on the customer's selected method */}
-        <Text style={styles.summaryLine}>
-          {paymentMethod.toLowerCase() === "cash"
-            ? "Please have your payment ready at pickup."
-            : "Please complete your payment using your selected payment method."}
-        </Text>
+        {paymentMethod === "Cash" ? (
+          <Text style={styles.summaryLine}>
+            Please have your payment ready at pickup.
+          </Text>
+        ) : paymentMethod === "Zelle" ? (
+          <View>
+            {/* Displays Zelle instructions only when Zelle is selected */}
+            <Text style={styles.summaryLine}>
+              Please send your payment through Zelle using your banking app.
+            </Text>
+            <Text
+              style={[
+                styles.summaryLine,
+                { fontSize: 22, fontWeight: "bold", marginTop: 12 },
+              ]}
+            >
+              Zelle Phone Number: 410-251-0019
+            </Text>
+            <Text
+              style={[
+                styles.summaryLine,
+                { fontSize: 22, fontWeight: "bold", marginTop: 12 },
+              ]}
+            >
+              Payment Amount: ${cartTotal.toFixed(2)}
+            </Text>
+          </View>
+        ) : (
+          <Text style={styles.summaryLine}>
+            Please complete your payment using you selected payment method.
+          </Text>
+        )}
       </View>
 
       <Pressable style={styles.primaryButton} onPress={() => setScreen("home")}>
