@@ -36,17 +36,6 @@ export const BusinessDashboardScreen = ({
         </Text>
       </Pressable>
 
-      {/* Opens Payment Management so the client can check electronic payments */}
-      <Pressable
-        style={styles.card}
-        onPress={() => setScreen("paymentManagement")}
-      >
-        <Text style={styles.cardTitle}>Payment Management</Text>
-        <Text style={styles.cardSubtitle}>
-          Access Venmo, PayPal, and Zelle to verify customer payments.
-        </Text>
-      </Pressable>
-
       {/* Loads customer catering requests before opening Catering Management */}
       <Pressable
         style={styles.card}

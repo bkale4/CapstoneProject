@@ -68,7 +68,6 @@ import {
 } from "../../screens/MenuManagementScreens";
 
 // Imports the Payment Management screen for administrator access
-import { PaymentManagementScreen } from "../../screens/PaymentManagementScreen";
 
 // Imports the shared Orders Management screen
 import { OrdersManagementScreen as SharedOrdersManagementScreen } from "../../screens/OrdersManagementScreen";
@@ -673,13 +672,6 @@ export default function App() {
           markOrderAsPaid={markOrderAsPaid}
           markOrderAsOpen={markOrderAsOpen}
           markOrderAsCancelled={markOrderAsCancelled}
-        />
-      )}
-      {/* Displays the administrator Payment Management screen */}
-      {screen === "paymentManagement" && (
-        <PaymentManagementScreen
-          Header={Header}
-          BusinessBackButton={BusinessBackButton}
         />
       )}
       {/* Displays the Catering Management screen using the shared component */}
