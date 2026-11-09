@@ -114,6 +114,8 @@ export const submitOrder = async (
   cartTotal: number,
   salesTax: number,
   finalTotal: number,
+  processingFeePayPal: number,
+  checkoutTotal: number,
   paymentMethod: string,
   setScreen: (screen: Screen) => void,
 ) => {
@@ -151,7 +153,8 @@ export const submitOrder = async (
       items: cartItems,
       subtotal: cartTotal,
       salesTax: salesTax,
-      total: finalTotal,
+      processingFeePayPal: processingFeePayPal,
+      total: checkoutTotal,
       paymentMethod: paymentMethod,
       paymentStatus: "Not Paid",
       status:

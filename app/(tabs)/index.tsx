@@ -393,6 +393,8 @@ export default function App() {
     submitOrder,
     paymentMethod,
     setPaymentMethod,
+    processingFeePayPal,
+    checkoutTotal,
   } = useCheckout({
     isCustomerLoggedIn,
     loggedInCustomerName,
@@ -570,6 +572,8 @@ export default function App() {
           cartTotal={cartTotal}
           salesTax={salesTax}
           finalTotal={finalTotal}
+          processingFeePayPal={processingFeePayPal}
+          checkoutTotal={checkoutTotal}
           submitOrder={submitOrder}
           isSubmittingOrder={isSubmittingOrder}
         />

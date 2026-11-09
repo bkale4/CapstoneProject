@@ -33,6 +33,8 @@ export const CheckoutScreen = ({
   cartTotal,
   salesTax,
   finalTotal,
+  processingFeePayPal,
+  checkoutTotal,
   submitOrder,
   isSubmittingOrder,
 }: CheckoutScreenProps) => (
@@ -154,12 +156,21 @@ export const CheckoutScreen = ({
           Subtotal: ${cartTotal.toFixed(2)}
         </Text>
         {/* Displays the calculated 6% */}
-        <Text style={styles.summaryTotal}>
+        <Text style={styles.summaryLine}>
           Sales Tax (6%): ${salesTax.toFixed(2)}
         </Text>
 
+        {/* Displays the calculated PayPal processing fee only when PayPal is the selected payment method */}
+        {paymentMethod === "PayPal" && (
+          <Text style={styles.summaryLine}>
+            PayPal Processing Fee (3.5%): ${processingFeePayPal.toFixed(2)}
+          </Text>
+        )}
+
         {/* Displays the final order total including sales tax */}
-        <Text style={styles.summaryTotal}>Total: ${finalTotal.toFixed(2)}</Text>
+        <Text style={styles.summaryTotal}>
+          Total: ${checkoutTotal.toFixed(2)}
+        </Text>
       </View>
 
       <Pressable

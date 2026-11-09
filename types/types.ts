@@ -257,6 +257,8 @@ export type CheckoutScreenProps = {
   cartTotal: number;
   salesTax: number;
   finalTotal: number;
+  processingFeePayPal: number;
+  checkoutTotal: number;
   submitOrder: () => void | Promise<void>;
 };
 

@@ -92,6 +92,8 @@ export const useCheckout = ({
       cartTotal,
       salesTax,
       finalTotal,
+      processingFeePayPal,
+      checkoutTotal,
       paymentMethod,
       setScreen,
     );
@@ -107,8 +109,8 @@ export const useCheckout = ({
     // Saves the successful order's ID for the confirmation screen
     setConfirmedOrderId(orderSaved);
 
-    // Preserves the final order including sales tax before clearing the cart
-    setConfirmedOrderTotal(finalTotal);
+    // Preserves the calculated checkout total before clearing the cart
+    setConfirmedOrderTotal(checkoutTotal);
 
     // Clears the customer's cart only after the order saves successfully
     setCartItems([]);
@@ -130,8 +132,21 @@ export const useCheckout = ({
     }
   };
 
+  // Calculates a 3.5% processing fee for PayPal payments
+  const calculatePayPalFee = (amount: number) => {
+    return Math.round(amount * 0.035 * 100) / 100;
+  };
+
   // Tracks the payment method selected by the customer during checkout
   const [paymentMethod, setPaymentMethod] = useState("Cash");
+
+  // Calculates a 3.5% processing for PayPal orders only
+  const processingFeePayPal =
+    paymentMethod === "PayPal" ? calculatePayPalFee(finalTotal) : 0;
+
+  // Calculate the total including sales tax and any processing fee
+  const checkoutTotal =
+    Math.round((finalTotal + processingFeePayPal) * 100) / 100;
 
   return {
     confirmedOrderTotal,
@@ -143,5 +158,7 @@ export const useCheckout = ({
     submitOrder,
     paymentMethod,
     setPaymentMethod,
+    processingFeePayPal,
+    checkoutTotal,
   };
 };
