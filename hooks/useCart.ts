@@ -82,9 +82,11 @@ export const useCart = (screen: Screen) => {
   // Decreases the quantity of an existing cart item
   const decreaseQuantity = (id: string) => {
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity - 1 } : item,
-      ),
+      prev
+        .map((item) =>
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item,
+        )
+        .filter((item) => item.quantity > 0),
     );
   };
 
