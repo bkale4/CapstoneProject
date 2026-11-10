@@ -36,10 +36,15 @@ export const OrdersManagementScreen = ({
         ) : (
           // Groups customer orders by their current status
           ["Pending Payment", "Open", "Filled", "Cancelled"].map((status) => {
-            // Finds requests belonging to the current status group
-            const groupOrders = adminOrders.filter(
-              (order) => order.status === status,
-            );
+            // Finds orders in the current status group and sorts them from oldest to newest
+            const groupOrders = adminOrders
+              .filter((order) => order.status === status)
+              .sort((a, b) => {
+                const timeA = a.createdAt?.toMillis?.() ?? 0;
+                const timeB = b.createdAt?.toMillis?.() ?? 0;
+
+                return timeA - timeB;
+              });
 
             const isExpanded = expandedGroups.includes(status);
 
@@ -63,6 +68,19 @@ export const OrdersManagementScreen = ({
                       {/* Displays order identification and customer information */}
                       <Text style={styles.orderNumberTitle}>
                         Order #{order.id.slice(0, 8)}
+                      </Text>
+
+                      {/* Displays the date and time the customer placed the order */}
+                      <Text style={styles.cardSubtitle}>
+                        Ordered:{" "}
+                        {order.createdAt?.toDate?.().toLocaleString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        }) ?? "Date unavailable"}
                       </Text>
 
                       <Text style={styles.cardSubtitle}>
