@@ -15,16 +15,16 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Catering Menu Options screen
 import type {
-    AvailabilityCalendarScreenProps,
-    CateringConfirmationScreenProps,
-    CateringEventsScreenProps,
-    CateringManagementScreenProps,
-    CateringRequestScreenProps,
-    CateringScreenProps,
-    DropOffCateringMenuOptionsScreenProps,
-    DropOffCateringMenuScreenProps,
-    OnsiteCateringMenuOptionsScreenProps,
-    OnsiteCateringMenuScreenProps,
+  AvailabilityCalendarScreenProps,
+  CateringConfirmationScreenProps,
+  CateringEventsScreenProps,
+  CateringManagementScreenProps,
+  CateringRequestScreenProps,
+  CateringScreenProps,
+  DropOffCateringMenuOptionsScreenProps,
+  DropOffCateringMenuScreenProps,
+  OnsiteCateringMenuOptionsScreenProps,
+  OnsiteCateringMenuScreenProps,
 } from "../types/types";
 
 // Displays the available Drop-Off Catering menus for customers to select
@@ -537,10 +537,15 @@ export const CateringManagementScreen = ({
           </View>
         ) : (
           requestGroups.map((group) => {
-            // Finds requests belonging to the current status group
-            const groupRequests = cateringRequests.filter(
-              (request) => request.status === group.status,
-            );
+            /// Finds requests in the current status group and sorts them by event date
+            const groupRequests = cateringRequests
+              .filter((request) => request.status === group.status)
+              .sort((a, b) => {
+                const dateA = new Date(a.date + "T00:00:00").getTime();
+                const dateB = new Date(b.date + "T00:00:00").getTime();
+
+                return dateA - dateB;
+              });
 
             const isExpanded = expandedGroups.includes(group.status);
 
