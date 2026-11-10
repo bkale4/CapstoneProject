@@ -80,7 +80,7 @@ export type AboutScreenProps = {
 // Defines the properties required by the Order screen
 export type OrderScreenProps = {
   Header: ({ title }: { title: string }) => React.JSX.Element;
-  isMenuActive: (menuName: string) => boolean;
+  activeFoodTrailerMenu: any;
   foodTrailerLocation: string;
   foodTrailerEventName: string;
   setSelectedMenuType: (value: string) => void;

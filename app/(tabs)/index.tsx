@@ -448,7 +448,7 @@ export default function App() {
       {screen === "order" && (
         <SharedOrderScreen
           Header={Header}
-          isMenuActive={isMenuActive}
+          activeFoodTrailerMenu={activeFoodTrailerMenu}
           foodTrailerLocation={foodTrailerLocation}
           foodTrailerEventName={foodTrailerEventName}
           setSelectedMenuType={setSelectedMenuType}
@@ -662,7 +662,7 @@ export default function App() {
           setScreen={setScreen}
         />
       )}
-      {/*Displays the shared Orders Management screen */}
+      {/* Displays the shared Orders Management screen */}
       {screen === "ordersManagement" && (
         <SharedOrdersManagementScreen
           Header={Header}

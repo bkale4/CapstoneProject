@@ -7,7 +7,7 @@ import type { OrderScreenProps } from "../types/types";
 // Displays the Order screen and allows customers to select the Food Trailer menu
 export const OrderScreen = ({
   Header,
-  isMenuActive,
+  activeFoodTrailerMenu,
   foodTrailerLocation,
   foodTrailerEventName,
   setSelectedMenuType,
@@ -23,12 +23,12 @@ export const OrderScreen = ({
       <ServiceCard
         title="Food Trailer"
         subtitle={
-          isMenuActive("Food Trailer Menu")
+          activeFoodTrailerMenu != null
             ? "Browse the active food trailer menu and place a quick order."
             : "The Food Trailer menu is currently unavailable."
         }
         onPress={() => {
-          if (isMenuActive("Food Trailer Menu")) {
+          if (activeFoodTrailerMenu !== null) {
             setSelectedMenuType("foodTrailer");
             setSelectedLocation(foodTrailerLocation);
             setSelectedEvent(foodTrailerEventName);
