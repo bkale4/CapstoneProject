@@ -67,6 +67,21 @@ export const FoodTrailerScreen = ({
               </Text>
             </Pressable>
 
+            {/* Displays the parent category description when expanded */}
+            {expandedParentCategories.includes(parentCategory) &&
+              activeFoodTrailerMenu?.categories
+                ?.filter(
+                  (category: any) =>
+                    category.name?.trim() === parentCategory &&
+                    !category.parentCategory?.trim() &&
+                    category.description?.trim(),
+                )
+                .map((category: any, index: number) => (
+                  <Text key={index} style={styles.menuDescription}>
+                    {category.description}
+                  </Text>
+                ))}
+
             {/* Displays items belonging directly to the expanded parent category */}
             {expandedParentCategories.includes(parentCategory) &&
               activeFoodTrailerMenu?.categories?.map(

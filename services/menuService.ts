@@ -1,11 +1,11 @@
 // Imports Firestore functions for creating and managing menu documents
 import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    updateDoc,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
 } from "firebase/firestore";
 
 // Imports the Firebase database connection
@@ -13,9 +13,9 @@ import { db } from "../firebaseConfig";
 
 // Compresses selected photos and saves them to Firestore
 import {
-    compressMenuItemPhoto,
-    deleteMenuItemPhoto,
-    saveMenuItemPhoto,
+  compressMenuItemPhoto,
+  deleteMenuItemPhoto,
+  saveMenuItemPhoto,
 } from "./imageService";
 
 import type { Screen } from "../types/types";
@@ -259,17 +259,64 @@ export const saveCategoryChanges = async (
   }
 };
 
-// Loads all menus from Firestore
+// Loads all menus from Firestore and adds missing parent categories to older menus
 export const loadAdminMenusService = async (
   setAdminMenus: React.Dispatch<React.SetStateAction<any>>,
 ) => {
   try {
     const menuSnapshot = await getDocs(collection(db, "menus"));
 
-    const menus = menuSnapshot.docs.map((menuDoc) => ({
-      id: menuDoc.id,
-      ...menuDoc.data(),
-    }));
+    const menus = await Promise.all(
+      menuSnapshot.docs.map(async (menuDoc) => {
+        const menuData = menuDoc.data();
+        const existingCategories = Array.isArray(menuData.categories)
+          ? menuData.categories
+          : [];
+
+        // Finds parent category names already assigned to subcategories
+        const parentNames = [
+          ...new Set<string>(
+            existingCategories
+              .map((category: any) => category.parentCategory?.trim() || "")
+              .filter((name: string) => name !== ""),
+          ),
+        ];
+
+        // Identifies parent categories that do not have their own category objects
+        const missingParents = parentNames.filter(
+          (parentName) =>
+            !existingCategories.some(
+              (category: any) =>
+                category.name?.trim() === parentName &&
+                !category.parentCategory?.trim(),
+            ),
+        );
+
+        // Creates the missing parent categories without changing existing items
+        const updatedCategories = [
+          ...existingCategories,
+          ...missingParents.map((name) => ({
+            name,
+            description: "",
+            parentCategory: "",
+            items: [],
+          })),
+        ];
+
+        // Saves the updated categories only when missing parents were found
+        if (missingParents.length > 0) {
+          await updateDoc(doc(db, "menus", menuDoc.id), {
+            categories: updatedCategories,
+          });
+        }
+
+        return {
+          id: menuDoc.id,
+          ...menuData,
+          categories: updatedCategories,
+        };
+      }),
+    );
 
     setAdminMenus(menus);
   } catch (error) {
