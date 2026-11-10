@@ -1,14 +1,14 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    orderBy,
-    query,
-    setDoc,
-    updateDoc,
-    writeBatch,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  setDoc,
+  updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import type { Screen } from "../types/types";
@@ -26,6 +26,23 @@ export const submitCateringRequest = async (
   cateringNotes: string,
   setScreen: (screen: Screen) => void,
 ) => {
+  // Checks that all required catering request fields are completed
+  if (
+    !cateringCustomerName.trim() ||
+    !cateringContact.trim() ||
+    !selectedCateringDate ||
+    !cateringTime.trim() ||
+    !cateringGuestCount.trim() ||
+    !cateringMenuPreferences.trim() ||
+    !cateringVenueName.trim() ||
+    !cateringVenueAddress.trim()
+  ) {
+    alert(
+      "Please complete all required fields before submitting your catering request.",
+    );
+    return;
+  }
+
   try {
     await addDoc(collection(db, "cateringRequests"), {
       customerName: cateringCustomerName,

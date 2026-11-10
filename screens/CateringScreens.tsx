@@ -394,6 +394,11 @@ export const CateringRequestScreen = ({
   <>
     <Header title="Catering Request Form" />
     <ScrollView contentContainerStyle={styles.content}>
+      {/* Explains the required field indicator */}
+      <Text style={{ color: "#555", marginBottom: 10 }}>
+        * Indicates a required field
+      </Text>
+
       <View style={styles.input}>
         <Text style={styles.selectedDateText}>
           Preferred Date: {formatCateringDate(selectedCateringDate)}
@@ -401,49 +406,49 @@ export const CateringRequestScreen = ({
       </View>
       <TextInput
         style={styles.input}
-        placeholder="Customer Name"
+        placeholder="Customer Name *"
         placeholderTextColor="#555"
         value={cateringCustomerName}
         onChangeText={setCateringCustomerName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Preferred Time"
+        placeholder="Preferred Time *"
         placeholderTextColor="#555"
         value={cateringTime}
         onChangeText={setCateringTime}
       />
       <TextInput
         style={styles.input}
-        placeholder="Estimated Guest Count"
+        placeholder="Estimated Guest Count *"
         placeholderTextColor="#555"
         value={cateringGuestCount}
         onChangeText={setCateringGuestCount}
       />
       <TextInput
         style={styles.input}
-        placeholder="Menu Preferences"
+        placeholder="Menu Preferences *"
         placeholderTextColor="#555"
         value={cateringMenuPreferences}
         onChangeText={setCateringMenuPreferences}
       />
       <TextInput
         style={styles.input}
-        placeholder="Email Address"
+        placeholder="Email Address *"
         placeholderTextColor="#555"
         value={cateringContact}
         onChangeText={setCateringContact}
       />
       <TextInput
         style={styles.input}
-        placeholder="Venue Name"
+        placeholder="Venue Name *"
         placeholderTextColor="#555"
         value={cateringVenueName}
         onChangeText={setCateringVenueName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Venue Address"
+        placeholder="Venue Address *"
         placeholderTextColor="#555"
         value={cateringVenueAddress}
         onChangeText={setCateringVenueAddress}
