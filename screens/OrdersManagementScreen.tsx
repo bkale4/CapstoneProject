@@ -77,12 +77,10 @@ export const OrdersManagementScreen = ({
                         Payment Status: {order.paymentStatus}
                       </Text>
 
-                      {/* Displays the selected payment method so the client knows where to verify payment */}
-                      {order.status === "Pending Payment" && (
-                        <Text style={styles.cardSubtitle}>
-                          Payment Method: {order.paymentMethod}
-                        </Text>
-                      )}
+                      {/* Displays the selected payment method for every order status */}
+                      <Text style={styles.cardSubtitle}>
+                        Payment Method: {order.paymentMethod}
+                      </Text>
 
                       {/* Shows the amount the client needs to verify before marking the order as paid */}
                       {order.status === "Pending Payment" && (
