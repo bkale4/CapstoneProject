@@ -120,6 +120,18 @@ export const submitOrder = async (
   setScreen: (screen: Screen) => void,
 ) => {
   try {
+    // Checks that all required checkout fields are completed
+    if (
+      !customerName.trim() ||
+      !customerPhone.trim() ||
+      !customerEmail.trim() ||
+      !paymentMethod.trim()
+    ) {
+      throw new Error(
+        "Please complete all required fields before placing your order.",
+      );
+    }
+
     // Checks that each cart item's menu and availability are still valid
     for (const cartItem of cartItems) {
       const menuRef = doc(db, "menus", cartItem.menuId);

@@ -21,6 +21,17 @@ export const handleCreateAccount = async (
   setScreen: (screen: Screen) => void,
 ) => {
   try {
+    // Checks that all required account registration fields are completed
+    if (
+      !newCustomerName.trim() ||
+      !newCustomerPhone.trim() ||
+      !newCustomerEmail.trim() ||
+      !newCustomerPassword.trim()
+    ) {
+      // Alerts the customer when required account registration fields are missing
+      alert("Please complete all required fields before creating an account.");
+      return;
+    }
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       newCustomerEmail,
@@ -60,6 +71,12 @@ export const handleCustomerLogin = async (
   setScreen: (screen: Screen) => void,
 ) => {
   try {
+    // Checks that both required customer login fields are completed
+    if (!customerEmail.trim() || !customerPassword.trim()) {
+      alert("Please complete all required fields before signing in.");
+      return;
+    }
+
     const userCredential = await signInWithEmailAndPassword(
       auth,
       customerEmail,

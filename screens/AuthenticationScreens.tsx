@@ -7,9 +7,9 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Business and Customer Login screens
 import type {
-    BusinessLoginScreenProps,
-    CreateAccountScreenProps,
-    CustomerLoginScreenProps,
+  BusinessLoginScreenProps,
+  CreateAccountScreenProps,
+  CustomerLoginScreenProps,
 } from "../types/types";
 
 // Displays the admin login form
@@ -83,16 +83,21 @@ export const CustomerLoginScreen = ({
     <ScrollView contentContainerStyle={styles.content}>
       <Text style={styles.sectionText}>Sign in to your customer account.</Text>
 
+      {/* Explains which customer login fields are required */}
+      <Text style={{ color: "#555", marginBottom: 10 }}>
+        * Indicates a required field
+      </Text>
+
       <TextInput
         style={styles.input}
-        placeholder="Email Address"
+        placeholder="Email Address *"
         placeholderTextColor="#555"
         value={customerEmail}
         onChangeText={setCustomerEmail}
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder="Password *"
         placeholderTextColor="#555"
         secureTextEntry
         value={customerPassword}
@@ -136,30 +141,35 @@ export const CreateAccountScreen = ({
         Create an account to make checkout easier.
       </Text>
 
+      {/* Explains which account registration fields are required */}
+      <Text style={{ color: "#555", marginBottom: 10 }}>
+        * Indicates a required field
+      </Text>
+
       <TextInput
         style={styles.input}
-        placeholder="Full Name"
+        placeholder="Full Name *"
         placeholderTextColor="#555"
         value={newCustomerName}
         onChangeText={setNewCustomerName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Phone Number"
+        placeholder="Phone Number *"
         placeholderTextColor="#555"
         value={newCustomerPhone}
         onChangeText={setNewCustomerPhone}
       />
       <TextInput
         style={styles.input}
-        placeholder="Email Address"
+        placeholder="Email Address *"
         placeholderTextColor="#555"
         value={newCustomerEmail}
         onChangeText={setNewCustomerEmail}
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder="Password *"
         placeholderTextColor="#555"
         secureTextEntry
         value={newCustomerPassword}

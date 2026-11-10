@@ -95,23 +95,28 @@ export const CheckoutScreen = ({
 
       {continueAsGuest && (
         <>
+          {/* Explains which guest checkout fields are required */}
+          <Text style={{ color: "#555", marginBottom: 10 }}>
+            * Indicates a required field
+          </Text>
+
           <TextInput
             style={styles.input}
-            placeholder="Full Name"
+            placeholder="Full Name *"
             placeholderTextColor="#555"
             value={guestName}
             onChangeText={setGuestName}
           />
           <TextInput
             style={styles.input}
-            placeholder="Phone Number"
+            placeholder="Phone Number *"
             placeholderTextColor="#555"
             value={guestPhone}
             onChangeText={setGuestPhone}
           />
           <TextInput
             style={styles.input}
-            placeholder="Email Address"
+            placeholder="Email Address *"
             placeholderTextColor="#555"
             value={guestEmail}
             onChangeText={setGuestEmail}
