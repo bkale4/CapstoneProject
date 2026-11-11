@@ -13,7 +13,7 @@ export type Screen =
   | "orderConfirmation"
   | "catering"
   | "cateringMenu"
-  | "cateringMenuOptions"
+  | "dropOffCateringMenuOptions"
   | "availabilityCalendar"
   | "cateringRequest"
   | "cateringConfirmation"
@@ -156,6 +156,7 @@ export type DropOffCateringMenuScreenProps = {
       }
     | null
     | undefined;
+  setScreen: (screen: Screen) => void;
 };
 
 // Defines the properties required by the Catering Services screen
@@ -331,6 +332,7 @@ export type OnsiteCateringMenuScreenProps = {
       }
     | null
     | undefined;
+  setScreen: (screen: Screen) => void;
 };
 
 // Defines the properties required by the Catering Availability Calendar screen

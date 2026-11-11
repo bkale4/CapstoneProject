@@ -58,6 +58,7 @@ export const DropOffCateringMenuOptionsScreen = ({
 export const DropOffCateringMenuScreen = ({
   Header,
   selectedDropOffCateringMenu,
+  setScreen,
 }: DropOffCateringMenuScreenProps) => {
   // Manages expanded parent categories and subcategories
   const {
@@ -80,6 +81,14 @@ export const DropOffCateringMenuScreen = ({
       <Header title="Drop-Off Catering Menu" />
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+        {/* Returns customers to the Drop-Off Catering menu selection screen */}
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => setScreen("dropOffCateringMenuOptions")}
+        >
+          <Text style={styles.primaryButtonText}>Back to Menus</Text>
+        </Pressable>
+
         {/* Displays the selected Drop-Off Catering menu name */}
         <Text style={styles.cateringMenuTitle}>
           {selectedDropOffCateringMenu?.name}
@@ -333,7 +342,7 @@ export const CateringScreen = ({ Header, setScreen }: CateringScreenProps) => (
       <Pressable
         style={styles.card}
         onPress={() => {
-          setScreen("cateringMenuOptions");
+          setScreen("dropOffCateringMenuOptions");
         }}
       >
         <Text style={styles.cardTitle}>Drop-Off Catering</Text>
@@ -797,6 +806,7 @@ export const OnsiteCateringMenuOptionsScreen = ({
 export const OnsiteCateringMenuScreen = ({
   Header,
   selectedOnsiteCateringMenu,
+  setScreen,
 }: OnsiteCateringMenuScreenProps) => {
   // Manages expanded parent categories and subcategories
   const {
@@ -819,6 +829,14 @@ export const OnsiteCateringMenuScreen = ({
       <Header title="Onsite Catering Menu" />
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content}>
+        {/* Returns customers to the Onsite Event Catering menu selection screen */}
+        <Pressable
+          style={styles.primaryButton}
+          onPress={() => setScreen("onsiteEventMenuOptions")}
+        >
+          <Text style={styles.primaryButtonText}>Back to Menus</Text>
+        </Pressable>
+
         {/* Displays the selected Drop-Off Catering menu name */}
         <Text style={styles.cateringMenuTitle}>
           {selectedOnsiteCateringMenu?.name}

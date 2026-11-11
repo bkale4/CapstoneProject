@@ -479,6 +479,7 @@ export default function App() {
         <SharedOnsiteCateringMenuScreen
           Header={Header}
           selectedOnsiteCateringMenu={selectedOnsiteCateringMenu}
+          setScreen={setScreen}
         />
       )}
       {/* Displays the Onsite Event Menu Options screen using the shared component */}
@@ -491,7 +492,7 @@ export default function App() {
         />
       )}
       {/* Displays the Catering Menu Options screen using the shared component */}
-      {screen === "cateringMenuOptions" && (
+      {screen === "dropOffCateringMenuOptions" && (
         <SharedCateringMenuOptionsScreen
           Header={Header}
           dropOffCateringMenus={dropOffCateringMenus}
@@ -504,6 +505,7 @@ export default function App() {
         <SharedDropOffCateringMenuScreen
           Header={Header}
           selectedDropOffCateringMenu={selectedDropOffCateringMenu}
+          setScreen={setScreen}
         />
       )}
       {/* Displays the Cart screen using the shared component */}
