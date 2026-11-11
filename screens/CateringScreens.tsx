@@ -399,84 +399,127 @@ export const CateringRequestScreen = ({
   cateringNotes,
   setCateringNotes,
   submitCateringRequest,
-}: CateringRequestScreenProps) => (
-  <>
-    <Header title="Catering Request Form" />
-    <ScrollView contentContainerStyle={styles.content}>
-      {/* Explains the required field indicator */}
-      <Text style={{ color: "#555", marginBottom: 10 }}>
-        * Indicates a required field
-      </Text>
+}: CateringRequestScreenProps) => {
+  // Generates time options in 15-minute increments throughout the day
+  const cateringTimeOptions = Array.from({ length: 96 }, (_, index) => {
+    const hour = Math.floor(index / 4);
+    const minute = (index % 4) * 15;
 
-      <View style={styles.input}>
-        <Text style={styles.selectedDateText}>
-          Preferred Date: {formatCateringDate(selectedCateringDate)}
+    const displayHour = hour % 12 || 12;
+    const displayMinute = String(minute).padStart(2, "0");
+    const period = hour < 12 ? "AM" : "PM";
+
+    return `${displayHour}:${displayMinute} ${period}`;
+  });
+
+  // Controls whether the Preferred Time dropdown is expanded
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+
+  return (
+    <>
+      <Header title="Catering Request Form" />
+      <ScrollView contentContainerStyle={styles.content}>
+        {/* Explains the required field indicator */}
+        <Text style={{ color: "#555", marginBottom: 10 }}>
+          * Indicates a required field
         </Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="Customer Name *"
-        placeholderTextColor="#555"
-        value={cateringCustomerName}
-        onChangeText={setCateringCustomerName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Preferred Time *"
-        placeholderTextColor="#555"
-        value={cateringTime}
-        onChangeText={setCateringTime}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Estimated Guest Count *"
-        placeholderTextColor="#555"
-        value={cateringGuestCount}
-        onChangeText={setCateringGuestCount}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Menu Preferences *"
-        placeholderTextColor="#555"
-        value={cateringMenuPreferences}
-        onChangeText={setCateringMenuPreferences}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Email Address *"
-        placeholderTextColor="#555"
-        value={cateringContact}
-        onChangeText={setCateringContact}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Venue Name *"
-        placeholderTextColor="#555"
-        value={cateringVenueName}
-        onChangeText={setCateringVenueName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Venue Address *"
-        placeholderTextColor="#555"
-        value={cateringVenueAddress}
-        onChangeText={setCateringVenueAddress}
-      />
-      <TextInput
-        style={[styles.input, styles.notesInput]}
-        placeholder="Special Notes"
-        placeholderTextColor="#555"
-        value={cateringNotes}
-        onChangeText={setCateringNotes}
-        multiline
-      />
 
-      <Pressable style={styles.primaryButton} onPress={submitCateringRequest}>
-        <Text style={styles.primaryButtonText}>Submit Catering Request</Text>
-      </Pressable>
-    </ScrollView>
-  </>
-);
+        <View style={styles.input}>
+          <Text style={styles.selectedDateText}>
+            Preferred Date: {formatCateringDate(selectedCateringDate)}
+          </Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Customer Name *"
+          placeholderTextColor="#555"
+          value={cateringCustomerName}
+          onChangeText={setCateringCustomerName}
+        />
+
+        {/* Opens or closes the Preferred Time dropdown */}
+        <Pressable
+          style={styles.input}
+          onPress={() => setShowTimeDropdown(!showTimeDropdown)}
+        >
+          <Text style={{ color: cateringTime ? "#000" : "#555" }}>
+            {cateringTime || "Preferred Time *"} {showTimeDropdown ? "▲" : "▼"}
+          </Text>
+        </Pressable>
+
+        {/* Displays the available times when the dropdown is expanded */}
+        {showTimeDropdown && (
+          <ScrollView
+            style={{ maxHeight: 200, marginBottom: 12 }}
+            nestedScrollEnabled
+          >
+            {cateringTimeOptions.map((time) => (
+              <Pressable
+                key={time}
+                style={styles.input}
+                onPress={() => {
+                  // Saves the selected time and closes the dropdown
+                  setCateringTime(time);
+                  setShowTimeDropdown(false);
+                }}
+              >
+                <Text style={{ color: "#000" }}>{time}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+        )}
+
+        <TextInput
+          style={styles.input}
+          placeholder="Estimated Guest Count *"
+          placeholderTextColor="#555"
+          value={cateringGuestCount}
+          onChangeText={setCateringGuestCount}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Menu Preferences *"
+          placeholderTextColor="#555"
+          value={cateringMenuPreferences}
+          onChangeText={setCateringMenuPreferences}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email Address *"
+          placeholderTextColor="#555"
+          value={cateringContact}
+          onChangeText={setCateringContact}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Venue Name *"
+          placeholderTextColor="#555"
+          value={cateringVenueName}
+          onChangeText={setCateringVenueName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Venue Address *"
+          placeholderTextColor="#555"
+          value={cateringVenueAddress}
+          onChangeText={setCateringVenueAddress}
+        />
+        <TextInput
+          style={[styles.input, styles.notesInput]}
+          placeholder="Special Notes"
+          placeholderTextColor="#555"
+          value={cateringNotes}
+          onChangeText={setCateringNotes}
+          multiline
+        />
+
+        <Pressable style={styles.primaryButton} onPress={submitCateringRequest}>
+          <Text style={styles.primaryButtonText}>Submit Catering Request</Text>
+        </Pressable>
+      </ScrollView>
+    </>
+  );
+};
 
 // Displays the Catering Confirmation screen after a request is submitted
 export const CateringConfirmationScreen = ({
