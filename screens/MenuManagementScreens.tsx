@@ -925,7 +925,7 @@ export const ManageMenuItemsScreen = ({
               <View key={index} style={styles.card}>
                 <Text style={styles.cardTitle}>{item.name}</Text>
 
-                {item.description && (
+                {!!item.description && (
                   <Text style={styles.cardSubtitle}>{item.description}</Text>
                 )}
 
