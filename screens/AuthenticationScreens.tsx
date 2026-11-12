@@ -1,5 +1,4 @@
 // Imports React and the components used to display the login screens
-import React from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 // Imports shared application styles
@@ -34,6 +33,8 @@ export function BusinessLoginScreen({
           </Text>
         </View>
 
+        {/* Displays the Customer Name label above the input */}
+        <Text style={styles.label}>Admin Username *</Text>
         <TextInput
           style={styles.input}
           placeholder="Username"
@@ -44,6 +45,8 @@ export function BusinessLoginScreen({
           blurOnSubmit={false}
         />
 
+        {/* Displays the Customer Name label above the input */}
+        <Text style={styles.label}>Admin Password *</Text>
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -88,6 +91,8 @@ export const CustomerLoginScreen = ({
         * Indicates a required field
       </Text>
 
+      {/* Displays the Customer Email label above the input */}
+      <Text style={styles.label}>Customer Email *</Text>
       <TextInput
         style={styles.input}
         placeholder="Email Address *"
@@ -95,6 +100,9 @@ export const CustomerLoginScreen = ({
         value={customerEmail}
         onChangeText={setCustomerEmail}
       />
+
+      {/* Displays the Customer Password label above the input */}
+      <Text style={styles.label}>Customer Password *</Text>
       <TextInput
         style={styles.input}
         placeholder="Password *"
@@ -146,6 +154,8 @@ export const CreateAccountScreen = ({
         * Indicates a required field
       </Text>
 
+      {/* Displays the Full Name label above the input */}
+      <Text style={styles.label}>Customer Name *</Text>
       <TextInput
         style={styles.input}
         placeholder="Full Name *"
@@ -153,6 +163,9 @@ export const CreateAccountScreen = ({
         value={newCustomerName}
         onChangeText={setNewCustomerName}
       />
+
+      {/* Displays the Phone Number label above the input */}
+      <Text style={styles.label}>Phone Number *</Text>
       <TextInput
         style={styles.input}
         placeholder="Phone Number *"
@@ -160,6 +173,9 @@ export const CreateAccountScreen = ({
         value={newCustomerPhone}
         onChangeText={setNewCustomerPhone}
       />
+
+      {/* Displays the Email Address label above the input */}
+      <Text style={styles.label}>Email Address *</Text>
       <TextInput
         style={styles.input}
         placeholder="Email Address *"
@@ -167,6 +183,9 @@ export const CreateAccountScreen = ({
         value={newCustomerEmail}
         onChangeText={setNewCustomerEmail}
       />
+
+      {/* Displays the Password label above the input */}
+      <Text style={styles.label}>Password *</Text>
       <TextInput
         style={styles.input}
         placeholder="Password *"

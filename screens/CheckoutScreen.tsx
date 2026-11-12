@@ -99,6 +99,8 @@ export const CheckoutScreen = ({
             * Indicates a required field
           </Text>
 
+          {/* Displays the Full Name label above the input */}
+          <Text style={styles.label}>Full Name *</Text>
           <TextInput
             style={styles.input}
             placeholder="Full Name *"
@@ -106,6 +108,9 @@ export const CheckoutScreen = ({
             value={guestName}
             onChangeText={setGuestName}
           />
+
+          {/* Displays the Phone Number label above the input */}
+          <Text style={styles.label}>Phone Number *</Text>
           <TextInput
             style={styles.input}
             placeholder="Phone Number *"
@@ -113,6 +118,9 @@ export const CheckoutScreen = ({
             value={guestPhone}
             onChangeText={setGuestPhone}
           />
+
+          {/* Displays the Email Address label above the input */}
+          <Text style={styles.label}>Email Address *</Text>
           <TextInput
             style={styles.input}
             placeholder="Email Address *"

@@ -431,9 +431,7 @@ export const CateringRequestScreen = ({
         </View>
 
         {/* Displays the Customer Name label above the input */}
-        <Text style={{ color: "#555", marginBottom: -10 }}>
-          Customer Name *
-        </Text>
+        <Text style={styles.label}>Customer Name *</Text>
         <TextInput
           style={styles.input}
           placeholder="Customer Name *"
@@ -493,9 +491,7 @@ export const CateringRequestScreen = ({
         )}
 
         {/* Displays the Estimated Guest Count label above the input */}
-        <Text style={{ color: "#555", marginBottom: -10 }}>
-          Estimated Guest Count *
-        </Text>
+        <Text style={styles.label}>Estimated Guest Count *</Text>
         <TextInput
           style={styles.input}
           placeholder="Estimated Guest Count *"
@@ -505,9 +501,7 @@ export const CateringRequestScreen = ({
         />
 
         {/* Displays the Menu Preferences label above the input */}
-        <Text style={{ color: "#555", marginBottom: -10 }}>
-          Menu Preferences *
-        </Text>
+        <Text style={styles.label}>Menu Preferences *</Text>
         <TextInput
           style={styles.input}
           placeholder="Menu Preferences *"
@@ -517,9 +511,7 @@ export const CateringRequestScreen = ({
         />
 
         {/* Displays the Email Address label above the input */}
-        <Text style={{ color: "#555", marginBottom: -10 }}>
-          Email Address *
-        </Text>
+        <Text style={styles.label}>Email Address *</Text>
         <TextInput
           style={styles.input}
           placeholder="Email Address *"
@@ -529,7 +521,7 @@ export const CateringRequestScreen = ({
         />
 
         {/* Displays the Venue Name label above the input */}
-        <Text style={{ color: "#555", marginBottom: -10 }}>Venue Name *</Text>
+        <Text style={styles.label}>Venue Name *</Text>
         <TextInput
           style={styles.input}
           placeholder="Venue Name *"
@@ -539,9 +531,7 @@ export const CateringRequestScreen = ({
         />
 
         {/* Displays the Venue Address label above the input */}
-        <Text style={{ color: "#555", marginBottom: -10 }}>
-          Venue Address *
-        </Text>
+        <Text style={styles.label}>Venue Address *</Text>
         <TextInput
           style={styles.input}
           placeholder="Venue Address *"
@@ -551,7 +541,7 @@ export const CateringRequestScreen = ({
         />
 
         {/* Displays the Special Notes label above the input */}
-        <Text style={{ color: "#555", marginBottom: -10 }}>Special Notes</Text>
+        <Text style={styles.label}>Special Notes</Text>
         <TextInput
           style={[styles.input, styles.notesInput]}
           placeholder="Special Notes"
@@ -761,6 +751,8 @@ export const CateringManagementScreen = ({
                             </Text>
                           </Pressable>
 
+                          {/* Displays the Follow-Up Notes label above the input */}
+                          <Text style={styles.label}>Follow-Up Notes</Text>
                           {/* Allows the admin to enter follow-up notes */}
                           <TextInput
                             style={styles.input}

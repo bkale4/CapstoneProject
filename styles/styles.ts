@@ -464,7 +464,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginTop: 14,
-    marginBottom: 6,
+    marginBottom: -10,
   },
   backButton: {
     alignSelf: "flex-start",

@@ -38,6 +38,9 @@ export const CartScreen = ({
                 <Text style={styles.summaryLine}>
                   Subtotal: ${(item.price * item.quantity).toFixed(2)}
                 </Text>
+
+                {/* Displays the Special Instructions label above the input */}
+                <Text style={styles.label}>Special Instructions</Text>
                 {/* Allows customers to enter and save special instructions for each cart item */}
                 <TextInput
                   style={[

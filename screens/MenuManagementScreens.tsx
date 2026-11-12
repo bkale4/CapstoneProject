@@ -581,6 +581,8 @@ export const ManageMenuItemsScreen = ({
       {/* Collects information for a new menu category */}
       <Text style={styles.label}>New Category</Text>
 
+      {/* Displays the Category Name label above the input */}
+      <Text style={styles.label}>Category Name</Text>
       <TextInput
         style={styles.input}
         value={newCategoryName}
@@ -588,6 +590,8 @@ export const ManageMenuItemsScreen = ({
         placeholder="Enter category name"
       />
 
+      {/* Displays the Category Description label above the input */}
+      <Text style={styles.label}>Category Description</Text>
       <TextInput
         style={styles.input}
         value={newCategoryDescription}
@@ -722,8 +726,12 @@ export const ManageMenuItemsScreen = ({
           {/* Displays the form for adding a new item to a category */}
           {group.field.startsWith("categories.") && (
             <View style={styles.card}>
-              <Text style={styles.label}>Add Item to {group.name}</Text>
+              <Text style={[styles.label, { marginBottom: 6 }]}>
+                Add Item to {group.name}
+              </Text>
 
+              {/* Adds a small gap between the Item Name label and its input */}
+              <Text style={[styles.label, { marginBottom: 0 }]}>Item Name</Text>
               <TextInput
                 style={styles.input}
                 value={
@@ -740,6 +748,10 @@ export const ManageMenuItemsScreen = ({
 
               {newItemCategoryIndex === Number(group.field.split(".")[1]) && (
                 <>
+                  {/* Adds a small gap between the Description label and its input */}
+                  <Text style={[styles.label, { marginBottom: 0 }]}>
+                    Description
+                  </Text>
                   <TextInput
                     style={styles.input}
                     value={newItemDescription}
@@ -808,15 +820,25 @@ export const ManageMenuItemsScreen = ({
                   </Pressable>
 
                   {newItemPricingType === "single" ? (
-                    <TextInput
-                      style={styles.input}
-                      value={newItemPrice}
-                      onChangeText={setNewItemPrice}
-                      placeholder="Price"
-                      keyboardType="decimal-pad"
-                    />
+                    <>
+                      {/* Adds a small gap between the Single Price label and its input */}
+                      <Text style={[styles.label, { marginBottom: 0 }]}>
+                        Single Price
+                      </Text>
+                      <TextInput
+                        style={styles.input}
+                        value={newItemPrice}
+                        onChangeText={setNewItemPrice}
+                        placeholder="Price"
+                        keyboardType="decimal-pad"
+                      />
+                    </>
                   ) : (
                     <>
+                      {/* Adds a small gap between the Item Name label and its input */}
+                      <Text style={[styles.label, { marginBottom: 0 }]}>
+                        Half Price
+                      </Text>
                       <TextInput
                         style={styles.input}
                         value={newItemHalfPrice}
@@ -825,6 +847,10 @@ export const ManageMenuItemsScreen = ({
                         keyboardType="decimal-pad"
                       />
 
+                      {/* Adds a small gap between the Item Name label and its input */}
+                      <Text style={[styles.label, { marginBottom: 0 }]}>
+                        Full Price
+                      </Text>
                       <TextInput
                         style={styles.input}
                         value={newItemFullPrice}
@@ -835,9 +861,15 @@ export const ManageMenuItemsScreen = ({
                     </>
                   )}
 
-                  {/* Collects optional add-on information */}
-                  <Text style={styles.label}>Optional Add-on</Text>
+                  {/* Adds a small gap between the Optional Add-On label and its input */}
+                  <Text style={[styles.label, { marginBottom: 0 }]}>
+                    Optional Add-On
+                  </Text>
 
+                  {/* Adds a small gap between the Add-On Name label and its input */}
+                  <Text style={[styles.label, { marginBottom: 0 }]}>
+                    Add-On Name
+                  </Text>
                   <TextInput
                     style={styles.input}
                     value={newAddOnName}
@@ -845,6 +877,10 @@ export const ManageMenuItemsScreen = ({
                     placeholder="Add-on name (e.g., Bacon or Sausage)"
                   />
 
+                  {/* Adds a small gap between the Add-On Price label and its input */}
+                  <Text style={[styles.label, { marginBottom: 0 }]}>
+                    Add-On Price
+                  </Text>
                   <TextInput
                     style={styles.input}
                     value={newAddOnPrice}
@@ -870,6 +906,10 @@ export const ManageMenuItemsScreen = ({
 
                   {additionalAddOns.map((addOn, index) => (
                     <View key={index}>
+                      {/* Adds a small gap between the Additional Add-On Name label and its input */}
+                      <Text style={[styles.label, { marginBottom: 0 }]}>
+                        Additional Add-On Name
+                      </Text>
                       <TextInput
                         style={styles.input}
                         value={addOn.name}
@@ -885,6 +925,10 @@ export const ManageMenuItemsScreen = ({
                         placeholder={`Additional add-on ${index + 1} name`}
                       />
 
+                      {/* Adds a small gap between the Additional Add-On Price label and its input */}
+                      <Text style={[styles.label, { marginBottom: 0 }]}>
+                        Additional Add-On Price
+                      </Text>
                       <TextInput
                         style={styles.input}
                         value={addOn.price}
@@ -1221,6 +1265,11 @@ export const EditMenuItemScreen = ({
 
       {/* Allows editing of an optional add-on and its price */}
       <Text style={styles.label}>Optional Add-on</Text>
+
+      {/* Adds a small gap between the Optional Add-On Name label and its input */}
+      <Text style={[styles.label, { marginBottom: 0 }]}>
+        Optional Add-On Name
+      </Text>
       <TextInput
         style={styles.input}
         value={editItemAddOnName}
@@ -1228,6 +1277,10 @@ export const EditMenuItemScreen = ({
         placeholder="Add-on name"
       />
 
+      {/* Adds a small gap between the Optional Add-On Price label and its input */}
+      <Text style={[styles.label, { marginBottom: 0 }]}>
+        Optional Add-On Price
+      </Text>
       <TextInput
         style={styles.input}
         value={editItemAddOnPrice}
@@ -1251,6 +1304,10 @@ export const EditMenuItemScreen = ({
 
       {additionalAddOns.map((addOn, index) => (
         <View key={index}>
+          {/* Adds a small gap between the Additional Add-On Name label and its input */}
+          <Text style={[styles.label, { marginBottom: 0 }]}>
+            Additional Add-On Name
+          </Text>
           <TextInput
             style={styles.input}
             value={addOn.name}
@@ -1264,6 +1321,10 @@ export const EditMenuItemScreen = ({
             placeholder={`Additional add-on ${index + 1} name`}
           />
 
+          {/* Adds a small gap between the Additional Add-On Price label and its input */}
+          <Text style={[styles.label, { marginBottom: 0 }]}>
+            Additional Add-On Price
+          </Text>
           <TextInput
             style={styles.input}
             value={addOn.price}
