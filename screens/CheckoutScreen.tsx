@@ -1,5 +1,4 @@
 // Imports React and the components used for checkout
-import React from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 // Imports shared application styles

@@ -90,6 +90,13 @@ export const useCart = (screen: Screen) => {
     );
   };
 
+  // Updates the special instructions for a specific cart item
+  const updateItemNotes = (id: string, notes: string) => {
+    setCartItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, notes } : item)),
+    );
+  };
+
   // Removes the selected item from the cart
   const removeItem = (id: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
@@ -127,6 +134,7 @@ export const useCart = (screen: Screen) => {
     addToCart,
     increaseQuantity,
     decreaseQuantity,
+    updateItemNotes,
     removeItem,
     clearCart,
     cartTotal,

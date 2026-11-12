@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 
-import type { ScrollView } from "react-native";
 
 // Imports Firestore functions for deleting menu documents
 import { deleteDoc, doc } from "firebase/firestore";
@@ -9,16 +8,16 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 import {
-    addNewCategory as addNewCategoryService,
-    addNewMenuItem as addNewMenuItemService,
-    createMenu,
-    deleteMenuCategory as deleteMenuCategoryService,
-    deleteMenuItem as deleteMenuItemService,
-    saveCategoryChanges as saveCategoryChangesService,
-    saveMenuChanges as saveMenuChangesService,
-    saveMenuDescription as saveMenuDescriptionService,
-    saveMenuItemChanges as saveMenuItemChangesService,
-    toggleMenuActive as toggleMenuActiveService,
+  addNewCategory as addNewCategoryService,
+  addNewMenuItem as addNewMenuItemService,
+  createMenu,
+  deleteMenuCategory as deleteMenuCategoryService,
+  deleteMenuItem as deleteMenuItemService,
+  saveCategoryChanges as saveCategoryChangesService,
+  saveMenuChanges as saveMenuChangesService,
+  saveMenuDescription as saveMenuDescriptionService,
+  saveMenuItemChanges as saveMenuItemChangesService,
+  toggleMenuActive as toggleMenuActiveService,
 } from "../services/menuService";
 
 // Imports the type used for application navigation
@@ -34,8 +33,9 @@ export const useMenuManagement = (
   // Stores menus retrieved from Firestore for admin management
   const [adminMenus, setAdminMenus] = useState<any>([]);
 
-  // References the Manage Menu Items screen's ScrollView
-  const manageMenuScrollRef = useRef<ScrollView>(null);
+  // References the Manage Menu Items screen's ScrollView instance
+  const manageMenuScrollRef =
+    useRef<import("react-native").ScrollViewInstance>(null);
 
   // Tracks whether the Back to Top button should be displayed
   const [showBackToTop, setShowBackToTop] = useState(false);

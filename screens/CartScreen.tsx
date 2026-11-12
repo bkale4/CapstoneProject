@@ -1,6 +1,5 @@
 // Imports React and the components used to display and manage the cart
-import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 // Imports shared application styles
 import { styles } from "../styles/styles";
@@ -13,8 +12,9 @@ export const CartScreen = ({
   Header,
   cartItems,
   cartTotal,
-  decreaseQuantity,
   increaseQuantity,
+  decreaseQuantity,
+  updateItemNotes,
   removeItem,
   clearCart,
   setScreen,
@@ -38,6 +38,22 @@ export const CartScreen = ({
                 <Text style={styles.summaryLine}>
                   Subtotal: ${(item.price * item.quantity).toFixed(2)}
                 </Text>
+                {/* Allows customers to enter and save special instructions for each cart item */}
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      marginTop: 10,
+                      marginBottom: 5,
+                      minHeight: 45,
+                    },
+                  ]}
+                  placeholder="Special Instructions (Optional)"
+                  placeholderTextColor="#555"
+                  value={item.notes ?? ""}
+                  onChangeText={(notes) => updateItemNotes(item.id, notes)}
+                  multiline
+                />
               </View>
 
               <View style={styles.quantityControls}>

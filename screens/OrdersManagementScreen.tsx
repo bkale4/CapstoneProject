@@ -1,5 +1,4 @@
 // Imports React and components for displaying and managing orders
-import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 import { useStatusGroups } from "../hooks/useStatusGroups";
@@ -112,10 +111,20 @@ export const OrdersManagementScreen = ({
                         Ordered Items:
                       </Text>
 
+                      {/* Displays each ordered item and its special instructions */}
                       {order.items?.map((item: any, index: number) => (
-                        <Text key={index} style={styles.cardSubtitle}>
-                          {item.name} - Quantity: {item.quantity}
-                        </Text>
+                        <View key={index} style={{ marginBottom: 8 }}>
+                          <Text style={styles.cardSubtitle}>
+                            {item.name} - Quantity: {item.quantity}
+                          </Text>
+
+                          {/* Displays special instructions only when the customer entered notes */}
+                          {item.notes?.trim() ? (
+                            <Text style={styles.cardSubtitle}>
+                              Special Instructions: {item.notes}
+                            </Text>
+                          ) : null}
+                        </View>
                       ))}
 
                       {/* Allows the client to confirm payment for an electronic order */}

@@ -37,6 +37,7 @@ export type CartItem = {
   name: string;
   price: number;
   quantity: number;
+  notes?: string;
 };
 
 // Defines the properties required by the Business Login screen
@@ -227,6 +228,7 @@ export type CartScreenProps = {
   Header: React.ComponentType<{ title: string }>;
   cartItems: CartItem[];
   cartTotal: number;
+  updateItemNotes: (id: string, notes: string) => void;
   decreaseQuantity: (id: string) => void;
   increaseQuantity: (id: string) => void;
   removeItem: (id: string) => void;
@@ -412,8 +414,9 @@ export type EditMenuScreenProps = {
 // Defines the properties required by the Manage Menu Items screen
 export type ManageMenuItemsScreenProps = {
   Header: React.ComponentType<{ title: string }>;
+  // References the Manage Menu Items screen's ScrollView instance
   manageMenuScrollRef: React.RefObject<
-    import("react-native").ScrollView | null
+    import("react-native").ScrollViewInstance | null
   >;
   setShowBackToTop: React.Dispatch<React.SetStateAction<boolean>>;
   showBackToTop: boolean;

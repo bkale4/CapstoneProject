@@ -1,5 +1,5 @@
 // Imports React and the state hook used to manage screen navigation
-import React, { useState } from "react";
+import { useState } from "react";
 
 // Imports SafeAreaView for handling screen safe areas
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -126,6 +126,7 @@ export default function App() {
     addToCart,
     increaseQuantity,
     decreaseQuantity,
+    updateItemNotes,
     removeItem,
     clearCart,
     cartTotal,
@@ -514,8 +515,9 @@ export default function App() {
           Header={Header}
           cartItems={cartItems}
           cartTotal={cartTotal}
-          decreaseQuantity={decreaseQuantity}
           increaseQuantity={increaseQuantity}
+          decreaseQuantity={decreaseQuantity}
+          updateItemNotes={updateItemNotes}
           removeItem={removeItem}
           clearCart={clearCart}
           setScreen={setScreen}

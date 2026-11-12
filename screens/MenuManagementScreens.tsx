@@ -1,20 +1,21 @@
 // Imports React and the components used for administrative menu management
-import React, { useEffect, useState } from "react";
+// Imports React for the order management components
+import { useEffect, useState } from "react";
 import {
-    Alert,
-    Image,
-    Platform,
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 import {
-    compressMenuItemPhoto,
-    loadMenuItemPhoto,
-    selectMenuItemPhoto,
+  compressMenuItemPhoto,
+  loadMenuItemPhoto,
+  selectMenuItemPhoto,
 } from "../services/imageService";
 
 // Imports shared application styles
@@ -22,11 +23,11 @@ import { styles } from "../styles/styles";
 
 // Imports the properties required by the Menu Management screen
 import type {
-    AddMenuScreenProps,
-    EditMenuItemScreenProps,
-    EditMenuScreenProps,
-    ManageMenuItemsScreenProps,
-    MenuManagementScreenProps,
+  AddMenuScreenProps,
+  EditMenuItemScreenProps,
+  EditMenuScreenProps,
+  ManageMenuItemsScreenProps,
+  MenuManagementScreenProps,
 } from "../types/types";
 
 // Displays menus and allows administrators to manage their settings and items
@@ -65,11 +66,11 @@ export const MenuManagementScreen = ({
           <Text style={styles.cardTitle}>{menu.name}</Text>
 
           {/* Displays menu location and event information when available */}
-          {menu.location && (
+          {!!menu.location && (
             <Text style={styles.cardSubtitle}>Location: {menu.location}</Text>
           )}
 
-          {menu.eventName && (
+          {!!menu.eventName && (
             <Text style={styles.cardSubtitle}>Event: {menu.eventName}</Text>
           )}
 
