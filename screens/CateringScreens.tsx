@@ -1,5 +1,5 @@
 // Import React and the components used to display catering menus
-import React, { useState } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 // Imports the shared category expansion functionality
@@ -400,10 +400,10 @@ export const CateringRequestScreen = ({
   setCateringNotes,
   submitCateringRequest,
 }: CateringRequestScreenProps) => {
-  // Generates time options in 15-minute increments throughout the day
-  const cateringTimeOptions = Array.from({ length: 96 }, (_, index) => {
-    const hour = Math.floor(index / 4);
-    const minute = (index % 4) * 15;
+  // Generates catering time options every 30 minutes from 6:00 AM to 10:00 PM
+  const cateringTimeOptions = Array.from({ length: 33 }, (_, index) => {
+    const hour = 6 + Math.floor(index / 2);
+    const minute = (index % 2) * 30;
 
     const displayHour = hour % 12 || 12;
     const displayMinute = String(minute).padStart(2, "0");
