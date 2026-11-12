@@ -429,6 +429,11 @@ export const CateringRequestScreen = ({
             Preferred Date: {formatCateringDate(selectedCateringDate)}
           </Text>
         </View>
+
+        {/* Displays the Customer Name label above the input */}
+        <Text style={{ color: "#555", marginBottom: -10 }}>
+          Customer Name *
+        </Text>
         <TextInput
           style={styles.input}
           placeholder="Customer Name *"
@@ -437,6 +442,10 @@ export const CateringRequestScreen = ({
           onChangeText={setCateringCustomerName}
         />
 
+        {/* Displays the Preferred Time label above the input */}
+        <Text style={{ color: "#555", marginBottom: -10 }}>
+          Preferred Time *
+        </Text>
         {/* Opens or closes the Preferred Time dropdown */}
         <Pressable
           style={styles.input}
@@ -483,6 +492,10 @@ export const CateringRequestScreen = ({
           </ScrollView>
         )}
 
+        {/* Displays the Estimated Guest Count label above the input */}
+        <Text style={{ color: "#555", marginBottom: -10 }}>
+          Estimated Guest Count *
+        </Text>
         <TextInput
           style={styles.input}
           placeholder="Estimated Guest Count *"
@@ -490,6 +503,11 @@ export const CateringRequestScreen = ({
           value={cateringGuestCount}
           onChangeText={setCateringGuestCount}
         />
+
+        {/* Displays the Menu Preferences label above the input */}
+        <Text style={{ color: "#555", marginBottom: -10 }}>
+          Menu Preferences *
+        </Text>
         <TextInput
           style={styles.input}
           placeholder="Menu Preferences *"
@@ -497,6 +515,11 @@ export const CateringRequestScreen = ({
           value={cateringMenuPreferences}
           onChangeText={setCateringMenuPreferences}
         />
+
+        {/* Displays the Email Address label above the input */}
+        <Text style={{ color: "#555", marginBottom: -10 }}>
+          Email Address *
+        </Text>
         <TextInput
           style={styles.input}
           placeholder="Email Address *"
@@ -504,6 +527,9 @@ export const CateringRequestScreen = ({
           value={cateringContact}
           onChangeText={setCateringContact}
         />
+
+        {/* Displays the Venue Name label above the input */}
+        <Text style={{ color: "#555", marginBottom: -10 }}>Venue Name *</Text>
         <TextInput
           style={styles.input}
           placeholder="Venue Name *"
@@ -511,6 +537,11 @@ export const CateringRequestScreen = ({
           value={cateringVenueName}
           onChangeText={setCateringVenueName}
         />
+
+        {/* Displays the Venue Address label above the input */}
+        <Text style={{ color: "#555", marginBottom: -10 }}>
+          Venue Address *
+        </Text>
         <TextInput
           style={styles.input}
           placeholder="Venue Address *"
@@ -518,6 +549,9 @@ export const CateringRequestScreen = ({
           value={cateringVenueAddress}
           onChangeText={setCateringVenueAddress}
         />
+
+        {/* Displays the Special Notes label above the input */}
+        <Text style={{ color: "#555", marginBottom: -10 }}>Special Notes</Text>
         <TextInput
           style={[styles.input, styles.notesInput]}
           placeholder="Special Notes"
