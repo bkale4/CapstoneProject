@@ -450,20 +450,34 @@ export const CateringRequestScreen = ({
         {/* Displays the available times when the dropdown is expanded */}
         {showTimeDropdown && (
           <ScrollView
-            style={{ maxHeight: 200, marginBottom: 12 }}
+            style={{
+              maxHeight: 200,
+              marginBottom: 12,
+              borderWidth: 2,
+              borderColor: "#E8D2B8",
+              borderRadius: 12,
+              marginTop: -16,
+              marginHorizontal: 12,
+            }}
             nestedScrollEnabled
           >
             {cateringTimeOptions.map((time) => (
               <Pressable
                 key={time}
-                style={styles.input}
+                // Displays each time as a compact dropdown option
+                style={{
+                  paddingVertical: 12,
+                  paddingHorizontal: 16,
+                  borderBottomWidth: 2,
+                  borderBottomColor: "#D8C0A3",
+                }}
                 onPress={() => {
                   // Saves the selected time and closes the dropdown
                   setCateringTime(time);
                   setShowTimeDropdown(false);
                 }}
               >
-                <Text style={{ color: "#000" }}>{time}</Text>
+                <Text style={{ color: "#000", fontSize: 14 }}>{time}</Text>
               </Pressable>
             ))}
           </ScrollView>
