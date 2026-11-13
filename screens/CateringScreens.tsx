@@ -805,7 +805,8 @@ export const CateringManagementScreen = ({
                       )}
 
                       {/* Allows admin to accept or reject pending requests */}
-                      {request.status === "pending" && (
+                      {(request.status === "pending" ||
+                        request.status === "rejected") && (
                         <View
                           style={{
                             flexDirection: "row",
@@ -825,17 +826,22 @@ export const CateringManagementScreen = ({
                             <Text style={styles.primaryButtonText}>Accept</Text>
                           </Pressable>
 
-                          <Pressable
-                            style={[styles.secondaryButton, { flex: 1 }]}
-                            onPress={() =>
-                              updateCateringRequestStatus(
-                                request.id,
-                                "rejected",
-                              )
-                            }
-                          >
-                            <Text style={styles.primaryButtonText}>Reject</Text>
-                          </Pressable>
+                          {/* Only displays Reject when the request is pending */}
+                          {request.status === "pending" && (
+                            <Pressable
+                              style={[styles.secondaryButton, { flex: 1 }]}
+                              onPress={() =>
+                                updateCateringRequestStatus(
+                                  request.id,
+                                  "rejected",
+                                )
+                              }
+                            >
+                              <Text style={styles.primaryButtonText}>
+                                Reject
+                              </Text>
+                            </Pressable>
+                          )}
                         </View>
                       )}
                     </View>
