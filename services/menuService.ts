@@ -15,6 +15,7 @@ import { db } from "../firebaseConfig";
 import {
   compressMenuItemPhoto,
   deleteMenuItemPhoto,
+  loadMenuItemPhoto,
   saveMenuItemPhoto,
 } from "./imageService";
 
@@ -391,7 +392,7 @@ export const saveMenuItemChanges = async (
   selectedAdminItemGroup: string,
   editItemName: string,
   editItemDescription: string,
-  editItemPhoto: string | null,
+  editItemPhoto: string[],
   editItemPricingType: "single" | "halfFull",
   editItemPrice: string,
   editItemHalfPrice: string,
@@ -462,9 +463,10 @@ export const saveMenuItemChanges = async (
     return;
   }
 
-  // Identifies a newly selected photo that needs to be saved to Firestore
-  const hasNewPhoto =
-    !!editItemPhoto && !editItemPhoto.startsWith("data:image/");
+  // Checks whether any selected photo is new rather than already saved
+  const hasNewPhoto = editItemPhoto.some(
+    (photo) => !photo.startsWith("data:image/"),
+  );
 
   try {
     const isCustomCategory = selectedAdminItemGroup.startsWith("categories.");
@@ -480,8 +482,34 @@ export const saveMenuItemChanges = async (
         ]
       : selectedAdminMenu[selectedAdminItemGroup]?.[selectedAdminItemIndex];
 
+    // Uses the existing menu item ID or generates one for older items
     const itemPhotoId =
       existingItem?.id || doc(collection(db, "menuItemImages")).id;
+
+    // Retrieves the IDs of photos already associated with this menu item
+    const savedPhotoIds: string[] =
+      existingItem?.photoIds?.length > 0
+        ? existingItem.photoIds
+        : existingItem?.id
+          ? [existingItem.id]
+          : [];
+
+    // Loads the saved photos so they can be compared with the edited selection
+    const savedPhotoUris = await Promise.all(
+      savedPhotoIds.map((photoId) => loadMenuItemPhoto(photoId)),
+    );
+
+    // Identifies which existing photos the client chose to keep
+    const keptPhotoIds = savedPhotoIds.filter(
+      (_, index) =>
+        savedPhotoUris[index] !== null &&
+        editItemPhoto.includes(savedPhotoUris[index]!),
+    );
+
+    // Identifies which existing photos the client removed
+    const removedPhotoIds = savedPhotoIds.filter(
+      (photoId) => !keptPhotoIds.includes(photoId),
+    );
 
     const updatedItems = isCustomCategory
       ? [...(selectedAdminMenu.categories?.[categoryIndex]?.items || [])]
@@ -525,17 +553,31 @@ export const saveMenuItemChanges = async (
       delete updatedItems[selectedAdminItemIndex].price;
     }
 
-    // Saves a replacement photo only when the admin selects a new image
-    if (hasNewPhoto && editItemPhoto) {
-      const compressPhoto = await compressMenuItemPhoto(editItemPhoto);
-      await saveMenuItemPhoto(itemPhotoId, compressPhoto);
+    // Tracks the IDs of newly uploaded photos
+    const newPhotoIds: string[] = [];
+
+    // Saves each newly selected photo without overwriting existing images
+    if (hasNewPhoto) {
+      for (const photo of editItemPhoto) {
+        // Skips photos that were already loaded from Firestore
+        if (photo.startsWith("data:image/")) {
+          continue;
+        }
+
+        // Creates a unique Firestore document for each new photo
+        const photoId = doc(collection(db, "menuItemImages")).id;
+        const compressedPhoto = await compressMenuItemPhoto(photo);
+
+        await saveMenuItemPhoto(photoId, compressedPhoto);
+        newPhotoIds.push(photoId);
+      }
     }
 
-    // Deletes the saved photo when the admin removes it
-    if (editItemPhoto === null && existingItem?.id) {
-      await deleteMenuItemPhoto(existingItem.id);
-    }
-
+    // Keeps the remaining existing photos and adds newly uploaded photos
+    updatedItems[selectedAdminItemIndex].photoIds = [
+      ...keptPhotoIds,
+      ...newPhotoIds,
+    ];
     if (isCustomCategory) {
       const updatedCategories = [...(selectedAdminMenu.categories || [])];
 
@@ -551,6 +593,11 @@ export const saveMenuItemChanges = async (
       await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
         [selectedAdminItemGroup]: updatedItems,
       });
+    }
+
+    // Deletes only the photos removed while editing the menu item
+    for (const photoId of removedPhotoIds) {
+      await deleteMenuItemPhoto(photoId);
     }
 
     if (isCustomCategory) {
@@ -658,8 +705,8 @@ export const addNewMenuItem = async (
   newItemCategoryIndex: number | null,
   newItemName: string,
   newItemDescription: string,
-  newItemPhoto: string | null,
-  setNewItemPhoto: React.Dispatch<React.SetStateAction<string | null>>,
+  newItemPhoto: string[],
+  setNewItemPhoto: React.Dispatch<React.SetStateAction<string[]>>,
   newItemPricingType: "single" | "halfFull",
   newItemPrice: string,
   newItemHalfPrice: string,
@@ -769,6 +816,9 @@ export const addNewMenuItem = async (
         ...(category.items || []),
         {
           id: newItemId,
+          photoIds: newItemPhoto.map((_, index) =>
+            index === 0 ? newItemId : `${newItemId}_${index}`,
+          ),
           name: newItemName.trim(),
           description: newItemDescription.trim(),
           pricingType: newItemPricingType,
@@ -789,10 +839,14 @@ export const addNewMenuItem = async (
       ],
     };
 
-    // Compresses and saves the new item's photo using its unique ID
-    if (newItemPhoto) {
-      const compressedPhoto = await compressMenuItemPhoto(newItemPhoto);
-      await saveMenuItemPhoto(newItemId, compressedPhoto);
+    // Compresses and saves each selected photo using a unique document ID
+    for (let index = 0; index < newItemPhoto.length; index++) {
+      const compressedPhoto = await compressMenuItemPhoto(newItemPhoto[index]);
+
+      // Keeps the first photo under the existing item ID for compatibility
+      const photoId = index === 0 ? newItemId : `${newItemId}_${index}`;
+
+      await saveMenuItemPhoto(photoId, compressedPhoto);
     }
 
     await updateDoc(doc(db, "menus", selectedAdminMenu.id), {
@@ -806,7 +860,7 @@ export const addNewMenuItem = async (
 
     setNewItemName("");
     setNewItemDescription("");
-    setNewItemPhoto(null);
+    setNewItemPhoto([]);
     setNewItemPrice("");
     setNewItemPricingType("single");
     setNewItemHalfPrice("");

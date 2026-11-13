@@ -1,5 +1,4 @@
 // Imports React and the components needed to display the Food Trailer menu and handle customer interactions
-import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
 // Imports the shared category expansion functionality
@@ -100,14 +99,16 @@ export const FoodTrailerScreen = ({
                           </Text>
 
                           {/* Displays the item's saved photo */}
-                          <SavedMenuItemPhoto photoId={item.id} />
-
+                          <SavedMenuItemPhoto
+                            photoId={item.id}
+                            photoIds={item.photoIds}
+                          />
                           <Text style={styles.sectionText}>
                             ${Number(item.price).toFixed(2)}
                           </Text>
 
                           {/* Allows customers to select an add-on for a parent-category item */}
-                          {item.addOn?.name && (
+                          {!!item.addOn?.name && (
                             <Pressable
                               onPress={() => {
                                 const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
@@ -144,8 +145,9 @@ export const FoodTrailerScreen = ({
                             </Pressable>
                           )}
 
-                          {/* Displays additional add-on options for parent-category items */}
-                          {item.addOns?.length > 1 &&
+                          {/* Displays additional add-ons only when more than one exists */}
+                          {Array.isArray(item.addOns) &&
+                            item.addOns.length > 1 &&
                             item.addOns
                               .slice(1)
                               .map(
@@ -286,27 +288,32 @@ export const FoodTrailerScreen = ({
                         </Text>
                       </Pressable>
 
+                      {/* Displays the description only when the subcategory has one */}
                       {expandedCategories.includes(categoryIndex) &&
-                        category.description?.trim() && (
+                        !!category.description?.trim() && (
                           <Text style={styles.menuDescription}>
                             {category.description}
                           </Text>
                         )}
-                      {/* Displays menu items when a subcategory is expanded */}
+                      {/* Displays menu items only when the category has a valid items array */}
                       {expandedCategories.includes(categoryIndex) &&
-                        category.items?.map((item: any, itemIndex: number) => (
+                        Array.isArray(category.items) &&
+                        category.items.map((item: any, itemIndex: number) => (
                           <View key={itemIndex} style={styles.card}>
                             <Text style={styles.cardTitle}>{item.name}</Text>
                             <Text style={styles.menuDescription}>
                               {item.description}
                             </Text>
                             {/* Displays the saved photo for an expanded subcategory menu item */}
-                            <SavedMenuItemPhoto photoId={item.id} />
+                            <SavedMenuItemPhoto
+                              photoId={item.id}
+                              photoIds={item.photoIds}
+                            />
                             <Text style={styles.sectionText}>
                               ${Number(item.price).toFixed(2)}
                             </Text>
                             {/* Displays optional add-ons available for a menu item */}
-                            {item.addOn?.name && (
+                            {!!item.addOn?.name && (
                               <Pressable
                                 onPress={() => {
                                   const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
@@ -339,14 +346,14 @@ export const FoodTrailerScreen = ({
                                         )
                                       ? "☑ "
                                       : "☐ "}
-                                  {item.addOn.name} (+$
-                                  {Number(item.addOn.price).toFixed(2)})
+                                  {item.addOn?.name} (+$
+                                  {Number(item.addOn?.price).toFixed(2)})
                                 </Text>
                               </Pressable>
                             )}
-
-                            {/* Displays additional add-on options for a menu item */}
-                            {item.addOns?.length > 1 &&
+                            {/* Displays additional add-ons only when more than one exists */}
+                            {Array.isArray(item.addOns) &&
+                              item.addOns.length > 1 &&
                               item.addOns
                                 .slice(1)
                                 .map(
@@ -389,7 +396,6 @@ export const FoodTrailerScreen = ({
                                     );
                                   },
                                 )}
-
                             {/* Displays Limited or Sold Out status for menu items */}
                             {(item.status === "Limited" ||
                               item.status === "Sold Out") && (
@@ -487,8 +493,9 @@ export const FoodTrailerScreen = ({
                     {expandedCategories.includes(categoryIndex) ? "▲" : "▼"}
                   </Text>
                 </Pressable>
+                {/* Displays the description only when the subcategory has one */}
                 {expandedCategories.includes(categoryIndex) &&
-                  category.description?.trim() && (
+                  !!category.description?.trim() && (
                     <Text style={styles.menuDescription}>
                       {category.description}
                     </Text>
@@ -502,12 +509,15 @@ export const FoodTrailerScreen = ({
                         {item.description}
                       </Text>
                       {/* Displays the saved photo for an expanded menu category item */}
-                      <SavedMenuItemPhoto photoId={item.id} />
+                      <SavedMenuItemPhoto
+                        photoId={item.id}
+                        photoIds={item.photoIds}
+                      />
                       <Text style={styles.sectionText}>
                         ${Number(item.price).toFixed(2)}
                       </Text>
                       {/* Displays optional add-ons available for a menu item */}
-                      {item.addOn?.name && (
+                      {!!item.addOn?.name && (
                         <Pressable
                           onPress={() => {
                             const itemId = `${activeFoodTrailerMenu.id}-${categoryIndex}-${itemIndex}`;
@@ -543,8 +553,9 @@ export const FoodTrailerScreen = ({
                           </Text>
                         </Pressable>
                       )}
-                      {/* Displays additional add-on options for a menu item */}
-                      {item.addOns?.length > 1 &&
+                      {/* Displays additional add-ons only when more than one exists */}
+                      {Array.isArray(item.addOns) &&
+                        item.addOns.length > 1 &&
                         item.addOns
                           .slice(1)
                           .map(

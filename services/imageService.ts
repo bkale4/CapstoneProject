@@ -8,10 +8,10 @@ import * as ImagePicker from "expo-image-picker";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 
 // Opens the device's photo library and returns the selected image
-export const selectMenuItemPhoto = async (): Promise<string | null> => {
+export const selectMenuItemPhoto = async (): Promise<string[] | null> => {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ["images"],
-    allowsEditing: true,
+    allowsMultipleSelection: true,
     quality: 0.7,
   });
 
@@ -20,7 +20,7 @@ export const selectMenuItemPhoto = async (): Promise<string | null> => {
     return null;
   }
 
-  return result.assets[0].uri;
+  return result.assets.map((asset) => asset.uri);
 };
 
 // Resizes and compresses a menu item photo before storing it in Firestore

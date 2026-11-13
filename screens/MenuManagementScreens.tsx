@@ -404,46 +404,84 @@ export const EditMenuScreen = ({
 );
 
 // Loads and displays a menu item's saved photo from Firestore
-export const SavedMenuItemPhoto = ({ photoId }: { photoId?: string }) => {
-  // Stores the image URI retrieved from Firestore
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
+export const SavedMenuItemPhoto = ({
+  photoId,
+  photoIds,
+}: {
+  photoId?: string;
+  photoIds?: string[];
+}) => {
+  // Stores all image URIs retrieved from Firestore
+  const [photoUris, setPhotoUris] = useState<string[]>([]);
 
   useEffect(() => {
-    // Prevents an old photo from appearing when the item changes
+    // Prevents outdated photos from appearing when the menu item changes
     let active = true;
-    setPhotoUri(null);
+    setPhotoUris([]);
 
-    // Skips loading when the item does not have a photo ID
-    if (!photoId) {
-      return () => {
-        active = false;
-      };
-    }
+    // Uses saved photo IDs, or falls back to the original photo ID for older items
+    const idsToLoad =
+      photoIds !== undefined ? photoIds : photoId ? [photoId] : [];
 
-    // Retrieves the photo associated with this menu item
-    loadMenuItemPhoto(photoId)
-      .then((uri) => {
+    // Loads all photos associated with the menu item
+    const loadPhotos = async () => {
+      try {
+        const loadedPhotos = await Promise.all(
+          idsToLoad.map((id) => loadMenuItemPhoto(id)),
+        );
+
+        // Checks whether each requested photo loads successfully
+        console.log(
+          "Photo loading results:",
+          idsToLoad.map((id, index) => ({
+            photoId: id,
+            loaded: loadedPhotos[index] !== null,
+          })),
+        );
+
+        // Keeps only successfully loaded photos
         if (active) {
-          setPhotoUri(uri);
+          setPhotoUris(
+            loadedPhotos.filter((uri): uri is string => uri !== null),
+          );
         }
-      })
-      .catch((error) => {
-        console.error("Error loading menu item photo:", error);
-      });
+      } catch (error) {
+        console.error("Error loading menu item photos:", error);
+      }
+    };
+
+    loadPhotos();
 
     return () => {
       active = false;
     };
-  }, [photoId]);
+  }, [photoId, photoIds]);
 
-  // Hides the image component when no photo exists
-  if (!photoUri) {
+  // Hides the image component when no photos exist
+  if (photoUris.length === 0) {
     return null;
   }
 
   return (
-    <View style={styles.menuItemImageContainer}>
-      <Image source={{ uri: photoUri }} style={styles.menuItemImage} />
+    <View
+      style={[
+        styles.menuItemImageContainer,
+        {
+          // Arranges saved menu item photos side by side
+          flexDirection: "row",
+          flexWrap: "wrap",
+          gap: 10,
+        },
+      ]}
+    >
+      {/* Displays each saved photo associated with the menu item */}
+      {photoUris.map((uri, index) => (
+        <Image
+          key={index}
+          source={{ uri }}
+          style={[styles.menuItemImage, { marginBottom: 10 }]}
+        />
+      ))}
     </View>
   );
 };
@@ -767,38 +805,58 @@ export const ManageMenuItemsScreen = ({
                     onPress={async () => {
                       const selectedPhoto = await selectMenuItemPhoto();
 
-                      // Updates the preview when a photo is selected
-                      if (selectedPhoto) {
-                        setNewItemPhoto(selectedPhoto);
+                      // Stores all selected photos for the new menu item
+                      if (selectedPhoto && selectedPhoto.length > 0) {
+                        // Adds newly selected photos to the existing selection
+                        setNewItemPhoto((previous) => [
+                          ...previous,
+                          ...selectedPhoto,
+                        ]);
 
-                        // Tests image compression without saving to Firestore
-                        await compressMenuItemPhoto(selectedPhoto);
+                        // Tests compression for each selected photo without saving to Firestore
+                        for (const photo of selectedPhoto) {
+                          await compressMenuItemPhoto(photo);
+                        }
                       }
                     }}
                   >
                     <Text style={styles.adminButtonText}>
-                      {newItemPhoto ? "Change Photo" : "Upload Photo"}
+                      {/* Shows the correct button text based on whether photos are selected */}
+                      {newItemPhoto.length > 0
+                        ? "Add More Photos"
+                        : "Upload Photos"}{" "}
                     </Text>
                   </Pressable>
 
                   {/* Displays a preview of the selected photo */}
                   {newItemPhoto && (
                     <View style={{ marginTop: 10 }}>
-                      <Image
-                        source={{ uri: newItemPhoto }}
-                        style={styles.menuItemImage}
-                        resizeMode="cover"
-                      />
+                      {/* Displays each selected photo with its own removal button */}
+                      {newItemPhoto.map((photo, index) => (
+                        <View key={index}>
+                          <Image
+                            source={{ uri: photo }}
+                            style={styles.menuItemImage}
+                            resizeMode="cover"
+                          />
 
-                      {/* Removes the selected photo before saving */}
-                      <Pressable
-                        style={styles.secondaryButton}
-                        onPress={() => setNewItemPhoto(null)}
-                      >
-                        <Text style={styles.secondaryButtonText}>
-                          Remove Photo
-                        </Text>
-                      </Pressable>
+                          <Pressable
+                            style={styles.secondaryButton}
+                            onPress={() => {
+                              // Removes only the selected photo from the new menu item
+                              setNewItemPhoto((previous) =>
+                                previous.filter(
+                                  (_, photoIndex) => photoIndex !== index,
+                                ),
+                              );
+                            }}
+                          >
+                            <Text style={styles.secondaryButtonText}>
+                              Remove Photo
+                            </Text>
+                          </Pressable>
+                        </View>
+                      ))}
                     </View>
                   )}
 
@@ -974,7 +1032,10 @@ export const ManageMenuItemsScreen = ({
                 )}
 
                 {/* Displays the item's saved photo from Firestore */}
-                <SavedMenuItemPhoto photoId={item.id} />
+                <SavedMenuItemPhoto
+                  photoId={item.id}
+                  photoIds={item.photoIds}
+                />
 
                 {/* Displays item pricing */}
                 {item.pricingType === "halfFull" ? (
@@ -1021,13 +1082,26 @@ export const ManageMenuItemsScreen = ({
                     setSelectedAdminItemIndex(index);
 
                     // Clears the previous photo while loading the selected item's saved photo
-                    setEditItemPhoto(null);
+                    setEditItemPhoto([]);
 
                     // Loads the existing photo so the admin can preview or replace it
                     if (item.id) {
-                      // Waits for the saved photo before opening the Edit Item screen
-                      const photoUri = await loadMenuItemPhoto(item.id);
-                      setEditItemPhoto(photoUri);
+                      // Loads all saved photos, including older items with a single photo
+                      const photoIds: string[] =
+                        item.photoIds?.length > 0
+                          ? item.photoIds
+                          : item.id
+                            ? [item.id]
+                            : [];
+
+                      const photoUris = await Promise.all(
+                        photoIds.map((photoId) => loadMenuItemPhoto(photoId)),
+                      );
+
+                      // Keeps only photos that were successfully loaded
+                      setEditItemPhoto(
+                        photoUris.filter((uri): uri is string => uri !== null),
+                      );
                     }
 
                     setEditItemName(item.name || "");
@@ -1186,26 +1260,45 @@ export const EditMenuItemScreen = ({
         onPress={async () => {
           const selectedPhoto = await selectMenuItemPhoto();
 
-          // Updates the preview when a photo is selected
-          if (selectedPhoto) {
-            setEditItemPhoto(selectedPhoto);
+          // Adds newly selected photos without removing existing photos
+          if (selectedPhoto && selectedPhoto.length > 0) {
+            setEditItemPhoto((previous) => [...previous, ...selectedPhoto]);
           }
         }}
       >
-        <Text style={styles.adminButtonText}>
-          {editItemPhoto ? "Change Photo" : "Upload Photo"}
-        </Text>
+        <Text style={styles.adminButtonText}>Add Photos</Text>
       </Pressable>
 
       {/* Displays a preview of the selected photo */}
       {editItemPhoto && (
         <View style={{ marginTop: 10 }}>
-          <Image source={{ uri: editItemPhoto }} style={styles.menuItemImage} />
+          {/* Displays each photo with its own removal button */}
+          {editItemPhoto.map((photo, index) => (
+            <View key={index}>
+              <Image
+                source={{ uri: photo }}
+                style={styles.menuItemImage}
+                resizeMode="cover"
+              />
+
+              <Pressable
+                style={styles.secondaryButton}
+                onPress={() => {
+                  // Removes only the selected photo from the preview
+                  setEditItemPhoto((previous) =>
+                    previous.filter((_, photoIndex) => photoIndex !== index),
+                  );
+                }}
+              >
+                <Text style={styles.secondaryButtonText}>Remove Photo</Text>
+              </Pressable>
+            </View>
+          ))}
 
           {/* Removes the selected photo before saving */}
           <Pressable
             style={styles.secondaryButton}
-            onPress={() => setEditItemPhoto(null)}
+            onPress={() => setEditItemPhoto([])}
           >
             <Text style={styles.secondaryButtonText}>Remove Photo</Text>
           </Pressable>

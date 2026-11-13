@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 
-
 // Imports Firestore functions for deleting menu documents
 import { deleteDoc, doc } from "firebase/firestore";
 
@@ -82,7 +81,7 @@ export const useMenuManagement = (
   const [newItemName, setNewItemName] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
-  const [newItemPhoto, setNewItemPhoto] = useState<string | null>(null);
+  const [newItemPhoto, setNewItemPhoto] = useState<string[]>([]);
 
   // Manages single-price and Half/Full pricing for new menu items
   const [newItemPricingType, setNewItemPricingType] = useState<
@@ -120,7 +119,7 @@ export const useMenuManagement = (
   // Stores the name, description, and photo of the menu item being edited
   const [editItemName, setEditItemName] = useState("");
   const [editItemDescription, setEditItemDescription] = useState("");
-  const [editItemPhoto, setEditItemPhoto] = useState<string | null>(null);
+  const [editItemPhoto, setEditItemPhoto] = useState<string[]>([]);
 
   // Manages single-price and Half/Full pricing when editing menu items
   const [editItemPrice, setEditItemPrice] = useState("");
